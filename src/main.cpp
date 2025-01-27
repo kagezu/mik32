@@ -1,5 +1,6 @@
 #include "display.h"
 // #include "core.h"
+// #include <ST7735/pin.h>
 
 #define PIN_LED 7	 // Светодиод управляется выводом PORT_2_7
 #define PIN_BUTTON 6 // Кнопка управляет сигналом на выводе
@@ -16,36 +17,37 @@ void InitClock()
 #define LED(x)      x(2, 7)
 #define BUTTON(x)   x(2, 6)
 
-Display lcd;
+// Display lcd;
 
 int main()
 {
   InitClock(); // Включение тактирования GPIO
 
+  Display lcd;
+
   // LED(GPIO);
-  // BUTTON(GPIO);
+  // L_SCK(GPIO);
+  // L_SDA(GPIO);
+  // L_RS(GPIO);
+  // L_RST(GPIO);
+  // L_CS(GPIO);
+
   // LED(OUT);
-  // BUTTON(IN);
+  // L_SCK(OUT);
+  // L_SDA(OUT);
+  // L_RS(OUT);
+  // L_RST(OUT);
+  // L_CS(OUT);
 
-  // while (true) {
-  //   if (BUTTON(GET)) {
-  //     LED(SET);
-  //   }
-  //   else {
-  //     LED(RES);
-  //   }
-  // }
 
-  int x = 0;
 
-  // while (true)
-  //   lcd.demo(x++);
 
-  L_CS(SET);
 
-  SELA45(GPIO);
-  SELA45(OUT);
-  SELA45(RES);
+  uint8_t x = 0;
+  // while (true) lcd.demo(x++);
 
-  while (true);
+  while (true) {
+
+    lcd.demo(x++);
+  }
 }

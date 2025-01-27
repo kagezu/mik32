@@ -44,5 +44,5 @@ union dword {
 
 // Функции
 
-void delay_us(uint32_t us);
-void delay_ms(uint32_t ms);
+volatile void delay_us(uint32_t us);
+volatile void delay_ms(uint32_t ms);

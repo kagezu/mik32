@@ -5,23 +5,22 @@
 
 class ST7735_SOFT {
 protected:
-  void send_command(int32_t data);
-  void set_addr(int32_t x0, int32_t y0, int32_t x1, int32_t y1);
+  void send_command(uint8_t data);
+  void set_addr(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1);
   void send_zero();
-  void send_byte(int32_t data);
+  void send_byte(uint8_t data);
   void send_rgb(RGB color);
-  void rect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, RGB color);
-  // void send_rgb(uint32_t16_t data);
+  void rect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, RGB color);
 };
 
-void ST7735_SOFT::send_command(int32_t command)
+void ST7735_SOFT::send_command(uint8_t command)
 {
   L_RS(RES); // Запись команды
   send_byte(command);
   L_RS(SET); // Запись данных
 };
 
-void ST7735_SOFT::set_addr(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
+void ST7735_SOFT::set_addr(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1)
 {
   send_command(CASET); // Column Address Set
   send_zero();
@@ -42,204 +41,246 @@ void ST7735_SOFT::send_zero()
 {
   L_SDA(RES);
 
-  int32_t res = L_SCK(SFR) & ~L_SCK(MASK);
-  int32_t set = L_SCK(SFR) | L_SCK(MASK);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
+  L_SCK(SET);
+  L_SCK(RES);
 
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = res;
-  L_SCK(SFR) = set;
 };
 
-void ST7735_SOFT::send_byte(int32_t data)
+void ST7735_SOFT::send_byte(uint8_t data)
 {
-  int32_t b0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
-  int32_t b1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
-  int32_t set = L_SCK(SFR) | L_SCK(MASK);
+  uint32_t d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+  uint32_t d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+  uint32_t s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+  uint32_t s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
-  L_SCK(SFR) = data & 0x80 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x40 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x20 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x10 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x8 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x4 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x2 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = data & 0x1 ? b1 : b0;
-  L_SCK(SFR) = set;
+
+  if (data & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x2) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (data & 0x1) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
+  L_SCK(RES);
+
 };
 
 
 void ST7735_SOFT::send_rgb(RGB color)
 {
-  int32_t r = color.red;
-  int32_t g = color.green;
-  int32_t b = color.blue;
+  uint8_t r = color.red;
+  uint8_t g = color.green;
+  uint8_t b = color.blue;
 
-  int32_t b0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
-  int32_t b1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
-  int32_t set = L_SCK(SFR) | L_SCK(MASK);
+  uint32_t d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+  uint32_t d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+  uint32_t s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+  uint32_t s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
-  L_SCK(SFR) = r & 0x80 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = r & 0x40 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = r & 0x20 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = r & 0x10 ? b1 : b0;
-  L_SCK(SFR) = set;
+  if (r & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (r & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (r & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (r & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-  L_SCK(SFR) = r & 0x8 ? b1 : b0;
-  L_SCK(SFR) = set;
+
+  if (r & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #endif
 #if RGB_FORMAT == RGB_18
-  L_SCK(SFR) = r & 0x4 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
+
+  if (r & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+
 #endif
 
-  L_SCK(SFR) = g & 0x80 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = g & 0x40 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = g & 0x20 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = g & 0x10 ? b1 : b0;
-  L_SCK(SFR) = set;
+  if (g & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (g & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (g & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (g & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-  L_SCK(SFR) = g & 0x8 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = g & 0x4 ? b1 : b0;
-  L_SCK(SFR) = set;
+
+  if (g & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (g & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #endif
 #if RGB_FORMAT == RGB_18
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
+
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+
 #endif
 
-  L_SCK(SFR) = b & 0x80 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b & 0x40 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b & 0x20 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b & 0x10 ? b1 : b0;
-  L_SCK(SFR) = set;
+  if (b & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (b & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (b & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+  if (b & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-  L_SCK(SFR) = b & 0x8 ? b1 : b0;
-  L_SCK(SFR) = set;
+
+  if (b & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
 #endif
 #if RGB_FORMAT == RGB_18
-  L_SCK(SFR) = b & 0x4 ? b1 : b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
-  L_SCK(SFR) = b0;
-  L_SCK(SFR) = set;
+
+  if (b & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+  else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+  L_SCK(SFR) = d0;
+  L_SCK(SFR) = s0;
+
 #endif
+
+  L_SCK(RES);
 };
 
-void ST7735_SOFT::rect(int32_t x0, int32_t y0, int32_t x1, int32_t y1, RGB color)
+void ST7735_SOFT::rect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, RGB color)
 {
-  int32_t r = color.red;
-  int32_t g = color.green;
-  int32_t b = color.blue;
+  uint8_t r = color.red;
+  uint8_t g = color.green;
+  uint8_t b = color.blue;
 
   L_CS(RES);
   set_addr(x0, y0, x1, y1);
-  int32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
+  uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-  int32_t b0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
-  int32_t b1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
-  int32_t set = L_SCK(SFR) | L_SCK(MASK);
+  uint32_t d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+  uint32_t d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+  uint32_t s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+  uint32_t s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
-  // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
+  // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение до 2х раз
   while (len--) {
-    L_SCK(SFR) = r & 0x80 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = r & 0x40 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = r & 0x20 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = r & 0x10 ? b1 : b0;
-    L_SCK(SFR) = set;
+    if (r & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-    L_SCK(SFR) = r & 0x8 ? b1 : b0;
-    L_SCK(SFR) = set;
+
+    if (r & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #endif
   #if RGB_FORMAT == RGB_18
-    L_SCK(SFR) = r & 0x4 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
+
+    if (r & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+
   #endif
 
-    L_SCK(SFR) = g & 0x80 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = g & 0x40 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = g & 0x20 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = g & 0x10 ? b1 : b0;
-    L_SCK(SFR) = set;
+    if (g & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-    L_SCK(SFR) = g & 0x8 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = g & 0x4 ? b1 : b0;
-    L_SCK(SFR) = set;
+
+    if (g & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #endif
   #if RGB_FORMAT == RGB_18
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
+
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+
   #endif
 
-    L_SCK(SFR) = b & 0x80 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b & 0x40 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b & 0x20 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b & 0x10 ? b1 : b0;
-    L_SCK(SFR) = set;
+    if (b & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #if RGB_FORMAT == RGB_18 || RGB_FORMAT == RGB_16
-    L_SCK(SFR) = b & 0x8 ? b1 : b0;
-    L_SCK(SFR) = set;
+
+    if (b & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
   #endif
   #if RGB_FORMAT == RGB_18
-    L_SCK(SFR) = b & 0x4 ? b1 : b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
-    L_SCK(SFR) = b0;
-    L_SCK(SFR) = set;
+
+    if (b & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+
   #endif
   }
+  L_SCK(RES);
   L_CS(SET);
 };
