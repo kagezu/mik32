@@ -1,4 +1,5 @@
 #pragma once
+#ifdef MIK32V2
 #include <mik32_memory_map.h>
 #include <pad_config.h>
 #include <gpio.h>
@@ -16,12 +17,13 @@
 #define GET(port, pin)      GPIO_ ## port ->STATE & (1 << pin)
 
 #define MASK(port, pin)     (1 << pin)
-#define SFR(port, pin)      (GPIO_ ## port ->OUTPUT)
+#define MMO(port, pin)      (GPIO_ ## port ->OUTPUT)
+#define MMI(port, pin)      (GPIO_ ## port ->STATE)
 
 
 // Доступ к байтам
 
-#define to_byte(w,x)  (((byte *)&w)[x])
+#define to_byte(w,x)  (((uint8_t *)&w)[x])
 
 union dbyte {
   uint16_t word;
@@ -46,3 +48,16 @@ union dword {
 
 volatile void delay_us(uint32_t us);
 volatile void delay_ms(uint32_t ms);
+
+// Типы
+
+typedef uint32_t reg;
+
+// Прочее
+
+#define PROGMEM
+#define pgm_read_byte  *(uint8_t *)
+
+void init_clock();
+
+#endif
