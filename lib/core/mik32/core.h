@@ -57,6 +57,7 @@ typedef uint32_t reg;
 
 #define PROGMEM
 #define pgm_read_byte  *(uint8_t *)
+#define pgm_read_word  *(uint16_t *)
 
 void init_clock();
 

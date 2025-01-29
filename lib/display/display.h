@@ -1,5 +1,4 @@
 #pragma once
-#include "type/include.h"
 #include "st7735-soft/driver.h"
 
 

@@ -16,21 +16,6 @@ protected:
 
   void send_config(const uint8_t *config, uint8_t size)
   {
-
-
-
-    // while (size) {
-    //   uint8_t data, comand = *config++;
-    //   size -= 2;
-    //   send_command(comand);
-    //   while ((data = *config++) != 0xFF) {
-    //     send_byte(data);
-    //     size--;
-    //   }
-    // }
-
-
-
     while (size) {
       uint8_t data, comand = pgm_read_byte(config++);
       size -= 2;
@@ -40,10 +25,5 @@ protected:
         size--;
       }
     }
-
-
-
-
-
   }
 };

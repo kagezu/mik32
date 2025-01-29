@@ -1,7 +1,7 @@
 #pragma once
-#include "type/include.h"
 #include "pin.h"
 #include "const.h"
+#include "type/include.h"
 
 template<typename C>
 class ST7735_SOFT : IDriver<C> {
@@ -16,7 +16,6 @@ public:
   L_RST(SET);
   delay_us(15000);          // Ждать стабилизации напряжений
   L_CS(RES);                // CS Выбор дисплея
-  send_byte(0);             // Костыль для mik32
 
   send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
   send_command(MADCTL);
@@ -76,7 +75,11 @@ protected:
     }
   }
 
-void send_rgb(C color)
+// template<>
+//   void  ST7735_SOFT<RGB18>::send_rgb(RGB18 color)
+//   {
+
+  void send_rgb(C color)
   {
     uint8_t r = color.red;
     uint8_t g = color.green;
@@ -141,6 +144,10 @@ void send_rgb(C color)
     L_SCK(RES);
   }
 
+public:
+// template<>
+//   void  ST7735_SOFT<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
+//   {
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     uint8_t r = color.red;

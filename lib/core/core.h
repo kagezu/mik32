@@ -7,3 +7,5 @@
 #ifdef __AVR_ATmega328P__
 #include "avr/core.h"
 #endif
+
+#include "attribute.h"
