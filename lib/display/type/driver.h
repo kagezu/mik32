@@ -16,6 +16,9 @@ protected:
 
   void send_config(const uint8_t *config, uint8_t size)
   {
+
+
+
     // while (size) {
     //   uint8_t data, comand = *config++;
     //   size -= 2;
@@ -37,5 +40,10 @@ protected:
         size--;
       }
     }
+
+
+
+
+
   }
 };

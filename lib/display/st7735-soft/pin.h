@@ -15,9 +15,9 @@
 
 #define L_SCK(x)     x ( C, PC0)
 #define L_SDA(x)     x ( C, PC1)
+#define L_RS(x)      x ( C, PC2)
 #define L_RST(x)     x ( C, PC3)
 #define L_CS(x)      x ( C, PC4)
-#define L_RS(x)      x ( C, PC2)
 
 #define SELA45(x)    x ( C, 7)
 

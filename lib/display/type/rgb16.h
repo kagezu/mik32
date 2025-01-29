@@ -15,7 +15,7 @@ public:
 
 public:
   RGB16() {}
-  RGB16(uint8_t _red, uint8_t _green, uint8_t _blue) : blue(_blue >> 3), green(_green >> 2), red(_red >> 3) {}
+  RGB16(uint8_t _red, uint8_t _green, uint8_t _blue) : rgb(((_red << 8) & 0xf800) | ((_green << 3) & 0x7e0) | ((_blue >> 3) & 0x1f)) {}
   RGB16(uint32_t _rgb) : rgb(((_rgb >> 8) & 0xf100) | ((_rgb >> 5) & 0x7e0) | ((_rgb >> 3) & 0x1f)) {}
 
   void rgb12(uint16_t c) { rgb = ((c << 4) & 0xf000) | ((c << 3) & 0x780) | ((c << 1) & 0xe); }

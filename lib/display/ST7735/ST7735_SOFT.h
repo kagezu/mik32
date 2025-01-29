@@ -13,12 +13,12 @@ protected:
   void rect(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, RGB color);
 };
 
-void ST7735_SOFT::send_command(uint8_t command)
-{
-  L_RS(RES); // Запись команды
-  send_byte(command);
-  L_RS(SET); // Запись данных
-};
+// void ST7735_SOFT::send_command(uint8_t command)
+// {
+//   L_RS(RES); // Запись команды
+//   send_byte(command);
+//   L_RS(SET); // Запись данных
+// };
 
 void ST7735_SOFT::set_addr(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1)
 {
