@@ -19,8 +19,6 @@
 #define L_RST(x)     x ( C, PC3)
 #define L_CS(x)      x ( C, PC4)
 
-#define SELA45(x)    x ( C, 7)
-
 #endif
 
 #ifdef MIK32V2
@@ -30,8 +28,6 @@
 #define L_RS(x)      x ( 0, 4 )
 #define L_RST(x)     x ( 0, 7 )
 #define L_CS(x)      x ( 0, 9 )
-
-#define SELA45(x)    x ( 1, 15 )
 
 #endif
 

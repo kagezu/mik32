@@ -15,6 +15,7 @@ private:
   using Driver::send_rgb;
 
 public:
+  using Driver::init;
   using Driver::area;
   void color(C c) { _color = c; }
   void background(C b) { _background = b; }
