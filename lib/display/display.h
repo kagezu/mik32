@@ -1,11 +1,12 @@
 #pragma once
 #include "st7735-soft/driver.h"
 #include "print/printf.h"
+#include "gfx/gfx.h"
 
 #define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 
 template<typename Driver, typename C>
-class CDisplay : public Driver, public PrintF {
+class CDisplay : public Driver, public PrintF, public GFX {
 private:
   C _color = 0x00ffffff;
   C _background = 0;
