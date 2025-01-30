@@ -66,6 +66,6 @@ typedef uint8_t reg;
 #define swap8(a, b)   { uint8_t _t = a; a = b; b = _t; }
 #define swap16(a, b)  { uint16_t _t = a; a = b; b = _t; }
 
-void init_clock();
+void init_clock(); // Включить тактирование
 
 #endif

@@ -1,4 +1,5 @@
 #pragma once
+#include "spi.h"
 #include "pins.h"
 #include "const/ST7735.h"
 #include "type/include.h"
@@ -13,51 +14,36 @@ public:
   inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
+    L_RST(OUT);L_CS(OUT);L_RS(OUT);
+    L_CS(SET);
+    SPI.init();
 
-#ifdef __AVR_ATmega328P__
+    L_RST(RES);               // Аппаратный сброс
+    delay_us(2000);
+    L_RST(SET);
+    delay_us(15000);          // Ждать стабилизации напряжений
+    L_CS(RES);                // CS Выбор дисплея
 
-  L_SCK(OUT);L_SDA(OUT);SS(OUT);
-  L_RST(OUT);L_CS(OUT);L_RS(OUT);
-  L_CS(SET);
+    send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
+    send_command(MADCTL);
+    send_byte(LCD_FLIP);
+    set_rgb_format();
+    send_command(DISPON); // Display On
 
-    SPCR = _BV(SPE) | _BV(MSTR);
-    SPSR = _BV(SPI2X);
-    TCCR0B |= _BV(CS00);
-    SPDR = 0;   // Способ установить флаг SPIF
-
-#endif
-
-#ifdef MIK32V2
-  L_SCK(GPIO); L_SDA(GPIO);L_RST(GPIO);L_CS(GPIO);L_RS(GPIO);
-#endif
-
-  L_RST(RES);               // Аппаратный сброс
-  delay_us(2000);
-  L_RST(SET);
-  delay_us(15000);          // Ждать стабилизации напряжений
-  L_CS(RES);                // CS Выбор дисплея
-
-  send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
-  send_command(MADCTL);
-  send_byte(LCD_FLIP);
-  set_rgb_format();
-  send_command(DISPON); // Display On
-
-  L_CS(SET);
+    L_CS(SET);
   }
-
 
 protected:
   // inline void select() { L_CS(RES); }
   // inline void release() { L_CS(SET); }
 
+  void send_byte(uint8_t data) { SPI.send(data); }
   void send_command(uint8_t command)
   {
-  SPI_WAIT;
+  SPI.wait();
   L_RS(RES); // Запись команды
-  SPDR = command;
-  asm volatile("nop");
-  SPI_WAIT;
+  SPI.send(command);
+  SPI.wait();
   L_RS(SET); // Запись данных
   }
 
@@ -78,22 +64,11 @@ protected:
     send_command(RAMWR); // Memory Write
   }
 
-  void send_byte(uint8_t data)
-  {
-    SPI_WAIT;
-    SPDR = data;
-  }
-
   void send_rgb(C color)
   {
-    SPI_WAIT;
-    SPDR = color.blue;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = color.green;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = color.red;
+    SPI.send(color.blue);
+    SPI.send(color.green);
+    SPI.send(color.red);
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
@@ -103,14 +78,9 @@ protected:
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-    SPI_WAIT;
-    SPDR = color.blue;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = color.green;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = color.red;
+    SPI.send(color.blue);
+    SPI.send(color.green);
+    SPI.send(color.red);
     }
     L_CS(SET);
   }
@@ -123,56 +93,23 @@ private:
 template<>
   void ST7735_SPI<RGB16>::send_rgb(RGB16 color)
   {
-    uint16_t rgb = color.rgb;
-    SPI_WAIT;
-    SPDR = rgb >> 8;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = rgb;
+    SPI.send16(color.rgb);
   }
 
 template<>
   void ST7735_SPI<RGB12>::send_rgb(RGB12 color)
   {
-    uint16_t rgb = color.rgb;
-
-  static uint8_t half, flag = 0;
-  uint8_t data;
-
-  if (flag) {
-    data = half | (rgb >> 8);
-    SPI_WAIT;
-    SPDR = data;
-    flag = 0;
-    SPI_WAIT;
-    SPDR = (uint8_t)rgb;
-  }
-  else {
-    data = rgb >> 4;
-    SPI_WAIT;
-    SPDR = data;
-    half = rgb << 4;
-    flag = 1;
-  }
-  
+    SPI.send12(color.rgb);
   }
 
 template<>
   void ST7735_SPI<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
   {
-    uint16_t rgb = color.rgb;
-
     L_CS(RES);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
-
-    while (len--) {
-    SPI_WAIT;
-    SPDR = rgb >> 8;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = (uint8_t)rgb;
-    }
+    
+    while (len--) SPI.send16(color.rgb);
     L_CS(SET);
   }
 
@@ -181,22 +118,11 @@ template<>
   {
     L_CS(RES);
     set_addr(x0, y0, x1, y1);
-    uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
-
-    uint8_t hbyte = color.rgb >> 4;
-    uint8_t mbyte = (color.rgb << 4) | ((color.rgb & 0xf00) >> 8);
-    uint8_t lbyte = color.rgb;
-    len >>= 1;
+    uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1))>>1;
 
     while (len--) {
-    SPI_WAIT;
-    SPDR = hbyte;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = mbyte;
-    asm volatile("nop");
-    SPI_WAIT;
-    SPDR = lbyte;
+    SPI.send12(color.rgb);
+    SPI.send12(color.rgb);
     }
     L_CS(SET);
   }

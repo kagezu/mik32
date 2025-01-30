@@ -1,7 +1,7 @@
 #ifdef __AVR_ATmega328P__
 #include "core.h"
 
-void init_clock() {}
+void init_clock() { TCCR0B |= _BV(CS00); } // Включить тактирование
 
 /* Поддерживаемые частоты 1, 8, 12, 16, 20, 24 МГц F_CPU */
 void delay_us(uint16_t us)

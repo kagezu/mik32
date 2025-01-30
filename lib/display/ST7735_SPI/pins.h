@@ -9,13 +9,9 @@
 // L_SCK      Тактирование / low -> high
 // L_SDA      Данные
 
-#ifndef L_SCK
+#ifndef L_CS
 
 #ifdef __AVR_ATmega328P__
-
-#define L_SCK(x)     x ( B, PB5)
-#define L_SDA(x)     x ( B, PB3)
-#define SS(x)        x ( B, PB2)
 
 #define L_RS(x)      x ( C, PC4)
 #define L_CS(x)      x ( C, PC5)

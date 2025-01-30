@@ -9,12 +9,15 @@
 
 class SPI_Master {
 public:
-  SPI_Master() { TCCR0B |= _BV(CS00); } // Включить тактирование
+  SPI_Master() {}
+  void wait() { while (!(SPSR & _BV(SPIF))); }
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MODE_0);
   void end() { SPI_STOP; }
   void send(uint8_t);
+  void send12(uint16_t);
+  void send16(uint16_t);
   uint8_t read(uint8_t);
-  uint16_t transfer(uint16_t);
+  uint16_t transfer16(uint16_t);
 };
 
-extern SPI_Master spi;
+extern SPI_Master SPI;
