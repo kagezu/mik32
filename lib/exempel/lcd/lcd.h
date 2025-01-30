@@ -1,7 +1,7 @@
 // Цветовая модель
 
-// #define RGB   RGB12   // 4x4x4 bit
-#define RGB   RGB16   // 5x6x5 bit
+#define RGB   RGB12   // 4x4x4 bit
+// #define RGB   RGB16   // 5x6x5 bit
 // #define RGB   RGB18   // 6x6x6 bit
 // #define RGB   RGB32   // Максимально поддерживаемое драйвером устройства
 
@@ -20,10 +20,7 @@
 
 // Драйвер дисплея
 
-// #include "st7735-soft/driver.h"
-// #include "st7735-spi/driver.h"
+// #include "ST7735_SOFT/driver.h"
+#include "ST7735_SPI/driver.h"
 
-#define LCD_DRIVER    ST7735_SOFT
-
-#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 #include <display.h>

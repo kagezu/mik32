@@ -1,11 +1,15 @@
 #pragma once
-#include "pin.h"
-#include "const.h"
+#include "pins.h"
+#include "const/ST7735.h"
 #include "type/include.h"
 
+#define LCD_DRIVER    ST7735_SOFT
+
 template<typename C>
-class ST7735_SOFT : IDriver<C> {
+class ST7735_SOFT {
 public:
+  inline const uint16_t max_x() { return MAX_X; }
+  inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
   L_SCK(GPIO); L_SDA(GPIO);L_RST(GPIO);L_CS(GPIO);L_RS(GPIO);
@@ -26,11 +30,10 @@ public:
   L_CS(SET);
   }
 
-private:
-  using IDriver<C>::send_config;
-  void set_rgb_format();
-
 protected:
+  // inline void select() { L_CS(RES); }
+  // inline void release() { L_CS(SET); }
+
   void send_command(uint8_t command)
   {
     L_RS(RES); // Запись команды
@@ -211,6 +214,10 @@ protected:
     L_SCK(RES);
     L_CS(SET);
   }
+
+private:
+  void set_rgb_format();
+  virtual  void send_config(const uint8_t *, uint8_t) = 0;
 };
 
 template<>

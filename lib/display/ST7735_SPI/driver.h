@@ -1,13 +1,16 @@
 #pragma once
-#include "pin.h"
-#include "const.h"
+#include "pins.h"
+#include "const/ST7735.h"
 #include "type/include.h"
 
+#define LCD_DRIVER    ST7735_SPI
 #define SPI_WAIT  while (!(SPSR & _BV(SPIF)));
 
 template<typename C>
-class ST7735_SPI : IDriver<C> {
+class ST7735_SPI {
 public:
+  inline const uint16_t max_x() { return MAX_X; }
+  inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
 
@@ -15,19 +18,18 @@ public:
 
   L_SCK(OUT);L_SDA(OUT);SS(OUT);
   L_RST(OUT);L_CS(OUT);L_RS(OUT);
+  L_CS(SET);
 
     SPCR = _BV(SPE) | _BV(MSTR);
     SPSR = _BV(SPI2X);
     TCCR0B |= _BV(CS00);
-    SPDR = 0;
+    SPDR = 0;   // Способ установить флаг SPIF
 
 #endif
-
 
 #ifdef MIK32V2
   L_SCK(GPIO); L_SDA(GPIO);L_RST(GPIO);L_CS(GPIO);L_RS(GPIO);
 #endif
-
 
   L_RST(RES);               // Аппаратный сброс
   delay_us(2000);
@@ -44,11 +46,11 @@ public:
   L_CS(SET);
   }
 
-private:
-  using IDriver<C>::send_config;
-  void set_rgb_format();
 
 protected:
+  // inline void select() { L_CS(RES); }
+  // inline void release() { L_CS(SET); }
+
   void send_command(uint8_t command)
   {
   SPI_WAIT;
@@ -112,6 +114,10 @@ protected:
     }
     L_CS(SET);
   }
+  
+private:
+  void set_rgb_format();
+  virtual  void send_config(const uint8_t *, uint8_t) = 0;
 };
 
 template<>
@@ -173,8 +179,6 @@ template<>
 template<>
   void ST7735_SPI<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
   {
-    uint16_t rgb = color.rgb;
-
     L_CS(RES);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);

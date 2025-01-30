@@ -1,9 +1,8 @@
 #pragma once
-#include "st7735-soft/driver.h"
-// #include "st7735-spi/driver.h"
 #include "print/printf.h"
 #include "gfx/gfx.h"
 
+#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
@@ -13,21 +12,35 @@ private:
 
   using Driver::set_addr;
   using Driver::send_rgb;
+  using Driver::send_command;
+  using Driver::send_byte;
+
+  void send_config(const uint8_t *config, uint8_t size)
+  {
+    while (size) {
+      uint8_t data, comand = pgm_read_byte(config++);
+      size -= 2;
+      send_command(comand);
+      while ((data = pgm_read_byte(config++)) != 0xFF) {
+        send_byte(data);
+        size--;
+      }
+    }
+  }
 
 public:
-  const uint16_t max_x() { return MAX_X; }
-  const uint16_t max_y() { return MAX_Y; }
-  using Driver::init;
   using Driver::area;
-  void color(C c) { _color = c; }
-  void background(C b) { _background = b; }
-  void clear() { area(0, 0, MAX_X, MAX_Y, _background); }
-  void clear(C color) { area(0, 0, MAX_X, MAX_Y, color); }
-  void rect(uint16_t x, uint16_t y, uint16_t x1, uint16_t y1) { area(x, y, x1, y1, _color); }
+  inline const uint16_t max_x() { return Driver::max_x(); }
+  inline const uint16_t max_y() { return Driver::max_y(); }
+  inline void color(C c) { _color = c; }
+  inline void background(C b) { _background = b; }
+  inline void clear() { area(0, 0, max_x(), max_y(), _background); }
+  inline void clear(C color) { area(0, 0, max_x(), max_y(), color); }
+  inline void rect(uint16_t x, uint16_t y, uint16_t x1, uint16_t y1) { area(x, y, x1, y1, _color); }
 
   void pixel(uint16_t x, uint16_t y)
   {
-    if (x > MAX_X || y > MAX_Y) return;
+    if (x > max_x() || y > max_y()) return;
     L_CS(RES);
     set_addr(x, y, x, y);
     send_rgb(_color);
@@ -35,6 +48,7 @@ public:
     L_CS(SET);
   }
 
+  // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
     uint16_t x1 = x + dx - 1;
@@ -62,14 +76,14 @@ public:
   void demo(uint8_t d)
   {
     L_CS(RES);
-    set_addr(0, 0, MAX_X, MAX_Y);
+    set_addr(0, 0, max_x(), max_y());
     uint16_t yy;
-    for (uint16_t y = VIEWPORT_OFFSET; y < MAX_Y + VIEWPORT_OFFSET + 1; y++) {
+    for (uint16_t y = VIEWPORT_OFFSET; y < max_y() + VIEWPORT_OFFSET + 1; y++) {
       yy = y * y;
 
       uint16_t xx = VIEWPORT_OFFSET * VIEWPORT_OFFSET;
       uint16_t xy = y * VIEWPORT_OFFSET;
-      for (uint16_t x = VIEWPORT_OFFSET << 1; x < (MAX_X + VIEWPORT_OFFSET) * 2 + 1; x += 2) {
+      for (uint16_t x = VIEWPORT_OFFSET << 1; x < (max_x() + VIEWPORT_OFFSET) * 2 + 1; x += 2) {
 
         uint8_t e = d << 2;
         uint16_t r = ((xx + yy) >> 6) + e;
