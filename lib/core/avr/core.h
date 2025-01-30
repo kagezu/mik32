@@ -1,6 +1,7 @@
 #pragma once
 #ifdef __AVR_ATmega328P__
 #include <Arduino.h>
+#include "accel.h"
 
 // Управление портами
 

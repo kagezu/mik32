@@ -2,11 +2,42 @@
 
 void PrintF::font(const Font &font)
 {
+#ifdef MIK32V2
+  _font = font;
+#else
   memcpy_P(&_font, &font, sizeof(Font));
+#endif
   _line = (1 + ((_font.height - 1) >> 3));
   _charSize = _font.weight * _line;
   set_interline(2);
   set_interval(1);
+}
+
+void PrintF::letter(uint8_t ch)
+{
+  ch -= _font.first_char;
+  if (_font.count_char <= ch) ch = 0;
+
+  uint8_t dx = _font.weight;
+  uint8_t *source = (uint8_t *)_font.data;
+
+  if (_font.offset) {
+    uint16_t *index = (uint16_t *)_font.offset + ch;
+    uint16_t offset = pgm_read_word(index);
+    dx = (pgm_read_word(index + 1) - offset) / _line;
+    source += offset;
+  }
+  else
+    source = (uint8_t *)_font.data + ch * _charSize;
+
+
+  if (point_x + dx > max_x()) {
+    point_y += _interline;
+    point_x = 0;
+  }
+  if (point_y + _font.height > max_y()) { point_x = point_y = 0; }
+  symbol((uint8_t *)source, point_x, point_y, dx, _font.height);
+  point_x += dx + _interval;
 }
 
 void PrintF::print(char ch)
@@ -40,12 +71,12 @@ void PrintF::printf(const char *string, ...)
             ch = pgm_read_byte(string++);
           }
           switch (ch) {
-            case 'c': print((char)__builtin_va_arg(args, int16_t)); break;
+            case 'c': print((char)__builtin_va_arg(args, unsigned int)); break;
             case 'd':
             case 'i':
               switch (arg) {
                 case '0':
-                case '2': print((int16_t)__builtin_va_arg(args, int16_t)); break;
+                case '2': print((int16_t)__builtin_va_arg(args, unsigned int)); break;
                 case '4': print((int32_t)__builtin_va_arg(args, int32_t)); break;
               } break;
             case 's': print((char *)__builtin_va_arg(args, char *)); break;
@@ -53,18 +84,18 @@ void PrintF::printf(const char *string, ...)
             case 'u':
               switch (arg) {
                 case '0':
-                case '2': print((uint16_t)__builtin_va_arg(args, uint16_t)); break;
+                case '2': print((uint16_t)__builtin_va_arg(args, unsigned int)); break;
                 case '4': print((uint32_t)__builtin_va_arg(args, uint32_t)); break;
               } break;
             case 'x':
               switch (arg) {
                 case '0':
-                case '1':  print_h((uint8_t)__builtin_va_arg(args, uint16_t)); break;
-                case '2':  print_h((uint16_t)__builtin_va_arg(args, uint16_t)); break;
+                case '1':  print_h((uint8_t)__builtin_va_arg(args, unsigned int)); break;
+                case '2':  print_h((uint16_t)__builtin_va_arg(args, unsigned int)); break;
                 case '4':  print_h((uint32_t)__builtin_va_arg(args, uint32_t)); break;
                 case '8':  print_h((uint64_t)__builtin_va_arg(args, uint64_t)); break;
               } break;
-            case 'p': print_h((uint16_t)__builtin_va_arg(args, uint16_t)); break;
+            case 'p': print_h((uint16_t)__builtin_va_arg(args, unsigned int)); break;
             case '%': print('%'); break;
           } break;
         }
@@ -105,7 +136,7 @@ void PrintF::print(uint32_t number)
   while (number > 9) {
     uint8_t mod;
 
-  #ifdef ACCEL
+  #ifdef AVR_ASM
     uint8_t tmp;
     div10_32bit(number, mod, tmp);
   #else
@@ -129,7 +160,7 @@ void PrintF::print(uint16_t number)
   while (number > 9) {
     uint8_t mod;
 
-  #ifdef ACCEL
+  #ifdef AVR_ASM
     uint8_t tmp;
     div10_16bit(number, mod, tmp);
   #else
@@ -147,7 +178,7 @@ void PrintF::print_h(uint64_t number)
 {
   union { uint64_t val; struct { uint8_t a; uint8_t b; uint8_t c; uint8_t d; uint8_t e; uint8_t f; uint8_t g; uint8_t h; }; } out;
   out.val = number;
-  print('.');
+  // print('.');
   print_h(out.h);
   print_h(out.g);
   print_h(out.f);
@@ -160,7 +191,7 @@ void PrintF::print_h(uint64_t number)
 
 void PrintF::print_h(uint32_t number)
 {
-  print('.');
+  // print('.');
   print_h(to_byte(number, 3));
   print_h(to_byte(number, 2));
   print_h(to_byte(number, 1));
@@ -169,7 +200,7 @@ void PrintF::print_h(uint32_t number)
 
 void PrintF::print_h(uint16_t number)
 {
-  print('.');
+  // print('.');
   print_h(to_byte(number, 1));
   print_h(to_byte(number, 0));
 }

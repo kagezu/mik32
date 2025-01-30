@@ -56,6 +56,7 @@ typedef uint32_t reg;
 // Прочее
 
 #define PROGMEM
+#define P(x)  x
 #define pgm_read_byte  *(uint8_t *)
 #define pgm_read_word  *(uint16_t *)
 

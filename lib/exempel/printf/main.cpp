@@ -25,7 +25,7 @@ int main(void)
       lcd.at(0, k);
       uint32_t *p = ptr;
       for (uint8_t i = 0; i < lcd.get_row(); i++) {
-        lcd.printf(P("%2x %4x %4x\n"), p, *p, *(p + 1));
+        lcd.printf(P("%2x %4x %4u\n"), p, *p, *(p + 1));
         p += 2;
       }
     }
