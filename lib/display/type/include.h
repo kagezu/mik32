@@ -6,4 +6,3 @@
 #include "rgb18.h"
 #include "rgb32.h"
 #include "font.h"
-#include "default.h"

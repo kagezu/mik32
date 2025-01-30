@@ -75,10 +75,6 @@ protected:
     }
   }
 
-// template<>
-//   void  ST7735_SOFT<RGB18>::send_rgb(RGB18 color)
-//   {
-
   void send_rgb(C color)
   {
     uint8_t r = color.red;
@@ -144,10 +140,6 @@ protected:
     L_SCK(RES);
   }
 
-public:
-// template<>
-//   void  ST7735_SOFT<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
-//   {
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     uint8_t r = color.red;

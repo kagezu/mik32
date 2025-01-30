@@ -1,11 +1,11 @@
 #pragma once
 #include "st7735-soft/driver.h"
-
+#include "print/printf.h"
 
 #define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 
 template<typename Driver, typename C>
-class CDisplay : public Driver, IDisplay<C> {
+class CDisplay : public Driver, public PrintF {
 private:
   C _color = 0x00ffffff;
   C _background = 0;
@@ -14,6 +14,8 @@ private:
   using Driver::send_rgb;
 
 public:
+  const uint16_t max_x() { return MAX_X; }
+  const uint16_t max_y() { return MAX_Y; }
   using Driver::init;
   using Driver::area;
   void color(C c) { _color = c; }
@@ -60,16 +62,21 @@ public:
   {
     L_CS(RES);
     set_addr(0, 0, MAX_X, MAX_Y);
-    for (uint8_t y = VIEWPORT_OFFSET; y < MAX_Y + VIEWPORT_OFFSET + 1; y++) {
-      uint16_t yy = y * y;
+    uint16_t yy;
+    for (uint16_t y = VIEWPORT_OFFSET; y < MAX_Y + VIEWPORT_OFFSET + 1; y++) {
+      yy = y * y;
 
-      for (uint8_t x = VIEWPORT_OFFSET; x < MAX_X + VIEWPORT_OFFSET + 1; x++) {
-        uint16_t xx = x * x;
+      uint16_t xx = VIEWPORT_OFFSET * VIEWPORT_OFFSET;
+      uint16_t xy = y * VIEWPORT_OFFSET;
+      for (uint16_t x = VIEWPORT_OFFSET << 1; x < (MAX_X + VIEWPORT_OFFSET) * 2 + 1; x += 2) {
 
         uint8_t e = d << 2;
         uint16_t r = ((xx + yy) >> 6) + e;
         uint16_t g = ((yy - xx) >> 6) + e;
-        uint16_t b = ((x * y) >> 6) - e;
+        uint16_t b = (xy >> 6) - e;
+
+        xy += y;  // Заменяем умножение сложением
+        xx += x;
 
         send_rgb(RGB(r, g, b));
       }
