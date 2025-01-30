@@ -1,6 +1,6 @@
 # ![alt text](https://elron.tech/wp-content/uploads/2024/07/photo_2024-07-02_15-28-41_crop.jpg)
 
-## Библиотеки для кроссплатформенного использования AVR и MIK32
+## Кроссплатформенное использования ATmega и MIK32 AMUR
 
 ### Поддерживаемые MK
 

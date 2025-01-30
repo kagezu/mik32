@@ -8,7 +8,6 @@ public:
   virtual void area(uint16_t, uint16_t, uint16_t, uint16_t, C) = 0;
   virtual void send_command(uint8_t) = 0;
   virtual void set_addr(uint16_t, uint16_t, uint16_t, uint16_t) = 0;
-  virtual void send_zero() = 0;
   virtual void send_byte(uint8_t) = 0;
   virtual void send_rgb(C) = 0;
 

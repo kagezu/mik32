@@ -23,3 +23,4 @@
 #define LCD_DRIVER    ST7735_SOFT
 
 #include <display.h>
+#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>

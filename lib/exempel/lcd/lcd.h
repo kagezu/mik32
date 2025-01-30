@@ -20,6 +20,10 @@
 
 // Драйвер дисплея
 
+// #include "st7735-soft/driver.h"
+// #include "st7735-spi/driver.h"
+
 #define LCD_DRIVER    ST7735_SOFT
 
+#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 #include <display.h>

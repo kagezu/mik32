@@ -1,9 +1,9 @@
 #pragma once
 #include "st7735-soft/driver.h"
+// #include "st7735-spi/driver.h"
 #include "print/printf.h"
 #include "gfx/gfx.h"
 
-#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
