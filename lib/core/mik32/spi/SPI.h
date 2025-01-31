@@ -11,8 +11,8 @@
 class SPI_Master {
 public:
   SPI_Master() {}
-  void wait() {}
-  void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MODE0);
+  void wait();
+  void init(uint16_t fq = 4000, uint8_t mode = SPI_MODE0);
   void end();
   void send(uint8_t);
   void send12(uint16_t);
@@ -21,6 +21,6 @@ public:
   uint16_t transfer16(uint16_t);
 };
 
-extern SPI_Master SPI;
+// extern SPI_Master SPI;
 
 #endif

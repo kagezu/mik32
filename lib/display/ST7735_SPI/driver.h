@@ -7,16 +7,19 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SPI
-#define SPI_WAIT  while (!(SPSR & _BV(SPIF)));
+// #define SPI_WAIT  while (!(SPSR & _BV(SPIF)));
 
 template<typename C>
 class ST7735_SPI {
 public:
+   SPI_Master SPI;
+
   inline const uint16_t max_x() { return MAX_X; }
   inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
-    L_RST(OUT);L_CS(OUT);L_RS(OUT);
+    L_RST(OUT);L_CS(OUT);L_RS(OUT);SPI_SS(OUT);
+    SPI_SS(SET);//test
     L_CS(SET);
     SPI.init();
 
@@ -31,6 +34,7 @@ public:
     send_byte(LCD_FLIP);
     set_rgb_format();
     send_command(DISPON); // Display On
+    SPI.wait();
 
     L_CS(SET);
   }
@@ -80,10 +84,11 @@ protected:
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-    SPI.send(color.blue);
-    SPI.send(color.green);
-    SPI.send(color.red);
+      SPI.send(color.blue);
+      SPI.send(color.green);
+      SPI.send(color.red);
     }
+    SPI.wait();
     L_CS(SET);
   }
   
@@ -112,6 +117,7 @@ template<>
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
     while (len--) SPI.send16(color.rgb);
+    SPI.wait();
     L_CS(SET);
   }
 
@@ -123,9 +129,10 @@ template<>
     uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1))>>1;
 
     while (len--) {
-    SPI.send12(color.rgb);
-    SPI.send12(color.rgb);
+      SPI.send12(color.rgb);
+      SPI.send12(color.rgb);
     }
+    SPI.wait();
     L_CS(SET);
   }
 
