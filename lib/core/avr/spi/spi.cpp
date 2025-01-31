@@ -1,3 +1,4 @@
+#ifdef __AVR_ATmega328P__
 #include "spi.h"
 
 #define SPI_DIV_4   0x00
@@ -65,7 +66,7 @@ void SPI_Master::send16(uint16_t data)
   SPDR = buf.byte[0];
 }
 
-uint8_t SPI_Master::read(uint8_t data)
+uint8_t SPI_Master::transfer(uint8_t data)
 {
   wait();
   SPDR = data;
@@ -86,3 +87,5 @@ uint16_t SPI_Master::transfer16(uint16_t data)
   buf.byte[0] = SPDR;
   return buf.word;
 }
+
+#endif

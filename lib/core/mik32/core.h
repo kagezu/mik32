@@ -1,11 +1,15 @@
 #pragma once
 #ifdef MIK32V2
 #include <mik32_memory_map.h>
+#include "mik32_hal_pcc.h"
 #include <pad_config.h>
 #include <gpio.h>
 #include <power_manager.h>
 #include <wakeup.h>
 
+// Переопределение
+
+#define F_CPU   OSC_SYSTEM_VALUE
 
 // Управление портами
 
@@ -48,6 +52,7 @@ union dword {
 
 volatile void delay_us(uint32_t us);
 volatile void delay_ms(uint32_t ms);
+void init_clock();
 
 // Типы
 
@@ -60,6 +65,5 @@ typedef uint32_t reg;
 #define pgm_read_byte  *(uint8_t *)
 #define pgm_read_word  *(uint16_t *)
 
-void init_clock();
 
 #endif

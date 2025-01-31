@@ -1,19 +1,19 @@
-#ifdef __AVR_ATmega328P__
+#ifdef MIK32V2
 #pragma once
-#include "pins.h"
+#include <core.h>
 
 #define SPI_MODE0 0x00
-#define SPI_MODE1 0x04
-#define SPI_MODE2 0x08
-#define SPI_MODE3 0x0C
+#define SPI_MODE1 0x01
+#define SPI_MODE2 0x02
+#define SPI_MODE3 0x03
 
 
 class SPI_Master {
 public:
   SPI_Master() {}
-  void wait() { while (!(SPSR & _BV(SPIF))); }
+  void wait() {}
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MODE0);
-  void end() { SPI_STOP; }
+  void end();
   void send(uint8_t);
   void send12(uint16_t);
   void send16(uint16_t);

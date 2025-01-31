@@ -1,5 +1,7 @@
 #pragma once
-#include "spi.h"
+#include "SPI.h"
+// #include "mik32/spi/spi.h"
+#include "mik32_hal_spi.h"
 #include "pins.h"
 #include "const/ST7735.h"
 #include "type/include.h"
