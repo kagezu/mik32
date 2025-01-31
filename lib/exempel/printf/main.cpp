@@ -1,9 +1,9 @@
 #include "lcd.h"
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
+using namespace Core;
 
 #define INTERLINE 3
-
 uint32_t var;
 
 int main(void)

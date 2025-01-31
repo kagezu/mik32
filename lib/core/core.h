@@ -2,6 +2,7 @@
 
 #ifdef MIK32V2
 #include "mik32/core.h"
+#include "mik32/core/init.h"
 #endif
 
 #ifdef __AVR_ATmega328P__

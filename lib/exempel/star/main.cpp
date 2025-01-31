@@ -2,8 +2,7 @@
 #include "font/arial_14.h"
 
 #define COUNT_STAR  150
-
-
+using namespace Core;
 int rand();
 
 int main(void)

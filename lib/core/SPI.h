@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef MIK32V2
-#include "mik32/spi/spi.h"
+#include "mik32/spi/SPI.h"
 #endif
 
 #ifdef __AVR_ATmega328P__

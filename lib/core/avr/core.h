@@ -62,10 +62,8 @@ typedef uint8_t reg;
 #define I_SAVE uint8_t _sreg = SREG; __asm__ __volatile__ ("cli" :: )
 #define I_REST SREG = _sreg
 
-#define SWAP(x, y)    { x^=y; y^=x; x^=y; }
-#define swap8(a, b)   { uint8_t _t = a; a = b; b = _t; }
-#define swap16(a, b)  { uint16_t _t = a; a = b; b = _t; }
-
-void init_clock(); // Включить тактирование
+// #define SWAP(x, y)    { x^=y; y^=x; x^=y; }
+// #define swap8(a, b)   { uint8_t _t = a; a = b; b = _t; }
+// #define swap16(a, b)  { uint16_t _t = a; a = b; b = _t; }
 
 #endif

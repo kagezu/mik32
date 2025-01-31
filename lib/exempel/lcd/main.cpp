@@ -1,5 +1,7 @@
 #include "lcd.h"
 
+using namespace Core;
+
 int main(void)
 {
   Display lcd;
