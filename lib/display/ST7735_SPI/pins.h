@@ -17,13 +17,11 @@
 #define L_CS(x)      x ( C, PC5)
 #define L_RST(x)     x ( C, PC6) // На самом деле сброс не подключён
 
-#define SPI_SS(x)     x (B, PB2)
-
 #endif
 
 #ifdef MIK32V2
 
-#define L_RST(x)     x ( 0, 7 )
+#define L_RST(x)     x ( 0, 16 ) // На самом деле сброс не подключён
 #define L_RS(x)      x ( 0, 9 )
 #define L_CS(x)      x ( 1, 15 ) // Низкий уровень => CS подтянут к 0, RS - активный / высокий => RS подтянут к 0, CS = RS
 

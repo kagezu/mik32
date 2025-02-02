@@ -1,11 +1,5 @@
 #ifdef MIK32V2
 #include "SPI.h"
-#include <mik32_memory_map.h>
-#include <power_manager.h>
-#include <pad_config.h>
-#include <gpio.h>
-#include "spi.h"
-#include "pins.h"
 
 // SPI_Master SPI;
 
@@ -34,7 +28,6 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
   // volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
   // (void)unused;
 
-
   SPI_1->INT_DISABLE = 0x3F;                        // Сброс маски прерываний
 
   SPI_1->CONFIG =
@@ -45,7 +38,7 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
     | SPI_CONFIG_MASTER_M;                          // Мастер
 
   SPI_1->DELAY = 0;
-  SPI_1->TX_THR = 6;                                // Задает уровень, при котором TX_FIFO считается не заполненным 1-8
+  SPI_1->TX_THR = 7;                                // Задает уровень, при котором TX_FIFO считается не заполненным 1-8
 
   SPI_1->ENABLE = SPI_ENABLE_M;                     // Включение модуля
 }
@@ -59,25 +52,11 @@ void SPI_Master::end()
   (void)unused;
 }
 
-void SPI_Master::send(uint8_t data)
-{
-  // while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
-  SPI_1->TXDATA = data;
-}
-
 uint8_t SPI_Master::transfer(uint8_t data)
 {
   SPI_1->TXDATA = data;
   while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
   return  SPI_1->RXDATA;
-}
-
-
-void SPI_Master::send16(uint16_t data)
-{
-  // while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
-  SPI_1->TXDATA = data >> 8;
-  SPI_1->TXDATA = data;
 }
 
 uint16_t SPI_Master::transfer16(uint16_t data)
@@ -90,11 +69,6 @@ uint16_t SPI_Master::transfer16(uint16_t data)
   rx_dbyte |= SPI_1->RXDATA;
 
   return rx_dbyte;
-}
-
-void SPI_Master::wait()
-{
-  while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
 }
 
 #endif

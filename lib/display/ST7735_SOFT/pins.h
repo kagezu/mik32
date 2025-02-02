@@ -13,11 +13,17 @@
 
 #ifdef __AVR_ATmega328P__
 
-#define L_SCK(x)     x ( C, PC0)
-#define L_SDA(x)     x ( C, PC1)
-#define L_RS(x)      x ( C, PC2)
-#define L_RST(x)     x ( C, PC3)
-#define L_CS(x)      x ( C, PC4)
+// #define L_SCK(x)     x ( C, PC0)
+// #define L_SDA(x)     x ( C, PC1)
+// #define L_RS(x)      x ( C, PC2)
+// #define L_RST(x)     x ( C, PC3)
+// #define L_CS(x)      x ( C, PC4)
+
+#define L_SCK(x)     x ( B, PB5)
+#define L_SDA(x)     x ( B, PB3)
+#define L_RS(x)      x ( C, PC4)
+#define L_RST(x)     x ( C, PC6)
+#define L_CS(x)      x ( C, PC5)
 
 #endif
 
@@ -34,11 +40,6 @@
 #define L_RS(x)      x ( 0, 9 )
 #define L_RST(x)     x ( 0, 7 )
 #define L_CS(x)      x ( 1, 15 )
-
-// #define SPI_MISO_1(x)   x (1, 0)
-// #define SPI_MOSI_1(x)   x (1, 1)
-// #define SPI_SCK_1(x)    x (1, 2)
-// #define SPI_SS_1(x)     x (1, 3)
 
 #endif
 

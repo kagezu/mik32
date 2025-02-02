@@ -6,7 +6,7 @@
 #define SPI_DIV_64  0x02
 #define SPI_DIV_128 0x03
 
-SPI_Master SPI;
+// SPI_Master SPI;
 
 // Частота в кГц
 void SPI_Master::init(uint16_t fq, uint8_t mode)
@@ -21,39 +21,12 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
   else if (fq >= F_CPU / 64000) sck = SPI_DIV_64;
   else sck = SPI_DIV_128;
 
-  SPI_MASTER_PIN;
+  SPI_SS(OUT); SPI_MOSI(OUT); SPI_SCK(OUT); SPI_MISO(IN);
+
   SPCR = _BV(SPE) | _BV(MSTR) | mode | sck;
   SPSR = spi2x;
   SPDR = 0;   // Способ установить флаг SPIF
   wait();
-}
-
-void SPI_Master::send(uint8_t data)
-{
-  wait();
-  SPDR = data;
-}
-
-void SPI_Master::send12(uint16_t data12)
-{
-  static uint8_t half, flag = 0;
-  uint8_t data;
-
-  if (flag) {
-    data = half | (data12 >> 8);
-    wait();
-    SPDR = data;
-    flag = 0;
-    wait();
-    SPDR = (uint8_t)data12;
-  }
-  else {
-    data = data12 >> 4;
-    wait();
-    SPDR = data;
-    half = data12 << 4;
-    flag = 1;
-  }
 }
 
 void SPI_Master::send16(uint16_t data)

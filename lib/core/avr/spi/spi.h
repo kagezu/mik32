@@ -13,14 +13,13 @@ public:
   SPI_Master() {}
   void wait() { while (!(SPSR & _BV(SPIF))); }
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MODE0);
-  void end() { SPI_STOP; }
-  void send(uint8_t);
-  void send12(uint16_t);
+  void end() { SPI_MOSI(IN); SPI_SCK(IN); SPI_MISO(IN); SPCR = 0; }
+  void send(uint8_t data) { wait(); SPDR = data; }
   void send16(uint16_t);
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);
 };
 
-extern SPI_Master SPI;
+// extern SPI_Master SPI;
 
 #endif

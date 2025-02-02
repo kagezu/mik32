@@ -7,4 +7,5 @@
 
 #ifdef __AVR_ATmega328P__
 #include "avr/core.h"
+#include "avr/core/init.h"
 #endif
