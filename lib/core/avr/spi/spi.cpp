@@ -1,4 +1,4 @@
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR__
 #include "spi.h"
 
 #define SPI_DIV_4   0x00

@@ -1,4 +1,4 @@
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR__
 #include "core.h"
 
 /* Поддерживаемые частоты 1, 8, 12, 16, 20, 24 МГц F_CPU */

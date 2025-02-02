@@ -1,5 +1,5 @@
 #pragma once
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR__
 
 namespace Core {
   void init();

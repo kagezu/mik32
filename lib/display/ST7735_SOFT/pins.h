@@ -19,11 +19,22 @@
 // #define L_RST(x)     x ( C, PC3)
 // #define L_CS(x)      x ( C, PC4)
 
+// Подключение как к SPI
 #define L_SCK(x)     x ( B, PB5)
 #define L_SDA(x)     x ( B, PB3)
 #define L_RS(x)      x ( C, PC4)
-#define L_RST(x)     x ( C, PC6)
 #define L_CS(x)      x ( C, PC5)
+#define L_RST(x)     x ( C, PC6)
+
+#endif
+
+#ifdef __AVR_ATmega128__
+
+#define L_SCK(x)     x ( B, PB1)
+#define L_SDA(x)     x ( B, PB2)
+#define L_RS(x)      x ( E, PE3)
+#define L_CS(x)      x ( E, PE2)
+#define L_RST(x)     x ( E, PE7)
 
 #endif
 
@@ -35,6 +46,7 @@
 // #define L_RST(x)     x ( 0, 7 )
 // #define L_CS(x)      x ( 0, 9 )
 
+// Подключение как к SPI
 #define L_SCK(x)     x ( 1, 2 )
 #define L_SDA(x)     x ( 1, 1 )
 #define L_RS(x)      x ( 0, 9 )

@@ -20,7 +20,7 @@
 
 // Драйвер дисплея
 
-// #include "ST7735_SOFT/driver.h"
-#include "ST7735_SPI/driver.h"
+#include "ST7735_SOFT/driver.h"
+// #include "ST7735_SPI/driver.h"
 
 #include <display.h>

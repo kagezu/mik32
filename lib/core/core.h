@@ -5,7 +5,7 @@
 #include "mik32/core/init.h"
 #endif
 
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR__
 #include "avr/core.h"
 #include "avr/core/init.h"
 #endif

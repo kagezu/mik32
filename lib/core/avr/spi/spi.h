@@ -1,4 +1,4 @@
-#ifdef __AVR_ATmega328P__
+#ifdef __AVR__
 #pragma once
 #include "pins.h"
 
