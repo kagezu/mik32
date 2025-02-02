@@ -18,9 +18,8 @@ public:
   inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
-    L_RST(OUT);L_CS(OUT);L_RS(OUT);SPI_SS(OUT);
-    SPI_SS(SET);//test
-    L_CS(SET);
+    L_RST(OUT);L_CS(OUT);L_RS(OUT);
+    L_CS(SET);L_RS(SET);
     SPI.init();
 
     L_RST(RES);               // Аппаратный сброс
@@ -72,9 +71,9 @@ protected:
 
   void send_rgb(C color)
   {
-    SPI.send(color.blue);
-    SPI.send(color.green);
     SPI.send(color.red);
+    SPI.send(color.green);
+    SPI.send(color.blue);
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
@@ -84,9 +83,9 @@ protected:
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      SPI.send(color.blue);
-      SPI.send(color.green);
       SPI.send(color.red);
+      SPI.send(color.green);
+      SPI.send(color.blue);
     }
     SPI.wait();
     L_CS(SET);

@@ -8,3 +8,6 @@
 
 // Графическая библиотека
 // #include "star/main.cpp"
+
+// Для различных тестов
+// #include "test/main.cpp"

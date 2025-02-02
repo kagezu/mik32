@@ -5,7 +5,7 @@
 #include <pad_config.h>
 #include <gpio.h>
 #include "spi.h"
-
+#include "pins.h"
 
 // SPI_Master SPI;
 
@@ -21,41 +21,48 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
     baud_rate_div++;
   }
 
-  PM->CLK_APB_P_SET |= PM_CLOCK_APB_P_SPI_1_M;      // Тактирование модуля
+  PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_1_M;      // Тактирование модуля
+
+  // Настройка порта ввода/вывода
+  SPI_MISO_1(SER); SPI_MOSI_1(SER); SPI_SCK_1(SER); SPI_SS_1(SER);
+  SPI_MISO_1(NC); SPI_MOSI_1(NC); SPI_SCK_1(NC); SPI_SS_1(VCC);
+
 
   SPI_1->ENABLE = 0;                                // Отключение модуля
   SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
+  SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
+  // volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
+  // (void)unused;
+
+
   SPI_1->INT_DISABLE = 0x3F;                        // Сброс маски прерываний
-  // SPI_1->INT_ENABLE = 0x00;                      // Установка прерываний
-  // Разрешить прерывания от используемого SPI контроллера (IRQ[3] для SPI_0 или IRQ[4] для SPI[1]) в программируемом контроллере прерываний;
 
   SPI_1->CONFIG =
-    SPI_CONFIG_MANUAL_CS_S                          // Ручной режим
+    SPI_CONFIG_MANUAL_CS_M                          // Ручной режим
     | SPI_CONFIG_CS_NONE_M                          // Устройства не выбраны
     | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S) // Делитель частоты
     | (mode << SPI_CONFIG_CLK_POL_S)                // Фаза и полярность
     | SPI_CONFIG_MASTER_M;                          // Мастер
 
-  // SPI_1->ENABLE = SPI_ENABLE_M;                     // Включение модуля
+  SPI_1->DELAY = 0;
+  SPI_1->TX_THR = 6;                                // Задает уровень, при котором TX_FIFO считается не заполненным 1-8
 
-  SPI_1->TX_THR = 2;  // Задает уровень, при котором TX_FIFO считается не заполненным 1-8
-
+  SPI_1->ENABLE = SPI_ENABLE_M;                     // Включение модуля
 }
 
 void SPI_Master::end()
 {
-  SPI_1->ENABLE = 0;                          // Отключение модуля
-  SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; // Очищение FIFO
-  SPI_1->INT_STATUS &= 0x3F;                  // Сброс флагов событий
-  SPI_1->INT_DISABLE = 0x3F;                  // Сброс маски прерываний
-  SPI_1->INT_STATUS = 0x3F;                   // Сброс флагов событий
+  SPI_1->ENABLE = 0;                                // Отключение модуля
+  SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
+  SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
+  volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
+  (void)unused;
 }
 
 void SPI_Master::send(uint8_t data)
 {
+  // while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
   SPI_1->TXDATA = data;
-  while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
-  uint8_t r = SPI_1->RXDATA;
 }
 
 uint8_t SPI_Master::transfer(uint8_t data)
@@ -68,11 +75,9 @@ uint8_t SPI_Master::transfer(uint8_t data)
 
 void SPI_Master::send16(uint16_t data)
 {
+  // while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
   SPI_1->TXDATA = data >> 8;
   SPI_1->TXDATA = data;
-  while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
-  uint8_t r = SPI_1->RXDATA;
-  r = SPI_1->RXDATA;
 }
 
 uint16_t SPI_Master::transfer16(uint16_t data)
