@@ -16,7 +16,7 @@ public:
 
 public:
   RGB12() {}
-  RGB12(uint8_t _red, uint8_t _green, uint8_t _blue) : blue(_blue >> 4), green(_green >> 4), red(_red >> 4) {}
+  RGB12(uint8_t _red, uint8_t _green, uint8_t _blue) : rgb(((_red & 0xf0) << 4) | (_green & 0xf0) | (_blue >> 4)) {}
   RGB12(uint32_t _rgb) : rgb(((_rgb >> 12) & 0xf00) | ((_rgb >> 8) & 0xf0) | ((_rgb >> 4) & 0xf)) {}
 
   void rgb12(uint16_t c) { rgb = c; }
@@ -29,31 +29,3 @@ public:
 
   operator uint32_t() { return rgb32(); }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-#if RGB_FORMAT == RGB_M
-#include "rgbm.h"
-#elif RGB_FORMAT == RGB_12
-#include "rgb12.h"
-#elif RGB_FORMAT == RGB_16
-#include "rgb16.h"
-#elif RGB_FORMAT == RGB_18
-#include "rgb18.h"
-#endif
-*/

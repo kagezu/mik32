@@ -1,23 +1,26 @@
 #pragma once
 #include "type/include.h"
 
-#define FONT_TAB_FACTOR     1
+#define FONT_TAB_FACTOR     2
+#define PRINT_BUFFER_SIZE   32
 
 class PrintF :private IDisplay {
 public:
   void printf(const char *, ...);
   void print(const char *);
-  void print(char *);
-  void print(uint16_t);
-  void print(uint32_t);
-  void print(int16_t);
-  void print(int32_t);
-  void print_h(uint64_t);
-  void print_h(uint32_t);
-  void print_h(uint16_t);
-  void print_h(uint8_t);
+  void print(char *, reg algin = 0);
+  // char *print(int64_t);
+  char *print(int32_t);
+  char *print(int16_t);
+  // char *print(uint64_t);
+  char *print(uint32_t);
+  char *print(uint16_t);
+  char *print_h(uint64_t);
+  char *print_h(uint32_t);
+  char *print_h(uint16_t);
+  uint16_t print_h(uint8_t);
   void print(char);
-  void letter(uint8_t);
+  void print_c(uint8_t);
 
   void font(const Font &);
   void at(uint16_t x, uint16_t y) { point_x = x; point_y = y; }
@@ -37,6 +40,7 @@ private:
   uint8_t  _tab_factor = FONT_TAB_FACTOR;
   uint16_t point_x = 0;
   uint16_t point_y = 0;
+  char buffer[PRINT_BUFFER_SIZE] = {};
 
 private:
   void LF() { point_y += _interline; }
@@ -44,4 +48,5 @@ private:
   void TAB() { point_x = ((point_x / ((_font.weight + _interval) << FONT_TAB_FACTOR) + 1) * (_font.weight + _interval)) << FONT_TAB_FACTOR; }
   void BS() { point_x -= (_font.weight + _interval); if (point_x > max_x()) point_x = 0; }
   void escape() {}
+  reg get_length(char *);
 };

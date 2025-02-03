@@ -91,7 +91,7 @@ public:
         xy += y;  // Заменяем умножение сложением
         xx += x;
 
-        send_rgb(RGB(r, g, b));
+        send_rgb(C(r, g, b));
       }
     }
     L_CS(SET);
