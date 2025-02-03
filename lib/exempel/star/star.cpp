@@ -1,4 +1,4 @@
-#include "lcd.h"
+#include "config.h"
 #include "font/arial_14.h"
 
 #define COUNT_STAR  150

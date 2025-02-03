@@ -1,4 +1,4 @@
-#include "lcd.h"
+#include "config.h"
 
 using namespace Core;
 

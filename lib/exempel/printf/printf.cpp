@@ -1,4 +1,4 @@
-#include "lcd.h"
+#include "config.h"
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
 using namespace Core;
