@@ -1,10 +1,10 @@
 // Примеры
 
 // Проверка цветных дисплеев
-// #include "lcd/lcd.cpp"
+#include "lcd/lcd.cpp"
 
 // Печать текста
-#include "printf/printf.cpp"
+// #include "printf/printf.cpp"
 
 // Графическая библиотека
 // #include "star/star.cpp"

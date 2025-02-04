@@ -67,6 +67,7 @@ volatile void delay_ms(uint32_t ms);
 // Типы
 
 typedef uint32_t reg;
+typedef uint32_t adr;
 
 // Прочее
 

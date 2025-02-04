@@ -85,29 +85,29 @@ void PrintF::printf(const char *string, ...)
     }
     digit |= algin;
     switch (ch) {
-      case 'c': print((char)__builtin_va_arg(args, unsigned int)); break;
+      case 'c': print((char)__builtin_va_arg(args, adr)); break;
       case 's': print((char *)__builtin_va_arg(args, char *), digit); break;
       case 'S': print((const char *)__builtin_va_arg(args, char *)); break;
       case 'd':
         switch (lng) {
-          case 1: ptr = print((int16_t)__builtin_va_arg(args, unsigned int)); break;
+          case 1: ptr = print((int16_t)__builtin_va_arg(args, adr)); break;
           case 2: ptr = print((int32_t)__builtin_va_arg(args, int32_t)); break;
         } print(ptr, digit); break;
       case 'u':
         switch (lng) {
-          case 1: ptr = print((uint16_t)__builtin_va_arg(args, unsigned int)); break;
+          case 1: ptr = print((uint16_t)__builtin_va_arg(args, adr)); break;
           case 2: ptr = print((uint32_t)__builtin_va_arg(args, uint32_t)); break;
         } print(ptr, digit); break;
       case 'x':
         if (digit && (digit < 3)) lng = 0; // явное указание, что число короткое
         switch (lng) {
-          case 0:  ptr--; *(uint16_t *)--ptr = print_h((uint8_t)__builtin_va_arg(args, unsigned int)); break;
-          case 1:  ptr = print_h((uint16_t)__builtin_va_arg(args, unsigned int)); break;
+          case 0:  ptr--; *(uint16_t *)--ptr = print_h((uint8_t)__builtin_va_arg(args, adr)); break;
+          case 1:  ptr = print_h((uint16_t)__builtin_va_arg(args, adr)); break;
           case 2:  ptr = print_h((uint32_t)__builtin_va_arg(args, uint32_t)); break;
           case 3:  ptr = print_h((uint64_t)__builtin_va_arg(args, uint64_t)); break;
         } print(ptr, digit); break;
 
-      case 'p': ptr = print_h((unsigned int)__builtin_va_arg(args, unsigned int)); print(ptr, digit); break;
+      case 'p': ptr = print_h((adr)__builtin_va_arg(args, adr)); print(ptr, digit); break;
       case '%': print_c('%'); break;
     }
   }
