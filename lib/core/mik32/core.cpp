@@ -13,4 +13,10 @@ volatile void delay_ms(volatile uint32_t ms)
   while (ms--) delay_us(999);
 }
 
+void cli()
+{}
+
+void sei()
+{}
+
 #endif

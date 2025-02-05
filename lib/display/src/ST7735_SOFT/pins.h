@@ -1,5 +1,5 @@
 #pragma once
-#include <core.h>
+#include "core.h"
 
 #if (!defined (PRESET_ST7735_A5) && !defined (PRESET_ST7735_A4) && !defined (PRESET_ST7735_SPI))
 // Конфигурация по умолчанию
@@ -39,7 +39,6 @@
 #define L_CS(x)      x ( C, PC5)
 #define L_RST(x)     x ( C, PC6)
 #endif
-
 #endif
 
 #ifdef __AVR_ATmega128__
@@ -55,19 +54,27 @@
 #ifdef MIK32V2
 
 #ifdef PRESET_ST7735_A4
-#define L_SCK(x)     x ( 1, 5 )
-#define L_SDA(x)     x ( 1, 7 )
-#define L_RS(x)      x ( 0, 4 )
-#define L_RST(x)     x ( 0, 7 )
-#define L_CS(x)      x ( 0, 9 )
+#define L_SCK(x)     x ( 1, 5 )     // A0
+#define L_SDA(x)     x ( 1, 7 )     // A1
+#define L_RS(x)      x ( 0, 4 )     // A2
+#define L_RST(x)     x ( 0, 7 )     // A3
+#define L_CS(x)      x ( 0, 9 )     // A4
+#endif
+
+#ifdef PRESET_ST7735_A5
+#define L_SCK(x)     x ( 1, 7 )     // A1
+#define L_SDA(x)     x ( 0, 4 )     // A2
+#define L_RS(x)      x ( 0, 7 )     // A3
+#define L_RST(x)     x ( 0, 9 )     // A4 Необходима подтяжка к питанию (на стороне девайса)
+#define L_CS(x)      x ( 1, 15 )    // A5 Необходима подтяжка к земле (на стороне девайса)
 #endif
 
 #ifdef PRESET_ST7735_SPI
-#define L_SCK(x)     x ( 1, 2 )
-#define L_SDA(x)     x ( 1, 1 )
-#define L_RS(x)      x ( 0, 9 )
-#define L_RST(x)     x ( 0, 7 )
-#define L_CS(x)      x ( 1, 15 )
+#define L_SCK(x)     x ( 1, 2 )     // D13
+#define L_SDA(x)     x ( 1, 1 )     // D11
+#define L_RST(x)
+#define L_RS(x)      x ( 0, 9 )     // A4
+#define L_CS(x)      x ( 1, 15 )    // A5 Необходима подтяжка к земле (на стороне девайса)
 #endif
 
 #endif

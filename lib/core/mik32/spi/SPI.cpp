@@ -25,8 +25,8 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
   SPI_1->ENABLE = 0;                                // Отключение модуля
   SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
   SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
-  // volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
-  // (void)unused;
+  volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
+  (void)unused;
 
   SPI_1->INT_DISABLE = 0x3F;                        // Сброс маски прерываний
 
@@ -54,17 +54,19 @@ void SPI_Master::end()
 
 uint8_t SPI_Master::transfer(uint8_t data)
 {
+  clear_fifo();
   SPI_1->TXDATA = data;
-  while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
+  wait();
   return  SPI_1->RXDATA;
 }
 
 uint16_t SPI_Master::transfer16(uint16_t data)
 {
   uint16_t rx_dbyte;
+  clear_fifo();
   SPI_1->TXDATA = data >> 8;
   SPI_1->TXDATA = data;
-  while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M);
+  wait();
   rx_dbyte = SPI_1->RXDATA << 8;
   rx_dbyte |= SPI_1->RXDATA;
 

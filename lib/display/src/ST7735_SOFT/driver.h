@@ -12,15 +12,17 @@ public:
   inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
+
+
   L_SCK(GPIO); L_SDA(GPIO);L_RST(GPIO);L_CS(GPIO);L_RS(GPIO);
   L_SCK(OUT);L_SDA(OUT);L_RST(OUT);L_CS(OUT);L_RS(OUT);
   L_CS(SET);L_RS(SET);
 
-  L_RST(RES);               // Аппаратный сброс
+  L_RST(CLR);               // Аппаратный сброс
   delay_us(2000);
   L_RST(SET);
   delay_us(15000);          // Ждать стабилизации напряжений
-  L_CS(RES);                // CS Выбор дисплея
+  L_CS(CLR);                // CS Выбор дисплея
 
   send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
   send_command(MADCTL);
@@ -32,12 +34,12 @@ public:
   }
 
 protected:
-  // inline void select() { L_CS(RES); }
+  // inline void select() { L_CS(CLR); }
   // inline void release() { L_CS(SET); }
 
   void send_command(uint8_t command)
   {
-    L_RS(RES); // Запись команды
+    L_RS(CLR); // Запись команды
     send_byte(command);
     L_RS(SET); // Запись данных
   }
@@ -62,10 +64,10 @@ protected:
   void send_zero()
   {
     reg count = 8;
-    L_SDA(RES);
+    L_SDA(CLR);
     while(count--){
       L_SCK(SET);
-      L_SCK(RES);
+      L_SCK(CLR);
     }
   }
 
@@ -73,9 +75,9 @@ protected:
   {
     for( reg mask = 0x80; mask > 0; mask >>=1){
       if (data & mask) L_SDA(SET);
-      else L_SDA(RES);
+      else L_SDA(CLR);
       L_SCK(SET);
-      L_SCK(RES);
+      L_SCK(CLR);
     }
   }
 
@@ -141,7 +143,7 @@ protected:
     L_SCK(MMO) = d0;
     L_SCK(MMO) = s0;
 
-    L_SCK(RES);
+    L_SCK(CLR);
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
@@ -150,7 +152,7 @@ protected:
     uint8_t g = color.green;
     uint8_t b = color.blue;
 
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
@@ -212,7 +214,7 @@ protected:
     L_SCK(MMO) = d0;
     L_SCK(MMO) = s0;
     }
-    L_SCK(RES);
+    L_SCK(CLR);
     L_CS(SET);
   }
 
@@ -267,7 +269,7 @@ template<>
     if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
     else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
   
-    L_SCK(RES);
+    L_SCK(CLR);
   }
 
 template<>
@@ -307,7 +309,7 @@ template<>
     if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
     else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
   
-    L_SCK(RES);
+    L_SCK(CLR);
   }
 
 template<>
@@ -315,7 +317,7 @@ template<>
   {
     uint16_t rgb = color.rgb;
 
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
@@ -362,7 +364,7 @@ template<>
     if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
     else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
     }
-    L_SCK(RES);
+    L_SCK(CLR);
     L_CS(SET);
   }
 
@@ -371,7 +373,7 @@ template<>
   {
     uint16_t rgb = color.rgb;
 
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
@@ -409,7 +411,7 @@ template<>
     if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
     else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
     }
-    L_SCK(RES);
+    L_SCK(CLR);
     L_CS(SET);
   }
 

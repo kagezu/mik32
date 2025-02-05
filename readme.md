@@ -4,7 +4,7 @@
 
 ### Поддерживаемые MK / Платы
 
-+ **ATmega328P / Uno R3**
++ **ATmega328P / Uno R3 / Nano**
 + **ATmega128 / XMEM 128kB**
 + **MIK32 AMUR / ACE UNO**
 

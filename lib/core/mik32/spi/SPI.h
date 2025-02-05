@@ -25,14 +25,18 @@ public:
   inline void send(uint8_t data)
   {
     SPI_1->TXDATA = data;
-    while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
+    wait_fifo();
   }
   inline void send16(uint16_t data)
   {
-    while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M));
+    wait_fifo();
     SPI_1->TXDATA = data >> 8;
     SPI_1->TXDATA = data;
   }
+private:
+  inline void clear_fifo() { wait(); SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
+  inline void wait_fifo() { while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+
 };
 
 // extern SPI_Master SPI;

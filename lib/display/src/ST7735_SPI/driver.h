@@ -18,11 +18,11 @@ public:
     L_CS(SET);L_RS(SET);
     SPI.init();
 
-    L_RST(RES);               // Аппаратный сброс
+    L_RST(CLR);               // Аппаратный сброс
     delay_us(2000);
     L_RST(SET);
     delay_us(15000);          // Ждать стабилизации напряжений
-    L_CS(RES);                // CS Выбор дисплея
+    L_CS(CLR);                // CS Выбор дисплея
 
     send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
     send_command(MADCTL);
@@ -35,14 +35,14 @@ public:
   }
 
 protected:
-  // inline void select() { L_CS(RES); }
+  // inline void select() { L_CS(CLR); }
   // inline void release() { L_CS(SET); }
 
   void send_byte(uint8_t data) { SPI.send(data); }
   void send_command(uint8_t command)
   {
   SPI.wait();
-  L_RS(RES); // Запись команды
+  L_RS(CLR); // Запись команды
   SPI.send(command);
   SPI.wait();
   L_RS(SET); // Запись данных
@@ -70,7 +70,7 @@ protected:
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
@@ -115,7 +115,7 @@ template<>
 template<>
   void ST7735_SPI<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
   {
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
@@ -127,7 +127,7 @@ template<>
 template<>
   void ST7735_SPI<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
   {
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x0, y0, x1, y1);
     uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1))>>1;
 

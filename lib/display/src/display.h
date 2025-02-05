@@ -39,7 +39,7 @@ public:
   void pixel(uint16_t x, uint16_t y)
   {
     if (x > max_x() || y > max_y()) return;
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x, y, x, y);
     send_rgb(_color);
     send_rgb(_color);
@@ -52,7 +52,7 @@ public:
     uint16_t x1 = x + dx - 1;
     uint16_t y1 = y + dy - 1;
 
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(x, y, x1, y1);
 
     for (uint8_t j = 0; j < dy; j++) {
@@ -73,7 +73,7 @@ public:
 
   void demo(uint8_t d)
   {
-    L_CS(RES);
+    L_CS(CLR);
     set_addr(0, 0, max_x(), max_y());
     uint16_t yy;
     for (uint16_t y = VIEWPORT_OFFSET; y < max_y() + VIEWPORT_OFFSET + 1; y++) {

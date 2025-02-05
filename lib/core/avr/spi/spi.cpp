@@ -35,6 +35,7 @@ void SPI_Master::send16(uint16_t data)
   buf.word = data;
   wait();
   SPDR = buf.byte[1];
+  __asm__ __volatile__("nop"::);
   wait();
   SPDR = buf.byte[0];
 }
@@ -43,7 +44,8 @@ uint8_t SPI_Master::transfer(uint8_t data)
 {
   wait();
   SPDR = data;
-  while (!(SPSR & _BV(SPIF)));
+  __asm__ __volatile__("nop"::);
+  wait();
   return SPDR;
 }
 
@@ -53,10 +55,12 @@ uint16_t SPI_Master::transfer16(uint16_t data)
   buf.word = data;
   wait();
   SPDR = buf.byte[1];
+  __asm__ __volatile__("nop"::);
   wait();
   buf.byte[1] = SPDR;
   SPDR = buf.byte[0];
-  while (!(SPSR & _BV(SPIF)));
+  __asm__ __volatile__("nop"::);
+  wait();
   buf.byte[0] = SPDR;
   return buf.word;
 }

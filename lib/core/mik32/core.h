@@ -27,13 +27,12 @@
 #define OUT(port, pin)      GPIO_ ## port ->DIRECTION_OUT |= 1 << pin
 
 #define SET(port, pin)      GPIO_ ## port ->OUTPUT |= 1 << pin
-#define RES(port, pin)      GPIO_ ## port ->OUTPUT &= ~(1 << pin)
-#define GET(port, pin)      GPIO_ ## port ->STATE & (1 << pin)
+#define CLR(port, pin)      GPIO_ ## port ->OUTPUT &= ~(1 << pin)
+#define GET(port, pin)      (GPIO_ ## port ->STATE & (1 << pin))
 
 #define MASK(port, pin)     (1 << pin)
 #define MMO(port, pin)      (GPIO_ ## port ->OUTPUT)
 #define MMI(port, pin)      (GPIO_ ## port ->STATE)
-
 
 // Доступ к байтам
 
@@ -62,7 +61,8 @@ union dword {
 
 volatile void delay_us(uint32_t us);
 volatile void delay_ms(uint32_t ms);
-
+void cli();
+void sei();
 
 // Типы
 
