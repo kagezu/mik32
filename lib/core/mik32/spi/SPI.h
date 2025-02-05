@@ -22,17 +22,17 @@ public:
   uint16_t transfer16(uint16_t);
 
   inline void wait() { while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  inline void send(uint8_t data)
-  {
-    SPI_1->TXDATA = data;
-    wait_fifo();
-  }
-  inline void send16(uint16_t data)
-  {
-    wait_fifo();
-    SPI_1->TXDATA = data >> 8;
-    SPI_1->TXDATA = data;
-  }
+  inline void send(uint8_t data) { SPI_1->TXDATA = data; wait_fifo(); }
+  inline void send16(uint16_t data) { wait_fifo(); SPI_1->TXDATA = data >> 8; SPI_1->TXDATA = data; }
+
+  // без проверок
+  inline  uint8_t read() { return SPI_1->RXDATA; }
+  inline  uint16_t read16() { uint16_t rx = SPI_1->RXDATA << 8; return SPI_1->RXDATA | rx; }
+  inline  uint32_t read32();
+  inline  void  write(uint8_t data) { SPI_1->TXDATA = data; }
+  inline  void  write16(uint16_t data) { SPI_1->TXDATA = data >> 8; SPI_1->TXDATA = data; }
+  inline  void  write32(uint32_t data);
+
 private:
   inline void clear_fifo() { wait(); SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
   inline void wait_fifo() { while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }

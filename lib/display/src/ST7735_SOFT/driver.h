@@ -12,8 +12,6 @@ public:
   inline const uint16_t max_y() { return MAX_Y; }
   void init()
   {
-
-
   L_SCK(GPIO); L_SDA(GPIO);L_RST(GPIO);L_CS(GPIO);L_RS(GPIO);
   L_SCK(OUT);L_SDA(OUT);L_RST(OUT);L_CS(OUT);L_RS(OUT);
   L_CS(SET);L_RS(SET);

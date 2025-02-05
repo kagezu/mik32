@@ -16,7 +16,6 @@ public:
 
 public:
   const char *get_pgm_text() { return MIDI_pgm[_pgm]; }
-  uint8_t _pgm = 0;
 
 protected:
   virtual void send_midi(uint8_t) = 0;
@@ -24,6 +23,7 @@ protected:
   virtual void send_midi(uint8_t, uint8_t, uint8_t) = 0;
 
 private:
+  uint8_t _pgm = 0;
   uint8_t _run_status = 0;
   void _send_midi(uint8_t, uint8_t, uint8_t);
   void _send_midi(uint8_t, uint8_t);

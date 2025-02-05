@@ -15,7 +15,7 @@ void VS1053::init()
   SPI.init(SCI_FQ_INIT);
   WAIT_DREQ;
   write_register(SCI_CLOCKF, SC_MULT | SC_ADD | SC_FREQ);
-  SPI.init(SCI_FQ_READ); // Ускоряем SPI
+  SPI.init(SCI_FQ_WRITE); // Ускоряем SPI
   set_master(SCI_VOL_DEFAULT);
   load_patch(rtmidi);
 }

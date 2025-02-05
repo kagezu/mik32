@@ -57,13 +57,6 @@ union dword {
   };
 };
 
-// Функции
-
-volatile void delay_us(uint32_t us);
-volatile void delay_ms(uint32_t ms);
-void cli();
-void sei();
-
 // Типы
 
 typedef uint32_t reg;

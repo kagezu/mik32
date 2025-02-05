@@ -1,9 +1,7 @@
-// #include "VS1053.h"
 #pragma once
-#include "pins.h"
-#include "SPI.h"
-#include "midi/midi.h"
-#include "const.h"
+
+// Параметры
+////////////////////////////////////////////////////////////////////////////////
 
 // SC_MULT Множитель частоты  SPI READ / WRITE
 // 0 0x0000 × 1.0   = 12  1,7 /  3
@@ -27,21 +25,20 @@
 
 // Частота кварца в кГц
 #define SC_FQ_CRYSTAL     12000
-#define SC_FREQ           ((SC_FQ_CRYSTAL - 8000) >> 2)
+
+// -20 dB
+#define SCI_VOL_DEFAULT   20
 
 // Константы
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // Инициализация SPI, в килогерцах
 #define SCI_FQ_INIT       (SC_FQ_CRYSTAL >> 3)
 #define SCI_FQ_WRITE      (((((SC_MULT >> 13) + 3) * SC_FQ_CRYSTAL) >> 1) / 4)
 #define SCI_FQ_READ       (((((SC_MULT >> 13) + 3) * SC_FQ_CRYSTAL) >> 1) / 7)
 
-// -20 dB
-#define SCI_VOL_DEFAULT   20
-
-
+// Частота кварца в единицах МК
+#define SC_FREQ           ((SC_FQ_CRYSTAL - 8000) >> 2)
 
 #define SCI_MIDI          0x0
 #define SCI_WRITE         0x2
@@ -84,37 +81,3 @@
 #define SM_CLK_RANGE      0x8000
 
 #define END_PATCH         0xFFFF
-
-class VS1053 : public MIDI {
-public:
-  void init();
-
-  // Управление громкостью
-
-  void set_left(uint8_t  left) { _vol_left = left; set_volume(); }
-  void set_right(uint8_t  right) { _vol_right = right; set_volume(); }
-  void set_master(uint8_t vol) { _vol_master = vol; set_volume(); }
-
-  uint8_t get_master() { return _vol_master; }
-  uint8_t get_left() { return _vol_left; }
-  uint8_t get_right() { return _vol_right; }
-
-protected:
-  uint8_t _vol_master;
-  uint8_t _vol_left = 0;
-  uint8_t _vol_right = 0;
-
-  void send_midi(uint8_t);
-  void send_midi(uint8_t, uint8_t);
-  void send_midi(uint8_t, uint8_t, uint8_t);
-
-private:
-  SPI_Master SPI;
-
-  void load_patch(const uint16_t *);
-  void write_register(uint8_t, uint16_t);
-  uint16_t read_register(uint8_t);
-  void get_volume();
-  void set_volume();
-  uint8_t sum_vol(char vol_ch);
-};

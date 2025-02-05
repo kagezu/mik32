@@ -1,6 +1,13 @@
 #pragma once
 #include "pins.h"
 
+#ifndef SH_RST
+#define SH_RST(x)
+#endif
+#ifndef SH_LD
+#define SH_LD(x)
+#endif
+
 class Shift {
 public:
   void init()
@@ -10,7 +17,7 @@ public:
     SH_LD(SET); SH_RST(SET); SH_SCK(CLR);
   }
 
-  inline void reset(boolean hold = false) { SH_RST(CLR); if (!hold) SH_RST(SET); }
+  inline void reset(bool hold = false) { SH_RST(CLR); if (!hold) SH_RST(SET); }
   inline void load() { SH_LD(CLR); SH_LD(SET); }
   inline void read_bytes(uint8_t *buffer, uint8_t length) { while (length--) *buffer++ = read(); }
   inline void write_bytes(uint8_t *buffer, uint8_t length) { while (length--) write(*buffer++); }

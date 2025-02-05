@@ -73,4 +73,21 @@ uint16_t SPI_Master::transfer16(uint16_t data)
   return rx_dbyte;
 }
 
+uint32_t SPI_Master::read32()
+{
+  uint32_t rx = SPI_1->RXDATA;
+  rx = (rx << 8) | SPI_1->RXDATA;
+  rx = (rx << 8) | SPI_1->RXDATA;
+  rx = (rx << 8) | SPI_1->RXDATA;
+  return rx;
+}
+
+void SPI_Master::write32(uint32_t data)
+{
+  SPI_1->TXDATA = data >> 8;
+  SPI_1->TXDATA = data >> 8;
+  SPI_1->TXDATA = data >> 8;
+  SPI_1->TXDATA = data;
+}
+
 #endif

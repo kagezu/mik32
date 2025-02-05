@@ -9,7 +9,6 @@ int main(void)
   lcd.init();
   midi.init();
 
-  // SCI_FQ_READ;
 
 
 

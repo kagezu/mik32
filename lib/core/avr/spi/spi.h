@@ -18,6 +18,14 @@ public:
   void send16(uint16_t);
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);
+
+  // для буферизации
+  inline  uint8_t read() { return SPDR; }
+  inline  uint16_t read16() { return SPDR; }
+  inline  uint32_t read32() { return SPDR; }
+  inline  void  write(uint8_t data) { SPDR = data; }
+  inline  void  write16(uint16_t data) { SPDR = data >> 8; __asm__ __volatile__("nop"::); wait(); SPDR = data; }
+  inline  void  write32(uint32_t data) {}
 };
 
 // extern SPI_Master SPI;
