@@ -117,15 +117,33 @@ namespace Core {
 }
 
 /* Поддерживаемые частоты 32 MHz F_CPU */
-volatile void delay_us(volatile uint32_t us)
+void delay_us(uint32_t us)
 {
-  us <<= 2;
-  while (us--);
+  if (!us) return;
+  int l = 6;
+  asm volatile (
+    "1:                 \n\t"
+    "addi %0, %0, -1    \n\t" // 1 такт
+    "bnez %0, 1b        \n\t" // 2 такта
+    :"=r"(l) : "0" (l)
+    );
+  us--;
+  if (!us) return; // 0,9 микросекунды
+  // 10,5 циклов на микросекунду опережение 0,4%
+  us = (us << 3) + (us << 1) + (us >> 1); // x10,5
+  us -= 10; // коррекция
+  if (!us) return; // 2 микросекунды
+  asm volatile (
+    "1:                 \n\t"
+    "addi %0, %0, -1    \n\t" // 1 такт
+    "bnez %0, 1b        \n\t" // 2 такта
+    : "=r" (us) : "0" (us)
+    );
 }
 
-volatile void delay_ms(volatile uint32_t ms)
+void delay_ms(uint32_t ms)
 {
-  while (ms--) delay_us(999);
+  while (ms--) delay_us(1000);
 }
 
 void cli() {}

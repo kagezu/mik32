@@ -1,4 +1,5 @@
 #include "printf.h"
+#include "accel.h"
 
 #define LEFT_ALGIN   0x80
 
@@ -162,7 +163,7 @@ char *PrintF::print(uint32_t number)
   while (number > 9) {
     uint8_t mod;
 
-  #ifdef AVR_ASM
+  #ifdef __AVR__
     uint8_t tmp;
     div10_32bit(number, mod, tmp);
   #else
@@ -182,7 +183,7 @@ char *PrintF::print(uint16_t number)
   while (number > 9) {
     uint8_t mod;
 
-  #ifdef AVR_ASM
+  #ifdef __AVR__
     uint8_t tmp;
     div10_16bit(number, mod, tmp);
   #else

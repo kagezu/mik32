@@ -1,12 +1,10 @@
-#ifdef __AVR__
-#include "spi.h"
+#include "SPI.h"
+#include "macros/avr.h"
 
 #define SPI_DIV_4   0x00
 #define SPI_DIV_16  0x01
 #define SPI_DIV_64  0x02
 #define SPI_DIV_128 0x03
-
-// SPI_Master SPI;
 
 // Частота в кГц
 void SPI_Master::init(uint16_t fq, uint8_t mode)
@@ -31,13 +29,11 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
 
 void SPI_Master::send16(uint16_t data)
 {
-  dbyte buf;
-  buf.word = data;
   wait();
-  SPDR = buf.byte[1];
+  SPDR = to_byte(data, 1);
   __asm__ __volatile__("nop"::);
   wait();
-  SPDR = buf.byte[0];
+  SPDR = to_byte(data, 0);
 }
 
 uint8_t SPI_Master::transfer(uint8_t data)
@@ -51,18 +47,14 @@ uint8_t SPI_Master::transfer(uint8_t data)
 
 uint16_t SPI_Master::transfer16(uint16_t data)
 {
-  dbyte buf;
-  buf.word = data;
   wait();
-  SPDR = buf.byte[1];
+  SPDR = to_byte(data, 1);
   __asm__ __volatile__("nop"::);
   wait();
-  buf.byte[1] = SPDR;
-  SPDR = buf.byte[0];
+  to_byte(data, 1) = SPDR;
+  SPDR = to_byte(data, 0);
   __asm__ __volatile__("nop"::);
   wait();
-  buf.byte[0] = SPDR;
-  return buf.word;
+  to_byte(data, 0) = SPDR;
+  return data;
 }
-
-#endif

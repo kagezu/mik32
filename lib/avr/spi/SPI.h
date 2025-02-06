@@ -1,4 +1,3 @@
-#ifdef __AVR__
 #pragma once
 #include "pins.h"
 
@@ -27,7 +26,3 @@ public:
   inline  void  write16(uint16_t data) { SPDR = data >> 8; __asm__ __volatile__("nop"::); wait(); SPDR = data; }
   inline  void  write32(uint32_t data) {}
 };
-
-// extern SPI_Master SPI;
-
-#endif

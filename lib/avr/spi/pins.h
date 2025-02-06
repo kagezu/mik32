@@ -1,4 +1,4 @@
-#include "avr/core.h"
+#include "macros/gpio.h"
 
 #ifdef __AVR_ATmega328P__
 

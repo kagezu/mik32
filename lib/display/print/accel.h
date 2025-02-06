@@ -1,7 +1,5 @@
 #pragma once
 
-#define AVR_ASM
-
 #define div10_16bit(div, mod, tmp)        \
   asm volatile(                           \
       " ldi %2,51     \n\t"               \

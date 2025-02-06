@@ -7,7 +7,7 @@
 void SPI_Master::init(uint16_t fq, uint8_t mode)
 {
   uint8_t baud_rate_div = 0;
-  uint16_t max_fq = F_CPU / 2000;
+  uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
 
   while (baud_rate_div < 0x07) {
     if (fq >= max_fq) break;
