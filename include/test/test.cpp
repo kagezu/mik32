@@ -3,9 +3,9 @@
 
 int main(void)
 {
-  Core::init_clock();
   Display lcd;
   VS1053 midi;
+  Core::init_clock();
   lcd.init();
   midi.init();
 
