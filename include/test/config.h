@@ -14,19 +14,19 @@
 // 270°   |     +     |     -     |     +     |
 
 // #define LCD_FLIP    0                           //   0°
-// #define LCD_FLIP              FLIP_Y | EX_X_Y   //  90°
+#define LCD_FLIP              FLIP_Y | EX_X_Y   //  90°
 // #define LCD_FLIP    FLIP_X  | FLIP_Y            // 180°
-#define LCD_FLIP    FLIP_X  |          EX_X_Y   // 270°
+// #define LCD_FLIP    FLIP_X  |          EX_X_Y   // 270°
 
 // Вариант подключения (только для ST7735_SОFT)
 
-#define PRESET_ST7735_A5
-// #define PRESET_ST7735_A4
+// #define PRESET_ST7735_A5
+#define PRESET_ST7735_A4
 // #define PRESET_ST7735_SPI
 
 // Драйвер дисплея
 
-// #include "ST7735_SOFT/driver.h"
-#include "ST7735_SPI/driver.h"
+#include "ST7735_SOFT/driver.h"
+// #include "ST7735_SPI/driver.h"
 
 #include <display.h>
