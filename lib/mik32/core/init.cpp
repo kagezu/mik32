@@ -48,7 +48,7 @@ namespace Core {
     // Включение тактирования устройств на шине APB_M.
     PM->CLK_APB_M_SET |=
       PM_CLOCK_APB_M_PM_M
-      // | PM_CLOCK_APB_M_EPIC_M
+      | PM_CLOCK_APB_M_EPIC_M
       // | PM_CLOCK_APB_M_TIMER32_0_M
       | PM_CLOCK_APB_M_PAD_CONFIG_M
       // | PM_CLOCK_APB_M_WDT_BUS_M
@@ -84,8 +84,8 @@ namespace Core {
       // | PM_CLOCK_APB_P_I2C_0_M
       // | PM_CLOCK_APB_P_I2C_1_M
       PM_CLOCK_APB_P_GPIO_0_M
-      | PM_CLOCK_APB_P_GPIO_1_M;
-    // | PM_CLOCK_APB_P_GPIO_2_M
+      | PM_CLOCK_APB_P_GPIO_1_M
+      | PM_CLOCK_APB_P_GPIO_2_M;
     // | PM_CLOCK_APB_P_ANALOG_REGS_M
     // | PM_CLOCK_APB_P_GPIO_IRQ_M;
 

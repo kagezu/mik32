@@ -13,14 +13,23 @@
 #include <scr1_csr_encoding.h>
 #include <csr.h>
 
+#define ISR(func) static int _isr = 0; if (_isr) { func(); return 0; } _isr = 1;
 #define INTERLINE 3
-using namespace Core;
+// using namespace Core;
 
 Display *lcd;
+
 void trap_handler()
 {
-  lcd->printf(P("int ~ "));
+  if (EPIC->STATUS & (1 << EPIC_TIMER32_0_INDEX)) { //Проверка источника прерывания
+    GPIO_2->OUTPUT ^= 1 << 7; //Установка значения выходного регистра
+    // TIMER32_0->Enable = TIMER32_RESET_VALUE_M | TIMER32_ENABLE_M;
+    TIMER32_0->INT_CLEAR = TIMER32_INT_OVERFLOW_M; //Сброс флага прерывания таймера
+    EPIC->CLEAR = 1 << EPIC_TIMER32_0_INDEX; //Сброс флага прерывания линии таймера
+  }
 }
+
+
 
 
 void EnableInterrupts()
@@ -37,9 +46,11 @@ void DisableInterrupts()
 
 int main(void)
 {
+  ISR(trap_handler);
+
   Display a;
   lcd = &a;
-  init_clock();
+  Core::init_clock();
   lcd->init();
   lcd->background(RGB(0, 32, 64));
   lcd->color(RGB(255, 255, 64));
@@ -51,24 +62,24 @@ int main(void)
   DisableInterrupts();
 
   //Включаем тактирование необходимых блоков
-  PM->CLK_APB_M_SET = PM_CLOCK_APB_M_TIMER32_0_M | PM_CLOCK_APB_M_EPIC_M;
+  PM->CLK_APB_M_SET |= PM_CLOCK_APB_M_TIMER32_0_M | PM_CLOCK_APB_M_EPIC_M;
 
   for (volatile int i = 0; i < 10; i++);
 
   //Настройка вывода (светодиода)
-  PAD_CONFIG->PORT_1_CFG = 1 << (13 << 1); //Установка режима 01 (GPIO) вывода 13
-  GPIO_1->DIRECTION_OUT = 1 << 13;
-  GPIO_1->OUTPUT = 0; //Установка значения выходного регистра
+  PAD_CONFIG->PORT_2_CFG &= ~(3 << (7 << 1)); //Установка режима 01 (GPIO) вывода 13
+  GPIO_2->DIRECTION_OUT = 1 << 7;
+  GPIO_2->OUTPUT = 0; //Установка значения выходного регистра
 
   //Остановка таймера и сброс настроек до стандартных
-  TIMER32_0->ENABLE = 0;
+  TIMER32_0->ENABLE = TIMER32_ENABLE_TIM_CLR_M;
   TIMER32_0->INT_MASK = 0;
   TIMER32_0->INT_CLEAR = 0x3FF;
   TIMER32_0->CONTROL = 0;
 
   //Настройка максимального значения счетчика
   //и включение прерывания на переполнение
-  TIMER32_0->TOP = 32000000u;
+  TIMER32_0->TOP = 64000000u;
   TIMER32_0->INT_MASK = TIMER32_INT_OVERFLOW_M;
 
   //Сброс настроек контроллера прерываний 
@@ -78,8 +89,13 @@ int main(void)
   EPIC->MASK_EDGE_SET = 1 << EPIC_TIMER32_0_INDEX;
 
   //Разрешение прерываний и запуск таймера
-  EnableInterrupts();
-  TIMER32_0->ENABLE = TIMER32_ENABLE;
+  // EnableInterrupts();
+  TIMER32_0->ENABLE = TIMER32_ENABLE_TIM_EN_M;
 
-  while (true);
+  while (true) {
+    delay_ms(100);
+    DisableInterrupts();
+    lcd->printf(P("%lu         \n"), TIMER32_0->VALUE);
+    EnableInterrupts();
+  }
 }
