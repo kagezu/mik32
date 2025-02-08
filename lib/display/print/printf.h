@@ -2,7 +2,8 @@
 #include "type/include.h"
 
 #define FONT_TAB_FACTOR     2
-#define PRINT_BUFFER_SIZE   32
+// для mik32 должно быть чётным + 1 байт
+#define PRINT_BUFFER_SIZE   33
 
 class PrintF :private IDisplay {
 public:

@@ -213,10 +213,10 @@ char *PrintF::print_h(uint64_t number)
 char *PrintF::print_h(uint32_t number)
 {
   char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 0));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 1));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 2));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 3));
+  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 0));
+  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 1));
+  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 2));
+  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 3));
   return ptr;
 }
 

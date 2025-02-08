@@ -13,23 +13,8 @@
 #include <scr1_csr_encoding.h>
 #include <csr.h>
 
-#define ISR(func) static int _isr = 0; if (_isr) { func(); return 0; } _isr = 1;
 #define INTERLINE 3
 // using namespace Core;
-
-Display *lcd;
-
-void trap_handler()
-{
-  if (EPIC->STATUS & (1 << EPIC_TIMER32_0_INDEX)) { //Проверка источника прерывания
-    GPIO_2->OUTPUT ^= 1 << 7; //Установка значения выходного регистра
-    // TIMER32_0->Enable = TIMER32_RESET_VALUE_M | TIMER32_ENABLE_M;
-    TIMER32_0->INT_CLEAR = TIMER32_INT_OVERFLOW_M; //Сброс флага прерывания таймера
-    EPIC->CLEAR = 1 << EPIC_TIMER32_0_INDEX; //Сброс флага прерывания линии таймера
-  }
-}
-
-
 
 
 void EnableInterrupts()
@@ -44,20 +29,30 @@ void DisableInterrupts()
 }
 
 
+#define ISR(func) static int _isr = 0; if (_isr) { func(); return 0; } _isr = 1;
+
+void isr()
+{
+  GPIO_2->OUTPUT ^= 1 << 7; //Установка значения выходного регистра
+  TIMER32_0->INT_CLEAR = TIMER32_INT_OVERFLOW_M; //Сброс флага прерывания таймера
+  EPIC->CLEAR = 1 << EPIC_TIMER32_0_INDEX; //Сброс флага прерывания линии таймера
+}
+
+extern uint32_t isr_vector;
+
 int main(void)
 {
-  ISR(trap_handler);
+  isr_vector = (uint32_t)(isr);
 
-  Display a;
-  lcd = &a;
+  Display lcd;
   Core::init_clock();
-  lcd->init();
-  lcd->background(RGB(0, 32, 64));
-  lcd->color(RGB(255, 255, 64));
-  lcd->clear();
-  lcd->font(arial_14);
-  // lcd->font(standard_5x8);
-  lcd->set_interline(INTERLINE);
+  lcd.init();
+  lcd.background(RGB(0, 32, 64));
+  lcd.color(RGB(255, 255, 64));
+  lcd.clear();
+  // lcd.font(arial_14);
+  lcd.font(standard_5x8);
+  lcd.set_interline(INTERLINE);
 
   DisableInterrupts();
 
@@ -79,7 +74,7 @@ int main(void)
 
   //Настройка максимального значения счетчика
   //и включение прерывания на переполнение
-  TIMER32_0->TOP = 64000000u;
+  TIMER32_0->TOP = 0xffffffff;
   TIMER32_0->INT_MASK = TIMER32_INT_OVERFLOW_M;
 
   //Сброс настроек контроллера прерываний 
@@ -95,7 +90,7 @@ int main(void)
   while (true) {
     delay_ms(100);
     DisableInterrupts();
-    lcd->printf(P("%lu         \n"), TIMER32_0->VALUE);
+    lcd.printf(P("\f\n\n%lx   \n"), TIMER32_0->VALUE);
     EnableInterrupts();
   }
 }
