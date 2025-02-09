@@ -12,17 +12,22 @@
 
 #define INTERLINE 3
 
-void isr()
+
+extern "C" //void trap_handler();
+void trap_handler()
 {
   GPIO_2->OUTPUT ^= 1 << 7; //Установка значения выходного регистра
   TIMER32_0->INT_CLEAR = TIMER32_INT_OVERFLOW_M; //Сброс флага прерывания таймера
   EPIC->CLEAR = 1 << EPIC_TIMER32_0_INDEX; //Сброс флага прерывания линии таймера
 }
 
+int k;
+
+Display a;
 
 int main(void)
 {
-  set_isr(isr);
+  // set_isr(isr);
 
   Display lcd;
   init_system();
@@ -67,7 +72,9 @@ int main(void)
   while (true) {
     delay_ms(100);
     cli();
-    lcd.printf(P("\f\n\n%lx   \n"), TIMER32_0->VALUE);
+    lcd.printf(P("\f\n\nk   %lx   \n"), &k);
+    lcd.printf(P("a   %lx   \n"), &a);
+    lcd.printf(P("init %lx   \n"), trap_handler);
     sei();
   }
 }

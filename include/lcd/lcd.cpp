@@ -1,11 +1,9 @@
 #include "config.h"
 
-using namespace Core;
-
 int main(void)
 {
   Display lcd;
-  init_clock();
+  init_system();
   lcd.init();
 
   uint8_t x = 1;

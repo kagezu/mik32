@@ -5,7 +5,7 @@
 #define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
 
 template<typename Driver, typename C>
-class CDisplay : public Driver, public PrintF, public GFX {
+class CDisplay : public Driver {//, public PrintF, public GFX {
 private:
   C _color = 0x00ffffff;
   C _background = 0;
