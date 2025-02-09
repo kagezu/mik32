@@ -1,4 +1,4 @@
-#include "init.h"
+#include "avr.h"
 
 void init_system()
 {
