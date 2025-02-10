@@ -51,20 +51,17 @@ protected:
   {
     PORT(L_DATA) = data;
     PORT(B) = data & 0x03;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(SET); L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
     PORT(L_DATA) = to_byte(data, 1);
     PORT(B) = to_byte(data, 1) & 0x03;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(INV); L_WR(INV);
     PORT(L_DATA) = to_byte(data, 0);
     PORT(B) = to_byte(data, 0) & 0x03;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(INV); L_WR(INV);
   }
 
   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
@@ -79,17 +76,15 @@ protected:
 
     send_command(RAMWR); // Memory Write
   }
+
   void send_rgb(C color)
   {
     PORT(L_DATA) = color.red;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(INV); L_WR(INV);
     PORT(L_DATA) = color.green;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(INV); L_WR(INV);
     PORT(L_DATA) = color.blue;
-    L_WR(SET);
-    L_WR(CLR);
+    L_WR(INV); L_WR(INV);
   }
 
 
@@ -101,15 +96,12 @@ protected:
     uint16_t y = y1 - y0;
     for (uint16_t i = 0; i <= x; i++)
       for (uint16_t j = 0; j <= y; j++) {
-        PORT(L_DATA) = color.blue;
-        L_WR(SET);
-        L_WR(CLR);
-        PORT(L_DATA) = color.green;
-        L_WR(SET);
-        L_WR(CLR);
         PORT(L_DATA) = color.red;
-        L_WR(SET);
-        L_WR(CLR);
+        L_WR(INV); L_WR(INV);
+        PORT(L_DATA) = color.green;
+        L_WR(INV); L_WR(INV);
+        PORT(L_DATA) = color.blue;
+        L_WR(INV); L_WR(INV);
       }
 
     L_CS(SET);
@@ -119,6 +111,63 @@ private:
   void set_rgb_format();
   virtual  void send_config(const uint8_t *, uint8_t) = 0;
 };
+
+template<>
+void ST7789<RGB16>::send_rgb(RGB16 color)
+{
+  send_word(color.rgb);
+}
+
+template<>
+inline void ST7789<RGB12>::send_rgb(RGB12 color)
+{
+  static uint8_t half, flag = 0;
+
+  if (flag) {
+    send_byte(to_byte(color.rgb, 1) | half);
+    send_byte(color.rgb);
+    flag = 0;
+  }
+  else {
+    send_byte(color.rgb >> 4);
+    half = color.rgb << 4;
+    flag = 1;
+  }
+}
+
+template<>
+void ST7789<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
+{
+  L_CS(CLR);
+  set_addr(x0, y0, x1, y1);
+  uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
+
+  uint8_t hbyte = color.rgb >> 4;
+  uint8_t mbyte = (color.rgb << 4) | ((color.rgb & 0xf00) >> 8);
+  uint8_t lbyte = color.rgb;
+
+  while (len--) {
+    send_byte(hbyte);
+    send_byte(mbyte);
+    send_byte(lbyte);
+  }
+  L_CS(SET);
+}
+
+template<>
+void ST7789<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+{
+  L_CS(CLR);
+  set_addr(x0, y0, x1, y1);
+  uint16_t x = x1 - x0;
+  uint16_t y = y1 - y0;
+  for (uint16_t i = 0; i <= x; i++)
+    for (uint16_t j = 0; j <= y; j++) {
+      send_word(color.rgb);
+    }
+
+  L_CS(SET);
+}
 
 template<>
 void ST7789<RGB32>::set_rgb_format()

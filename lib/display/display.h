@@ -84,9 +84,9 @@ public:
       for (uint16_t x = VIEWPORT_OFFSET << 1; x < (max_x() + VIEWPORT_OFFSET) * 2 + 1; x += 2) {
 
         uint8_t e = d << 2;
-        uint16_t r = ((xx + yy) >> 6) + e;
-        uint16_t g = ((yy - xx) >> 6) + e;
-        uint16_t b = (xy >> 6) - e;
+        uint16_t r = ((xx + yy) >> (6 + (max_x() >> 8))) + e;
+        uint16_t g = ((yy - xx) >> (6 + (max_x() >> 8))) + e;
+        uint16_t b = (xy >> (6 + (max_x() >> 8))) - e;
 
         xy += y;  // Заменяем умножение сложением
         xx += x;

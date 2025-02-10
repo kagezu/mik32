@@ -14,6 +14,7 @@
 #define OUT(port, pin)        DDR(port)  |=  _BV(pin)
 #define SET(port, pin)        PORT(port) |=  _BV(pin)
 #define CLR(port, pin)        PORT(port) &=~ _BV(pin)
+#define INV(port, pin)        PORT(port) ^=  _BV(pin)
 #define GET(port, pin)        (PIN(port)  &  _BV(pin))
 #define MASK(port, pin)                      _BV(pin)
 #define MMO(port, pin)        PORT(port)
