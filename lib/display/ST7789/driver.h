@@ -20,8 +20,8 @@ public:
   {
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
     L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
-    DDR(L_DATA) = 0xFC; //временно
-    DDR(B) |= 0x03; //временно
+    // DDR(L_DATA) = 0xFC; //временно
+    // DDR(B) |= 0x03; //временно
 
     delay_us(2000);
     L_RST(SET);
@@ -49,18 +49,18 @@ protected:
 
   void send_byte(uint8_t data)
   {
-    PORT(L_DATA) = data;
-    PORT(B) = data & 0x03;
+    L_PORT(MMO) = data;
+    // PORT(B) = data & 0x03;
     L_WR(SET); L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
-    PORT(L_DATA) = to_byte(data, 1);
-    PORT(B) = to_byte(data, 1) & 0x03;
+    L_PORT(MMO) = to_byte(data, 1);
+    // PORT(B) = to_byte(data, 1) & 0x03;
     L_WR(INV); L_WR(INV);
-    PORT(L_DATA) = to_byte(data, 0);
-    PORT(B) = to_byte(data, 0) & 0x03;
+    L_PORT(MMO) = to_byte(data, 0);
+    // PORT(B) = to_byte(data, 0) & 0x03;
     L_WR(INV); L_WR(INV);
   }
 
@@ -79,11 +79,11 @@ protected:
 
   void send_rgb(C color)
   {
-    PORT(L_DATA) = color.red;
+    L_PORT(MMO) = color.red;
     L_WR(INV); L_WR(INV);
-    PORT(L_DATA) = color.green;
+    L_PORT(MMO) = color.green;
     L_WR(INV); L_WR(INV);
-    PORT(L_DATA) = color.blue;
+    L_PORT(MMO) = color.blue;
     L_WR(INV); L_WR(INV);
   }
 
@@ -96,11 +96,11 @@ protected:
     uint16_t y = y1 - y0;
     for (uint16_t i = 0; i <= x; i++)
       for (uint16_t j = 0; j <= y; j++) {
-        PORT(L_DATA) = color.red;
+        L_PORT(MMO) = color.red;
         L_WR(INV); L_WR(INV);
-        PORT(L_DATA) = color.green;
+        L_PORT(MMO) = color.green;
         L_WR(INV); L_WR(INV);
-        PORT(L_DATA) = color.blue;
+        L_PORT(MMO) = color.blue;
         L_WR(INV); L_WR(INV);
       }
 

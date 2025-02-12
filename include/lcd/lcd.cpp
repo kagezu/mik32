@@ -1,16 +1,40 @@
 #include "config.h"
 
-volatile uint8_t f = 0;
+#ifdef __cplusplus
+extern "C" {
+#endif
+  extern void (*__preinit_array_start[]) (void) __attribute__((weak));
+  extern void (*__preinit_array_end[]) (void) __attribute__((weak));
+  extern void (*__init_array_start[]) (void) __attribute__((weak));
+  extern void (*__init_array_end[]) (void) __attribute__((weak));
 
-void isr()
-{
-  static uint8_t t = 0;
-  t++;
-  if (t > 100) {
-    f = 1;
-    t = 0;
+  void *__dso_handle;
+
+  int __cxa_atexit(void (*fn) (void *), void *arg, void *d)
+  {
+    return 0;
   }
+
+  // void __attribute__((naked, used, section("SmallSystemInit")))  __libc_init_array(void);
+  // void  __libc_init_array(void)
+  void SystemInit()
+  {
+    uint32_t count;
+    uint32_t i;
+
+    count = __preinit_array_end - __preinit_array_start;
+    for (i = 0; i < count; ++i)
+      __preinit_array_start[i]();
+
+    count = __init_array_end - __init_array_start;
+    for (i = 0; i < count; i++)
+      __init_array_start[i]();
+  }
+#ifdef __cplusplus
 }
+#endif
+
+Display lcd;
 
 int main(void)
 {
@@ -20,8 +44,7 @@ int main(void)
   T0_COMPA_ON;
   set_isr(TIMER0_COMPA_vect_num, isr);
 */
-
-  Display lcd;
+// __libc_init_array();
   init_system();
   lcd.init();
 
