@@ -21,13 +21,13 @@
 // Вариант подключения (только для ST7735_SОFT)
 
 // #define PRESET_ST7735_A5
-#define PRESET_ST7735_A4
-// #define PRESET_ST7735_SPI
+// #define PRESET_ST7735_A4
+#define PRESET_ST7735_SPI
 
 // Драйвер дисплея
 
-#include "ST7735_SOFT/driver.h"
-// #include "ST7735_SPI/driver.h"
+// #include "ST7735_SOFT/driver.h"
+#include "ST7735_SPI/driver.h"
 // #include "ST7789/driver.h"
 
 #include <display.h>

@@ -9,7 +9,7 @@ void set_isr(uint8_t isr, void handler())
   isr_vector[isr] = handler;
 }
 
-
+#ifdef __ATmega328P__
 ISR(INT0_vect) { isr_vector[INT0_vect_num](); }
 ISR(INT1_vect) { isr_vector[INT1_vect_num](); }
 ISR(PCINT0_vect) { isr_vector[PCINT0_vect_num](); }
@@ -35,4 +35,4 @@ ISR(EE_READY_vect) { isr_vector[EE_READY_vect_num](); }
 ISR(ANALOG_COMP_vect) { isr_vector[ANALOG_COMP_vect_num](); }
 ISR(TWI_vect) { isr_vector[TWI_vect_num](); }
 ISR(SPM_READY_vect) { isr_vector[SPM_READY_vect_num](); }
-
+#endif
