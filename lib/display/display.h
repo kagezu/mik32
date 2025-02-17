@@ -69,21 +69,19 @@ public:
 
   // тестирование дисплея
 
-#define VIEWPORT_OFFSET 30
-
   void demo(uint8_t d)
   {
-    static const uint8_t div = 6 + (max_x() >> 7);
+    static const uint8_t div = 6 + ((max_x() + max_y()) >> 8);
 
     L_CS(CLR);
     set_addr(0, 0, max_x(), max_y());
-    uint16_t yy;
-    for (uint16_t y = VIEWPORT_OFFSET; y < max_y() + VIEWPORT_OFFSET + 1; y++) {
+    uint32_t yy;
+    for (uint16_t y = 0; y < max_y() + 1; y++) {
       yy = y * y;
 
-      uint16_t xx = VIEWPORT_OFFSET * VIEWPORT_OFFSET;
-      uint16_t xy = y * VIEWPORT_OFFSET;
-      for (uint16_t x = VIEWPORT_OFFSET << 1; x < (max_x() + VIEWPORT_OFFSET) * 2 + 1; x += 2) {
+      uint32_t xx = 0;
+      uint32_t xy = 0;
+      for (uint16_t x = 0; x < (max_x() << 1) + 1; x += 2) {
 
         uint8_t e = d << 2;
         uint16_t r = ((xx + yy) >> div) + e;
