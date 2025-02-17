@@ -71,17 +71,15 @@ public:
 
   void demo(uint8_t d)
   {
-    static const uint8_t div = 6 + ((max_x() + max_y()) >> 8);
+    static const uint8_t div = 5 + ((max_x() + max_y()) >> 8);
 
     L_CS(CLR);
     set_addr(0, 0, max_x(), max_y());
-    uint32_t yy;
+    uint32_t yy = 0;
     for (uint16_t y = 0; y < max_y() + 1; y++) {
-      yy = y * y;
-
       uint32_t xx = 0;
       uint32_t xy = 0;
-      for (uint16_t x = 0; x < (max_x() << 1) + 1; x += 2) {
+      for (uint16_t x = 0; x < max_x() + 1; x++) {
 
         uint8_t e = d << 2;
         uint16_t r = ((xx + yy) >> div) + e;
@@ -89,10 +87,11 @@ public:
         uint16_t b = (xy >> div) - e;
 
         xy += y;  // Заменяем умножение сложением
-        xx += x;
+        xx += x << 1;
 
         send_rgb(C(r, g, b));
       }
+      yy += y;
     }
     L_CS(SET);
   }

@@ -11,8 +11,8 @@
 template<typename C>
 class ST7789 {
 public:
-  inline constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
-  inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
+  inline constexpr uint16_t max_x() { return MAX_X; }//{ return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
+  inline constexpr uint16_t max_y() { return MAX_Y; }//{ return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
 
   void init()
   {
@@ -30,13 +30,12 @@ public:
     send_command(MADCTL); send_byte(LCD_FLIP);
 
     send_command(COLMOD);
-    send_byte(0x66); // Пока так
+    send_byte(0x06); // RGB18
 
     // send_command(INVON);
     send_command(SLPOUT);	//	Out of sleep mode
     send_command(NORON);		//	Normal Display on
-    send_command(DISPON);	//	Main screen turned on	
-    delay_ms(50);
+    send_command(DISPON);	//	Main screen turned on
     L_CS(SET);
   }
 
@@ -109,62 +108,3 @@ protected:
 private:
   virtual  void send_config(const uint8_t *, uint8_t) = 0;
 };
-
-template<>
-void ST7789<RGB16>::send_rgb(RGB16 color)
-{
-  RGB32 rgb = color.rgb32();
-  L_PORT(MMO) = rgb.red;
-  L_WR(INV); L_WR(INV);
-  L_PORT(MMO) = rgb.green;
-  L_WR(INV); L_WR(INV);
-  L_PORT(MMO) = rgb.blue;
-  L_WR(INV); L_WR(INV);
-}
-
-template<>
-inline void ST7789<RGB12>::send_rgb(RGB12 color)
-{
-  RGB32 rgb = color.rgb32();
-  L_PORT(MMO) = rgb.red;
-  L_WR(INV); L_WR(INV);
-  L_PORT(MMO) = rgb.green;
-  L_WR(INV); L_WR(INV);
-  L_PORT(MMO) = rgb.blue;
-  L_WR(INV); L_WR(INV);
-}
-/*
-template<>
-void ST7789<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
-{
-  L_CS(CLR);
-  set_addr(x0, y0, x1, y1);
-  uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
-
-  uint8_t hbyte = color.rgb >> 4;
-  uint8_t mbyte = (color.rgb << 4) | ((color.rgb & 0xf00) >> 8);
-  uint8_t lbyte = color.rgb;
-
-  while (len--) {
-    send_byte(hbyte);
-    send_byte(mbyte);
-    send_byte(lbyte);
-  }
-  L_CS(SET);
-}
-
-template<>
-void ST7789<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
-{
-  L_CS(CLR);
-  set_addr(x0, y0, x1, y1);
-  uint16_t x = x1 - x0;
-  uint16_t y = y1 - y0;
-  for (uint16_t i = 0; i <= x; i++)
-    for (uint16_t j = 0; j <= y; j++) {
-      send_word(color.rgb);
-    }
-
-  L_CS(SET);
-}
-*/

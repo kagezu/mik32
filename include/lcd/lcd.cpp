@@ -50,7 +50,7 @@ int main(void)
 
   sei();
 
-  uint8_t x = 50;
+  uint8_t x = 80;
   while (true) {
     lcd.demo(x++);
   }
