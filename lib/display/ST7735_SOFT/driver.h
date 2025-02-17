@@ -8,8 +8,8 @@
 template<typename C>
 class ST7735_SOFT {
 public:
-  inline const uint16_t max_x() { return MAX_X; }
-  inline const uint16_t max_y() { return MAX_Y; }
+  inline constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X;}
+  inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
   
   void init()
   {
@@ -417,21 +417,21 @@ template<>
 template<>
  void ST7735_SOFT<RGB32>::set_rgb_format(){
     send_command(COLMOD);
-    send_byte(_RGB18);
+    send_byte(0x06); // 6x6x6 bit (24 bit transfer)
  }
  template<>
  void ST7735_SOFT<RGB18>::set_rgb_format(){
     send_command(COLMOD);
-    send_byte(_RGB18);
+    send_byte(0x06); // 6x6x6 bit (24 bit transfer)
  }
 template<>
  void ST7735_SOFT<RGB16>::set_rgb_format(){
     send_command(COLMOD);
-    send_byte(_RGB16);
+    send_byte(0x05); // 5x6x5 bit
  }
 template<>
  void ST7735_SOFT<RGB12>::set_rgb_format(){
     send_command(COLMOD);
-    send_byte(_RGB12);
+    send_byte(0x03); // 4x4x4 bit
  }
  

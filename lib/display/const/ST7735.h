@@ -60,14 +60,9 @@
 #define EXTCTRL 0xf0  // Extension Command Control
 #define VCOM4L 0xff   // Vcom 4 Level control
 
-// Interface pixel format
-#define _RGB12 0x03 // 4x4x4 bit
-#define _RGB16 0x05 // 5x6x5 bit
-#define _RGB18 0x06 // 6x6x6 bit (24 bit transfer)
-
 // размер дисплея
-#define LCD_MAX_X 127
-#define LCD_MAX_Y 159
+#define MAX_X 127
+#define MAX_Y 159
 
 //Поворот и отражения дисплея
 #define  EX_X_Y   0x20
@@ -76,14 +71,6 @@
 
 #ifndef LCD_FLIP
 #define LCD_FLIP  0x00
-#endif
-
-#if LCD_FLIP & (EX_X_Y)
-#define MAX_X     LCD_MAX_Y
-#define MAX_Y     LCD_MAX_X
-#else
-#define MAX_X     LCD_MAX_X
-#define MAX_Y     LCD_MAX_Y
 #endif
 
 static const uint8_t ST7735_CONFIG[] PROGMEM = {
