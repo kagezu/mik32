@@ -14,7 +14,7 @@
 // 270°   |     +     |     -     |     +     |
 
 // #define LCD_FLIP    0                             //   0°
-// #define LCD_FLIP              (FLIP_Y | EX_X_Y)   //  90°
+#define LCD_FLIP              (FLIP_Y | EX_X_Y)   //  90°
 // #define LCD_FLIP    (FLIP_X  | FLIP_Y)            // 180°
 // #define LCD_FLIP    (FLIP_X  |          EX_X_Y)   // 270° 
 

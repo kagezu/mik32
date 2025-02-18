@@ -11,8 +11,8 @@
 template<typename C>
 class ST7789 {
 public:
-  inline constexpr uint16_t max_x() { return MAX_X; }//{ return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
-  inline constexpr uint16_t max_y() { return MAX_Y; }//{ return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
+  inline constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
+  inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
 
   void init()
   {
@@ -23,7 +23,7 @@ public:
     delay_ms(2);
     L_RST(SET);
     delay_ms(15);          // Ждать стабилизации напряжений
-    L_CS(CLR);                // CS Выбор дисплея
+    L_CS(CLR);             // CS Выбор дисплея
 
 
     send_config(ST7789_CONFIG, sizeof(ST7789_CONFIG));
@@ -32,7 +32,6 @@ public:
     send_command(COLMOD);
     send_byte(0x06); // RGB18
 
-    // send_command(INVON);
     send_command(SLPOUT);	//	Out of sleep mode
     send_command(NORON);		//	Normal Display on
     send_command(DISPON);	//	Main screen turned on
@@ -88,17 +87,14 @@ protected:
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     L_CS(CLR);
-    RGB32 rgb = color.rgb32();
     set_addr(x0, y0, x1, y1);
-    uint16_t x = x1 - x0;
-    uint16_t y = y1 - y0;
-    for (uint16_t i = 0; i <= x; i++)
-      for (uint16_t j = 0; j <= y; j++) {
-        L_PORT(MMO) = rgb.red;
+    for (uint16_t i = y0; i <= y1; i++)
+      for (uint16_t j = x0; j <= x1; j++) {
+        L_PORT(MMO) = color.red;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = rgb.green;
+        L_PORT(MMO) = color.green;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = rgb.blue;
+        L_PORT(MMO) = color.blue;
         L_WR(INV); L_WR(INV);
       }
 
