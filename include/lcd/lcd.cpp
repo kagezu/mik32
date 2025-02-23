@@ -15,8 +15,6 @@ extern "C" {
     return 0;
   }
 
-  // void __attribute__((naked, used, section("SmallSystemInit")))  __libc_init_array(void);
-  // void  __libc_init_array(void)
   void SystemInit()
   {
     uint32_t count;
@@ -48,10 +46,12 @@ int main(void)
   init_system();
   lcd.init();
 
-  sei();
+  // sei();
 
   uint8_t x = 80;
   while (true) {
     lcd.demo(x++);
+    // lcd.clear(RGB(x << 2, 255 - (x << 2), 128 + (x << 2)));
+    // x++;
   }
 }

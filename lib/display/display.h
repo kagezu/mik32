@@ -87,7 +87,7 @@ public:
         uint16_t b = (xy >> div) - e;
 
         xy += y;  // Заменяем умножение сложением
-        xx += x << 1;
+        xx += x;
 
         send_rgb(C(r, g, b));
       }
