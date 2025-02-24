@@ -3,6 +3,10 @@
 #include "gfx/gfx.h"
 
 #define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
+#ifndef L_BEGIN
+#define L_BEGIN
+#define L_END
+#endif
 
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
@@ -39,11 +43,11 @@ public:
   void pixel(uint16_t x, uint16_t y)
   {
     if (x > max_x() || y > max_y()) return;
-    L_CS(CLR);
+    L_BEGIN;
     set_addr(x, y, x, y);
     send_rgb(_color);
     send_rgb(_color);
-    L_CS(SET);
+    L_END;
   }
 
   // Вывод символа (двух цветного изображения) на экран
@@ -52,7 +56,7 @@ public:
     uint16_t x1 = x + dx - 1;
     uint16_t y1 = y + dy - 1;
 
-    L_CS(CLR);
+    L_BEGIN;
     set_addr(x, y, x1, y1);
 
     for (uint8_t j = 0; j < dy; j++) {
@@ -64,7 +68,7 @@ public:
         else send_rgb(_background);
       }
     }
-    L_CS(SET);
+    L_END;
   }
 
   // тестирование дисплея
@@ -73,7 +77,7 @@ public:
   {
     static const uint8_t div = 5 + ((max_x() + max_y()) >> 8);
 
-    L_CS(CLR);
+    L_BEGIN;
     set_addr(0, 0, max_x(), max_y());
     uint32_t yy = 0;
     for (uint16_t y = 0; y < max_y() + 1; y++) {
@@ -93,7 +97,7 @@ public:
       }
       yy += y;
     }
-    L_CS(SET);
+    L_END;
   }
 };
 

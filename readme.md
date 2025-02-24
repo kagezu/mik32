@@ -4,8 +4,7 @@
 
 ### Поддерживаемые MK / Платы
 
-+ **ATmega328P / Uno R3 / Nano**
-+ **ATmega128 / XMEM 128kB**
++ **ATmega328P / Uno R3 - 16...27 МГц**
 + **MIK32 AMUR / ACE UNO**
 
 ### Поддерживаемые дисплеи

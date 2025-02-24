@@ -7,10 +7,9 @@
 // X_RESET    Аппаратный сброс
 
 #ifdef __AVR_ATmega328P__
-#define X_DREQ(f)   f (D, PD2)
-#define X_CS(f)     f (D, PD6)
-#define X_DCS(f)    f (D, PD7)
-#define X_RESET(f)  f (B, PD0)
+#define X_DREQ(f)   f (B, PB0)
+#define X_CS(f)     f (C, PC5)
+#define X_DCS(f)    f (C, PC4)
 #endif
 
 #ifdef MIK32V2

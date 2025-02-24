@@ -1,57 +1,37 @@
 #include "config.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-  extern void (*__preinit_array_start[]) (void) __attribute__((weak));
-  extern void (*__preinit_array_end[]) (void) __attribute__((weak));
-  extern void (*__init_array_start[]) (void) __attribute__((weak));
-  extern void (*__init_array_end[]) (void) __attribute__((weak));
-
-  void *__dso_handle;
-
-  int __cxa_atexit(void (*fn) (void *), void *arg, void *d)
-  {
-    return 0;
-  }
-
-  void SystemInit()
-  {
-    uint32_t count;
-    uint32_t i;
-
-    count = __preinit_array_end - __preinit_array_start;
-    for (i = 0; i < count; ++i)
-      __preinit_array_start[i]();
-
-    count = __init_array_end - __init_array_start;
-    for (i = 0; i < count; i++)
-      __init_array_start[i]();
-  }
-#ifdef __cplusplus
-}
-#endif
+#include "VS1053/VS1053.h"
+#include "font/arial_14.h"
+#include "font/standard_5x8.h"
 
 Display lcd;
+VS1053 midi;
 
 int main(void)
 {
-  /*
-  timer0(100);
-  T0_CTC;
-  T0_COMPA_ON;
-  set_isr(TIMER0_COMPA_vect_num, isr);
-*/
-// __libc_init_array();
   init_system();
+  SPI.begin();
   lcd.init();
+  midi.init();
+  lcd.background(RGB(0, 16, 32));
+  lcd.color(RGB(255, 255, 64));
+  lcd.clear();
+  lcd.font(arial_14);
+  // lcd.font(standard_5x8);
 
-  // sei();
+  midi.pgm_change(30);
 
-  uint8_t x = 80;
+  lcd.printf(P("\f  Started"));
+
+  uint8_t x = 40;
   while (true) {
-    lcd.demo(x++);
-    // lcd.clear(RGB(x << 2, 255 - (x << 2), 128 + (x << 2)));
-    // x++;
+    x++;
+    if (x > 120) x = 10;
+    midi.note_on(x);
+    // lcd.demo(x++);
+    delay_ms(100);
+    midi.note_off(x);
+    lcd.printf(P("\f\n\n  %x"), midi.read_register(SCI_STATUS));
+    lcd.printf(P("\n  %x"), midi.read_register(SCI_VOL));
+    lcd.printf(P("\n  %u   "), x);
   }
 }

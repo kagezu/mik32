@@ -4,6 +4,8 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ILI9486
+#define L_BEGIN       L_CS(CLR);
+#define L_END         L_CS(SET);
 
 #define L_WRITE  L_RD(SET); L_PORT(OUT) | 0xFF;
 #define L_READ   L_PORT(IN) & 0x00; L_RD(CLR);

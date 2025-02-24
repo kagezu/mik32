@@ -34,8 +34,9 @@
 
 // Инициализация SPI, в килогерцах
 #define SCI_FQ_INIT       (SC_FQ_CRYSTAL >> 3)
-#define SCI_FQ_WRITE      (((((SC_MULT >> 13) + 3) * SC_FQ_CRYSTAL) >> 1) / 4)
-#define SCI_FQ_READ       (((((SC_MULT >> 13) + 3) * SC_FQ_CRYSTAL) >> 1) / 7)
+#define __FQ_CORE         ((((SC_MULT >> 13) + 3) * SC_FQ_CRYSTAL) >> 1)
+#define SCI_FQ_WRITE      (__FQ_CORE / 4)
+#define SCI_FQ_READ       (__FQ_CORE / 7)
 
 // Частота кварца в единицах МК
 #define SC_FREQ           ((SC_FQ_CRYSTAL - 8000) >> 2)

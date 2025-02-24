@@ -4,6 +4,8 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SOFT
+#define L_BEGIN       L_CS(CLR);
+#define L_END         L_CS(SET);
 
 template<typename C>
 class ST7735_SOFT {

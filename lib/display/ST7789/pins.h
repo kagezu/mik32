@@ -14,7 +14,7 @@
 #define L_WR(x)   x ( C, 1 )
 #define L_RS(x)   x ( C, 2 )
 #define L_CS(x)   x ( C, 3 )
-#define L_RST(x)  x ( C, 4 )
+#define L_RST(x)  x ( C, 8 )
 #define L_PORT(x) x ( D, 8 )
 #endif
 

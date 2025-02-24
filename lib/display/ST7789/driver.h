@@ -4,6 +4,8 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7789
+#define L_BEGIN       L_CS(CLR);
+#define L_END         L_CS(SET);
 
 #define L_WRITE  L_RD(SET); L_PORT(OUT) | 0xFF;
 #define L_READ   L_PORT(IN) & 0x00; L_RD(CLR);
@@ -19,13 +21,12 @@ public:
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
     L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
     L_PORT(OUT) | 0xFF;
-
-    delay_ms(2);
     L_RST(SET);
+
+    send_command(SWRESET);
     delay_ms(15);          // Ждать стабилизации напряжений
+
     L_CS(CLR);             // CS Выбор дисплея
-
-
     send_config(ST7789_CONFIG, sizeof(ST7789_CONFIG));
     send_command(MADCTL); send_byte(LCD_FLIP);
 

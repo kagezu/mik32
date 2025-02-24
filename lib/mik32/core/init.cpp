@@ -111,3 +111,35 @@ void init_system()
   // | PM_CLOCK_APB_P_GPIO_IRQ_M;
 }
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  extern void (*__preinit_array_start[]) (void) __attribute__((weak));
+  extern void (*__preinit_array_end[]) (void) __attribute__((weak));
+  extern void (*__init_array_start[]) (void) __attribute__((weak));
+  extern void (*__init_array_end[]) (void) __attribute__((weak));
+
+  void *__dso_handle;
+
+  int __cxa_atexit(void (*fn) (void *), void *arg, void *d)
+  {
+    return 0;
+  }
+
+  void SystemInit()
+  {
+    uint32_t count;
+    uint32_t i;
+
+    count = __preinit_array_end - __preinit_array_start;
+    for (i = 0; i < count; ++i)
+      __preinit_array_start[i]();
+
+    count = __init_array_end - __init_array_start;
+    for (i = 0; i < count; i++)
+      __init_array_start[i]();
+  }
+#ifdef __cplusplus
+}
+#endif
