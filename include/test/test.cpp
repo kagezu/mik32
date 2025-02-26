@@ -10,7 +10,6 @@ VS1053 midi;
 
 int main(void)
 {
-  MIDI_Play play(&midi);
   init_system();
   SPI.begin();
   lcd.init();
@@ -21,14 +20,19 @@ int main(void)
   lcd.font(arial_14);
   // lcd.font(standard_5x8);
 
-  midi.pgm_change(30);
+  // midi.pgm_change(30);
 
   lcd.printf(P("\f  Started"));
 
+  MIDI_Play play(&midi);
+
   play.open(ernani);
-  play.play();
+
   while (true) {
-    if (!play.step()) play.play();
+
+    play.play();
+    for (uint16_t i = 0; i < 500; i++)
+      play.tick();
 
     // lcd.printf(P("\f\n\n  %x"), midi.read_register(SCI_STATUS));
     // lcd.printf(P("\n  %x"), midi.read_register(SCI_VOL));

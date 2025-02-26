@@ -22,7 +22,18 @@ void VS1053::init()
   load_patch(rtmidi);
 }
 
+void VS1053::rt() { load_patch(rtmidi); }
 
+void VS1053::send(uint8_t *ptr, uint8_t size)
+{
+  X_DCS(CLR);
+  SPI.beginTransaction(_write);
+  while (size--) {
+    SPI.transfer16(*ptr++);
+  }
+  X_DCS(SET);
+  SPI.endTransaction();
+}
 
 // Управление
 ////////////////////////////////////////////////////////////////////////

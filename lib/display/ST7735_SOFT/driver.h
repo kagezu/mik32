@@ -35,8 +35,8 @@ public:
   }
 
 protected:
-  // inline void select() { L_CS(CLR); }
-  // inline void release() { L_CS(SET); }
+  inline void select() { L_CS(CLR); }
+  inline void release() { L_CS(SET); }
 
   void send_command(uint8_t command)
   {

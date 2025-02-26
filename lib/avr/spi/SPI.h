@@ -18,9 +18,9 @@
 class SPI_Settings {
 public:
   SPI_Settings() {}
-  SPI_Settings(uint16_t fq, uint8_t bit = MSBFIRST, uint8_t mode = SPI_MODE0) { init(fq, bit, mode); }
+  SPI_Settings(uint16_t fq, uint8_t bit = SPI_MSBFIRST, uint8_t mode = SPI_MODE0) { init(fq, bit, mode); }
 
-  void init(uint16_t fq = 0xffff, uint8_t bit = MSBFIRST, uint8_t mode = SPI_MODE0)
+  void init(uint16_t fq = 0xffff, uint8_t bit = SPI_MSBFIRST, uint8_t mode = SPI_MODE0)
   {
     uint8_t sck = 0, spi2x = 0;
 
@@ -53,7 +53,7 @@ public:
 
   void beginTransaction(SPI_Settings settings)
   {
-    if (!transaction) { sreg = SREG; cli(); transaction = 1; }
+    if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
     SPSR = settings.spsr;
   }
@@ -68,8 +68,8 @@ public:
 
   inline static  void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
   inline static uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
-  inline static void send(uint8_t data) { wait(); SPDR = data; }
-  inline static void send16(uint16_t data) { wait(); SPDR = to_byte(data, 1); wait(); SPDR = data; }
+  inline static void send(uint8_t data) { SPDR = data; }
+  inline static void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
 
   uint16_t transfer16(uint16_t data)
   {

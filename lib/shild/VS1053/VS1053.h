@@ -9,6 +9,8 @@ class VS1053 : public MIDI {
 public:
   VS1053() { _init.init(SCI_FQ_INIT); _write.init(SCI_FQ_WRITE); _read.init(SCI_FQ_READ); }
   void init();
+  void rt();
+  void send(uint8_t *, uint8_t);
 
   // Управление громкостью
 
