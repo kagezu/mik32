@@ -46,14 +46,14 @@ private:
   uint8_t spcr;
   uint8_t spsr;
 
-  friend class SPIClass;
+  friend class SPI_Class;
 };
 
-class SPIClass {
+class SPI_Class {
 public:
   // Инициализация
 
-  SPIClass() {}
+  SPI_Class() {}
   void begin()
   {
     SPI_MOSI(OUT);
@@ -66,6 +66,7 @@ public:
 
   void beginTransaction(SPI_Settings settings)
   {
+    if (settings.spcr & SPI_MASTER) SPI_SS(OUT);
     if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
     SPSR = settings.spsr;
@@ -75,6 +76,7 @@ public:
   {
     transaction = 0;
     SREG = sreg;
+    SPI_SS(IN);
   }
 
   // Передача данных
@@ -106,11 +108,13 @@ public:
   }
 
   // для буферизации
-  inline  void  write(uint8_t data);
+  void write(uint8_t data);
+  void write16(uint16_t data);
+  uint16_t read16(uint8_t command);
 
 private:
   uint8_t sreg;
   uint8_t transaction = 0;
 };
 
-extern SPIClass SPI;
+extern SPI_Class SPI;

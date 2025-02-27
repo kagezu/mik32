@@ -15,3 +15,5 @@
 #define T0_COMPA_ON         T0_COMP_ON
 #define TIMER0_COMPA_vect   TIMER0_COMP_vect
 #endif
+
+void timer0(uint16_t freq);
