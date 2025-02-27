@@ -96,6 +96,7 @@ private:
 template<>
   inline void ST7735_SPI<RGB16>::send_rgb(RGB16 color) 
   { 
+    SPI.wait();
     SPI.send16(color.rgb); 
   }
 
@@ -105,8 +106,10 @@ template<>
     static uint8_t half, flag = 0;
 
   if (flag) {
+    SPI.wait();
     SPI.send(half | (color.rgb >> 8));
     flag = 0;
+    SPI.wait();
     SPI.send(color.rgb);
   }
   else {

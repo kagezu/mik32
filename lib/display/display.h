@@ -73,7 +73,7 @@ public:
 
   void demo(uint8_t d)
   {
-    static const uint8_t div = 5 + ((max_x() + max_y()) >> 8);
+    static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
 
     select();
     set_addr(0, 0, max_x(), max_y());

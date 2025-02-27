@@ -2,25 +2,31 @@
 #include "macros/avr.h"
 #include "pins.h"
 
-#define SPI_MODE0 0x00
-#define SPI_MODE1 0x04
-#define SPI_MODE2 0x08
-#define SPI_MODE3 0x0C
+#define SPI_MASTER    _BV(MSTR)
+#define SPI_SLAVE     0x00
 
-#define SPI_DIV_4   0x00
-#define SPI_DIV_16  0x01
-#define SPI_DIV_64  0x02
-#define SPI_DIV_128 0x03
 
-#define SPI_MSBFIRST    0
-#define SPI_LSBFIRST    _BV(DORD)
+#define SPI_MODE0     0x00
+#define SPI_MODE1     _BV(CPHA)
+#define SPI_MODE2     _BV(CPOL)
+#define SPI_MODE3     (_BV(CPHA) | _BV(CPOL))
+
+#define SPI_DIV_4     0x00
+#define SPI_DIV_16    0x01
+#define SPI_DIV_64    0x02
+#define SPI_DIV_128   0x03
+
+#define SPI_MSB       0
+#define SPI_LSB       _BV(DORD)
+
+#define SPI_INTERRUPT _BV(SPIE)
 
 class SPI_Settings {
 public:
   SPI_Settings() {}
-  SPI_Settings(uint16_t fq, uint8_t bit = SPI_MSBFIRST, uint8_t mode = SPI_MODE0) { init(fq, bit, mode); }
+  SPI_Settings(uint16_t fq, uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER) { init(fq, mode); }
 
-  void init(uint16_t fq = 0xffff, uint8_t bit = SPI_MSBFIRST, uint8_t mode = SPI_MODE0)
+  void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER)
   {
     uint8_t sck = 0, spi2x = 0;
 
@@ -32,7 +38,7 @@ public:
     else if (fq >= F_CPU / 64000) sck = SPI_DIV_64;
     else sck = SPI_DIV_128;
 
-    spcr = _BV(SPE) | _BV(MSTR) | mode | sck | bit;
+    spcr = _BV(SPE) | mode | sck;
     spsr = spi2x;
   }
 
@@ -40,16 +46,23 @@ private:
   uint8_t spcr;
   uint8_t spsr;
 
-  friend class SPI_Master;
+  friend class SPIClass;
 };
 
-class SPI_Master {
+class SPIClass {
 public:
   // Инициализация
 
-  SPI_Master() {}
-  void begin() { SPI_SS(OUT); SPI_MOSI(OUT); SPI_SCK(OUT); SPI_MISO(IN); }
-  void end() { SPI_MOSI(IN); SPI_SCK(IN); SPI_MISO(IN); SPCR = 0; }
+  SPIClass() {}
+  void begin()
+  {
+    SPI_MOSI(OUT);
+    SPI_MISO(OUT);
+    SPI_SCK(OUT);
+    SPI_SS(IN);
+    SPI_SS(SET);
+  }
+  void end() { SPI_MOSI(IN); SPI_SCK(IN); SPI_MISO(IN); SPI_SS(IN); SPCR = 0; }
 
   void beginTransaction(SPI_Settings settings)
   {
@@ -93,16 +106,11 @@ public:
   }
 
   // для буферизации
-  inline  uint8_t read() { return SPDR; }
-  inline  uint16_t read16() { return SPDR; }
-  inline  uint32_t read32() { return SPDR; }
-  inline  void  write(uint8_t data) { SPDR = data; }
-  inline  void  write16(uint16_t data) { SPDR = data >> 8; __asm__ __volatile__("nop"::); wait(); SPDR = data; }
-  inline  void  write32(uint32_t data) {}
+  inline  void  write(uint8_t data);
 
 private:
   uint8_t sreg;
   uint8_t transaction = 0;
 };
 
-extern SPI_Master SPI;
+extern SPIClass SPI;
