@@ -5,6 +5,7 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SPI
+extern SPI_Class SPI;
 
 template<typename C>
 class ST7735_SPI {

@@ -85,6 +85,7 @@ public:
   inline static uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
   inline static void send(uint8_t data) { SPDR = data; }
   inline static void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
+  inline static uint8_t read() { return SPDR; };
 
   uint16_t transfer16(uint16_t data)
   {
@@ -107,14 +108,7 @@ public:
     }
   }
 
-  // для буферизации
-  void write(uint8_t data);
-  void write16(uint16_t data);
-  uint16_t read16(uint8_t command);
-
 private:
   uint8_t sreg;
   uint8_t transaction = 0;
 };
-
-extern SPI_Class SPI;
