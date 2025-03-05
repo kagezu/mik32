@@ -9,7 +9,7 @@
 #define DDR(x)  CONCAT(DDR  , x)
 #define PIN(x)  CONCAT(PIN  , x)
 
-#define GPIO(port, pin)
+#define GPIO(port, pin)       DDR(port)
 #define IN(port, pin)         DDR(port)  &=~ _BV(pin)
 #define OUT(port, pin)        DDR(port)  |=  _BV(pin)
 #define SET(port, pin)        PORT(port) |=  _BV(pin)

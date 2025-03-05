@@ -15,10 +15,9 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
   void init()
   {
     L_RST(OUT);L_CS(OUT);L_RS(OUT);
-    L_CS(SET);L_RS(SET);L_RST(SET);
-    SPI.begin();
+    L_CS(SET);L_RS(SET);L_RST(CLR);
     _spi.init();
-
+    L_RST(SET);
     select();                  // CS Выбор дисплея
     send_command(SWRESET);
     delay_us(15000);          // Ждать стабилизации напряжений

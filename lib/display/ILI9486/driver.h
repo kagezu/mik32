@@ -25,7 +25,7 @@ public:
     delay_ms(2);
     L_RST(SET);
     delay_ms(15);         // Ждать стабилизации напряжений
-    L_CS(CLR);            // CS Выбор дисплея
+    select();            // CS Выбор дисплея
     send_command(SLPOUT);	//	Out of sleep mode
     delay_ms(10);
 
@@ -36,10 +36,13 @@ public:
 
     send_command(NORON);  //	Normal Display on
     send_command(DISPON);	//	Main screen turned on
-    L_CS(SET);
+    release();
   }
 
 protected:
+  inline void select() { L_CS(CLR); }
+  inline void release() { L_CS(SET); }
+
   void send_command(uint8_t command)
   {
     L_RS(CLR);
@@ -87,7 +90,7 @@ protected:
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
-    L_CS(CLR);
+    select();
     RGB32 rgb = color.rgb32();
     set_addr(x0, y0, x1, y1);
     uint16_t x = x1 - x0;
@@ -102,7 +105,7 @@ protected:
         L_WR(INV); L_WR(INV);
       }
 
-    L_CS(SET);
+    release();
   }
 
 private:
@@ -119,7 +122,7 @@ void ILI9486<RGB16>::send_rgb(RGB16 color)
 template<>
 void ILI9486<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
 {
-  L_CS(CLR);
+  select();
   set_addr(x0, y0, x1, y1);
   uint16_t x = x1 - x0;
   uint16_t y = y1 - y0;
@@ -128,7 +131,7 @@ void ILI9486<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
       send_word(color.rgb);
     }
 
-  L_CS(SET);
+  release();
 }
 
 

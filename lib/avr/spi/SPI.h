@@ -66,7 +66,6 @@ public:
 
   void beginTransaction(SPI_Settings settings)
   {
-    if (settings.spcr & SPI_MASTER) SPI_SS(OUT);
     if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
     SPSR = settings.spsr;
@@ -76,7 +75,6 @@ public:
   {
     transaction = 0;
     SREG = sreg;
-    SPI_SS(IN);
   }
 
   // Передача данных
