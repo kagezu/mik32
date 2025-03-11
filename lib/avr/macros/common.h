@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include "avr.h"
 
 // Доступ к байтам
 

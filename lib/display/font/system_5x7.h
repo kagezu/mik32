@@ -1,5 +1,5 @@
 #pragma once
-#include "font.h"
+#include "type/font.h"
 
 // font data
 static const uint8_t data_system_5x7[] PROGMEM = {
@@ -108,5 +108,5 @@ static const Font system_5x7 PROGMEM = {
 5,                        // weight
 7,                        // height
 0,                        // Моношрифт
-(uint16_t)data_system_5x7 // font data
+data_system_5x7 // font data
 };

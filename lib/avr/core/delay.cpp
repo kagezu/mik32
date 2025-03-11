@@ -1,4 +1,4 @@
-#include "avr.h"
+#include "init.h"
 
 /* Поддерживаемые частоты 1, 8, 12, 16, 20, 24 МГц F_CPU */
 void delay_us(uint16_t us)

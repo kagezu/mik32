@@ -39,6 +39,14 @@ public:
     release();
   }
 
+  void scroll(uint16_t sl)
+  {
+    select();            // CS Выбор дисплея
+    send_command(VSCRSADD);
+    send_word(sl);
+    release();
+  }
+
 protected:
   inline void select() { L_CS(CLR); }
   inline void release() { L_CS(SET); }

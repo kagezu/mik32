@@ -1,5 +1,5 @@
 #pragma once
-#include "macros/avr.h"
+#include "macros/common.h"
 #include "pins.h"
 
 #define SPI_MASTER    _BV(MSTR)

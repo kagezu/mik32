@@ -25,9 +25,11 @@
 #define RAMWR 0x2c     // Memory write
 #define RAMRD 0x2e     // Memory read
 #define PTLAR 0x30     // Partial start/end address set
+#define PVSCRDEF 0x30  // Vertical Scrolling Definition
 #define TEOFF 0x34     // Tearing effect line off
 #define TEON 0x35      // Tearing effect mode set & on
 #define MADCTL 0x36    // Memory data access control
+#define VSCRSADD 0x37  // Vertical Scrolling Start Address
 #define IDMOFF 0x38    // Idle mode off
 #define IDMON 0x39     // Idle mode on
 #define COLMOD 0x3a    // Interface pixel format

@@ -16,10 +16,11 @@ int main(void)
   // lcd.font(standard_5x8);
 
 
-  uint8_t x = 40;
+  uint16_t x = 0;
   while (true) {
-    lcd.demo(x);
-    x += 2;
-    // lcd.clear(RGB(255 - x, x - 127, x += 4));
+    lcd.demo(x++);
+    // delay_ms(10);
+    // lcd.clear(RGB(-x, x, x * x));
+    x += x % 7 + 1;
   }
 }

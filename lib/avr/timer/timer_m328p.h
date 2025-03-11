@@ -1,6 +1,6 @@
 #ifdef __AVR_ATmega328P__
 #pragma once
-#include <Arduino.h>
+#include <avr.h>
 
 /*
   Настройка таймера 0:

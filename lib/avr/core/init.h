@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include <avr.h>
 
 void set_isr(uint8_t isr, void handler());
 
