@@ -2,8 +2,11 @@
 #pragma once
 #include <core.h>
 
+#define XBuffer(name, type, size) \
+static type __ ## name[size];     \
+static Buffer<type> name(__ ## name, size);
+
 /*
-#include <type/buffer.h>
 #### Buffer<T>
 + read() <-- -- [ tail ] ... [ head ] <-- write()
 + shift() <-- - [ tail ] ... [ head ] <--  push()
