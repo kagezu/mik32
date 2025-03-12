@@ -2,9 +2,9 @@
 #pragma once
 #include <core.h>
 
-#define XBuffer(name, type, size) \
+#define Buffer(name, type, size) \
 static type __ ## name[size];     \
-static Buffer<type> name(__ ## name, size);
+static CBuffer<type> name(__ ## name, size);
 
 /*
 #### Buffer<T>
@@ -16,7 +16,7 @@ static Buffer<type> name(__ ## name, size);
 + length() clear()
 */
 template <typename T>
-class Buffer {
+class CBuffer {
 protected:
   T *_buffer;
   reg _head;    // Голова
@@ -26,7 +26,7 @@ protected:
 
 public:
   // Конструктор
-  Buffer(T *buffer, reg size)
+  CBuffer(T *buffer, reg size)
   {
     _buffer = buffer;
     _size = size;

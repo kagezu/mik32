@@ -5,7 +5,7 @@
 // static uint16_t _buffer[GFX_BUFFER_SIZE];
 // static Buffer<uint16_t> buffer(_buffer, GFX_BUFFER_SIZE);
 
-XBuffer(buffer, uint16_t, GFX_BUFFER_SIZE);
+Buffer(buffer, uint16_t, GFX_BUFFER_SIZE);
 
 uint16_t Widget::read() { return buffer.read(); }
 

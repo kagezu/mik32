@@ -66,15 +66,15 @@ public:
 
   void beginTransaction(SPI_Settings settings)
   {
-    if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
+    // if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
     SPSR = settings.spsr;
   }
 
   void endTransaction(void)
   {
-    transaction = 0;
-    SREG = sreg;
+    // transaction = 0;
+    // SREG = sreg;
   }
 
   // Передача данных
