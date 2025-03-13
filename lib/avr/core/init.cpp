@@ -10,3 +10,8 @@ void init_system()
   TCCRB |= _BV(CS00); // Включить тактирование
 #endif
 }
+
+void reset_system()
+{
+  asm volatile("jmp 0");
+}
