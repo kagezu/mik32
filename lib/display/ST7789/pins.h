@@ -28,10 +28,10 @@
 #endif
 
 #ifdef MIK32V2
-#define L_RD(x)   x ( 0, 0 )
-#define L_WR(x)   x ( 0, 1 )
-#define L_RS(x)   x ( 0, 2 )
-#define L_CS(x)   x ( 0, 3 )
-#define L_RST(x)  x ( 0, 4 )
+#define L_RD(x)   x ( 0, 8 )
+#define L_WR(x)   x ( 0, 9 )
+#define L_RS(x)   x ( 0, 10)
+#define L_CS(x)   x ( 0, 15)
+#define L_RST(x)  x ( 0, 0 )
 #define L_PORT(x) x ( 0, 16)
 #endif

@@ -18,8 +18,10 @@ public:
 
   void init()
   {
+    L_RD(GPIO); L_WR(GPIO); L_RS(GPIO); L_CS(GPIO); L_RST(GPIO);
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
     L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
+    L_PORT(GPIO) &(0xffff0000);
     L_PORT(OUT) | 0xFF;
     L_RST(SET);
 
@@ -40,8 +42,8 @@ public:
   }
 
 protected:
-  inline void select() { L_CS(CLR); }
-  inline void release() { L_CS(SET); }
+  inline void select() { L_CS(CLR); L_WR(CLR); }
+  inline void release() { L_CS(SET); L_WR(SET); }
 
   void send_command(uint8_t command)
   {
@@ -52,15 +54,17 @@ protected:
 
   void send_byte(uint8_t data)
   {
-    L_PORT(MMO) = data;
+    uint8_t tmp = L_PORT(MMO) & 0xff00;
+    L_PORT(MMO) = data | tmp;
     L_WR(SET); L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
-    L_PORT(MMO) = to_byte(data, 1);
+    uint8_t tmp = L_PORT(MMO) & 0xff00;
+    L_PORT(MMO) = to_byte(data, 1) | tmp;
     L_WR(INV); L_WR(INV);
-    L_PORT(MMO) = to_byte(data, 0);
+    L_PORT(MMO) = to_byte(data, 0) | tmp;
     L_WR(INV); L_WR(INV);
   }
 
@@ -79,11 +83,12 @@ protected:
 
   void send_rgb(C color)
   {
-    L_PORT(MMO) = color.red;
+    uint8_t tmp = L_PORT(MMO) & 0xff00;
+    L_PORT(MMO) = color.red | tmp;
     L_WR(INV); L_WR(INV);
-    L_PORT(MMO) = color.green;
+    L_PORT(MMO) = color.green | tmp;
     L_WR(INV); L_WR(INV);
-    L_PORT(MMO) = color.blue;
+    L_PORT(MMO) = color.blue | tmp;
     L_WR(INV); L_WR(INV);
   }
 
@@ -91,14 +96,15 @@ protected:
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     L_CS(CLR);
+    uint8_t tmp = L_PORT(MMO) & 0xff00;
     set_addr(x0, y0, x1, y1);
     for (uint16_t i = y0; i <= y1; i++)
       for (uint16_t j = x0; j <= x1; j++) {
-        L_PORT(MMO) = color.red;
+        L_PORT(MMO) = color.red | tmp;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = color.green;
+        L_PORT(MMO) = color.green | tmp;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = color.blue;
+        L_PORT(MMO) = color.blue | tmp;
         L_WR(INV); L_WR(INV);
       }
 

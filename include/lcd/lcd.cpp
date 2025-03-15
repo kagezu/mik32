@@ -21,6 +21,6 @@ int main(void)
     lcd.demo(x++);
     // delay_ms(10);
     // lcd.clear(RGB(-x, x, x * x));
-    x += x % 7 + 1;
+    // x += x % 7 + 1;
   }
 }
