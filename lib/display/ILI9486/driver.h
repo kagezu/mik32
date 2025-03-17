@@ -18,15 +18,16 @@ public:
 
   void init()
   {
+  #ifdef MIK32V2
+    L_RD(GPIO); L_WR(GPIO); L_RS(GPIO); L_CS(GPIO); L_RST(GPIO);
+  #endif
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
-    L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
     L_PORT(OUT) | 0xFF;
-
-    delay_ms(2);
+    L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
     L_RST(SET);
-    delay_ms(15);         // Ждать стабилизации напряжений
-    select();            // CS Выбор дисплея
-    send_command(SLPOUT);	//	Out of sleep mode
+
+    select();             // CS Выбор дисплея
+    send_command(SLPOUT);	// Out of sleep mode
     delay_ms(10);
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
@@ -34,8 +35,8 @@ public:
 
     set_rgb_format();
 
-    send_command(NORON);  //	Normal Display on
-    send_command(DISPON);	//	Main screen turned on
+    send_command(NORON);  // Normal Display on
+    send_command(DISPON);	// Main screen turned on
     release();
   }
 
@@ -60,16 +61,31 @@ protected:
 
   void send_byte(uint8_t data)
   {
+  #ifdef MIK32V2
+    L_PORT(MMO) = data | (L_PORT(MMO) & ~0xff);
+    L_WR(CLR); L_WR(SET);
+  #else
     L_PORT(MMO) = data;
     L_WR(SET); L_WR(CLR);
+  #endif
   }
 
   void send_word(uint16_t data)
   {
+  #ifdef MIK32V2
+    volatile reg tmp = (L_PORT(MMO) & ~0xff);
+    L_PORT(MMO) = (data >> 8) | tmp;
+    L_WR(CLR);
+    L_WR(SET);
+    L_PORT(MMO) = (data & 0xff) | tmp;
+    L_WR(CLR);
+    L_WR(SET);
+  #else
     L_PORT(MMO) = to_byte(data, 1);
     L_WR(INV); L_WR(INV);
     L_PORT(MMO) = to_byte(data, 0);
     L_WR(INV); L_WR(INV);
+  #endif
   }
 
   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
@@ -87,20 +103,51 @@ protected:
 
   void send_rgb(C color)
   {
+  #ifdef MIK32V2
+    static reg tmp = L_PORT(MMO) & ~0xff;
+    L_PORT(MMO) = color.red | tmp;
+    L_WR(CLR); L_WR(SET);
+    L_PORT(MMO) = color.green | tmp;
+    L_WR(CLR); L_WR(SET);
+    L_PORT(MMO) = color.blue | tmp;
+    L_WR(CLR); L_WR(SET);
+  #else
     L_PORT(MMO) = color.red;
     L_WR(INV); L_WR(INV);
     L_PORT(MMO) = color.green;
     L_WR(INV); L_WR(INV);
     L_PORT(MMO) = color.blue;
     L_WR(INV); L_WR(INV);
+  #endif
   }
 
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     select();
-    RGB32 rgb = color.rgb32();
     set_addr(x0, y0, x1, y1);
+
+  #ifdef MIK32V2
+    reg red = (L_PORT(MMO) & ~0xff) | color.red;
+    reg green = (L_PORT(MMO) & ~0xff) | color.green;
+    reg blue = (L_PORT(MMO) & ~0xff) | color.blue;
+    reg red_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.red;
+    reg green_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.green;
+    reg blue_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.blue;
+    reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+
+    while (len--) {
+      L_PORT(MMO) = red;
+      L_PORT(MMO) = red_c;
+      L_WR(SET);
+      L_PORT(MMO) = green;
+      L_PORT(MMO) = green_c;
+      L_WR(SET);
+      L_PORT(MMO) = blue;
+      L_PORT(MMO) = blue_c;
+      L_WR(SET);
+    #else
+    RGB32 rgb = color.rgb32();
     uint16_t x = x1 - x0;
     uint16_t y = y1 - y0;
     for (uint16_t i = 0; i <= x; i++)
@@ -111,7 +158,8 @@ protected:
         L_WR(INV); L_WR(INV);
         L_PORT(MMO) = rgb.blue;
         L_WR(INV); L_WR(INV);
-      }
+      #endif
+    }
 
     release();
   }

@@ -23,7 +23,7 @@ public:
   #endif
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
     L_PORT(OUT) | 0xFF;
-    L_RD(SET); L_WR(SET); L_RS(CLR); L_CS(SET); L_RST(CLR);
+    L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
     L_RST(SET);
 
     select();             // CS Выбор дисплея
@@ -43,7 +43,7 @@ public:
   }
 
 protected:
-  inline void select() { L_WR(SET); L_CS(CLR); }
+  inline void select() { L_CS(CLR); }
   inline void release() { L_CS(SET); }
 
   void send_command(uint8_t command)
@@ -71,7 +71,6 @@ protected:
     L_PORT(MMO) = (data >> 8) | tmp;
     L_WR(CLR);
     L_WR(SET);
-    // tmp = (L_PORT(MMO) & ~0xff);
     L_PORT(MMO) = (data & 0xff) | tmp;
     L_WR(CLR);
     L_WR(SET);
@@ -99,7 +98,7 @@ protected:
   void send_rgb(C color)
   {
   #ifdef MIK32V2
-    reg tmp = L_PORT(MMO) & ~0xff;
+    static reg tmp = L_PORT(MMO) & ~0xff;
     L_PORT(MMO) = color.red | tmp;
     L_WR(CLR); L_WR(SET);
     L_PORT(MMO) = color.green | tmp;
@@ -120,21 +119,29 @@ protected:
   {
     select();
     set_addr(x0, y0, x1, y1);
+
   #ifdef MIK32V2
     reg red = (L_PORT(MMO) & ~0xff) | color.red;
     reg green = (L_PORT(MMO) & ~0xff) | color.green;
     reg blue = (L_PORT(MMO) & ~0xff) | color.blue;
-  #endif
+    reg red_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.red;
+    reg green_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.green;
+    reg blue_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.blue;
+    reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+
+    while (len--) {
+      L_PORT(MMO) = red;
+      L_PORT(MMO) = red_c;
+      L_WR(SET);
+      L_PORT(MMO) = green;
+      L_PORT(MMO) = green_c;
+      L_WR(SET);
+      L_PORT(MMO) = blue;
+      L_PORT(MMO) = blue_c;
+      L_WR(SET);
+    #else
     for (uint16_t i = y0; i <= y1; i++)
       for (uint16_t j = x0; j <= x1; j++) {
-      #ifdef MIK32V2
-        L_PORT(MMO) = red;
-        L_WR(CLR); L_WR(SET);
-        L_PORT(MMO) = green;
-        L_WR(CLR); L_WR(SET);
-        L_PORT(MMO) = blue;
-        L_WR(CLR); L_WR(SET);
-      #else
         L_PORT(MMO) = color.red;
         L_WR(INV); L_WR(INV);
         L_PORT(MMO) = color.green;
@@ -142,9 +149,7 @@ protected:
         L_PORT(MMO) = color.blue;
         L_WR(INV); L_WR(INV);
       #endif
-      }
-    L_WR(CLR);
-
+    }
     release();
   }
 

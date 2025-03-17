@@ -26,8 +26,8 @@ int main(void)
 
   while (true) {
     lcd.clear(RGB(-x, x, x * x));
-    // x += x % 7 + 1;
-    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
+    x += 10;
+    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x);
   }
 
 }
