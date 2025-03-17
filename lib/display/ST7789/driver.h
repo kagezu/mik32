@@ -18,17 +18,18 @@ public:
 
   void init()
   {
+  #ifdef MIK32V2
     L_RD(GPIO); L_WR(GPIO); L_RS(GPIO); L_CS(GPIO); L_RST(GPIO);
+  #endif
     L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
-    L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
-    L_PORT(GPIO) &(0xffff0000);
     L_PORT(OUT) | 0xFF;
+    L_RD(SET); L_WR(SET); L_RS(CLR); L_CS(SET); L_RST(CLR);
     L_RST(SET);
 
+    select();             // CS Выбор дисплея
     send_command(SWRESET);
     delay_ms(15);          // Ждать стабилизации напряжений
 
-    L_CS(CLR);             // CS Выбор дисплея
     send_config(ST7789_CONFIG, sizeof(ST7789_CONFIG));
     send_command(MADCTL); send_byte(LCD_FLIP);
 
@@ -38,12 +39,12 @@ public:
     send_command(SLPOUT);	//	Out of sleep mode
     send_command(NORON);		//	Normal Display on
     send_command(DISPON);	//	Main screen turned on
-    L_CS(SET);
+    release();
   }
 
 protected:
-  inline void select() { L_CS(CLR); L_WR(CLR); }
-  inline void release() { L_CS(SET); L_WR(SET); }
+  inline void select() { L_WR(SET); L_CS(CLR); }
+  inline void release() { L_CS(SET); }
 
   void send_command(uint8_t command)
   {
@@ -54,18 +55,32 @@ protected:
 
   void send_byte(uint8_t data)
   {
-    uint8_t tmp = L_PORT(MMO) & 0xff00;
-    L_PORT(MMO) = data | tmp;
+  #ifdef MIK32V2
+    L_PORT(MMO) = data | (L_PORT(MMO) & ~0xff);
+    L_WR(CLR); L_WR(SET);
+  #else
+    L_PORT(MMO) = data;
     L_WR(SET); L_WR(CLR);
+  #endif
   }
 
   void send_word(uint16_t data)
   {
-    uint8_t tmp = L_PORT(MMO) & 0xff00;
-    L_PORT(MMO) = to_byte(data, 1) | tmp;
+  #ifdef MIK32V2
+    volatile reg tmp = (L_PORT(MMO) & ~0xff);
+    L_PORT(MMO) = (data >> 8) | tmp;
+    L_WR(CLR);
+    L_WR(SET);
+    // tmp = (L_PORT(MMO) & ~0xff);
+    L_PORT(MMO) = (data & 0xff) | tmp;
+    L_WR(CLR);
+    L_WR(SET);
+  #else
+    L_PORT(MMO) = to_byte(data, 1);
     L_WR(INV); L_WR(INV);
-    L_PORT(MMO) = to_byte(data, 0) | tmp;
+    L_PORT(MMO) = to_byte(data, 0);
     L_WR(INV); L_WR(INV);
+  #endif
   }
 
   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
@@ -83,32 +98,54 @@ protected:
 
   void send_rgb(C color)
   {
-    uint8_t tmp = L_PORT(MMO) & 0xff00;
+  #ifdef MIK32V2
+    reg tmp = L_PORT(MMO) & ~0xff;
     L_PORT(MMO) = color.red | tmp;
-    L_WR(INV); L_WR(INV);
+    L_WR(CLR); L_WR(SET);
     L_PORT(MMO) = color.green | tmp;
-    L_WR(INV); L_WR(INV);
+    L_WR(CLR); L_WR(SET);
     L_PORT(MMO) = color.blue | tmp;
+    L_WR(CLR); L_WR(SET);
+  #else
+    L_PORT(MMO) = color.red;
     L_WR(INV); L_WR(INV);
+    L_PORT(MMO) = color.green;
+    L_WR(INV); L_WR(INV);
+    L_PORT(MMO) = color.blue;
+    L_WR(INV); L_WR(INV);
+  #endif
   }
-
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
-    L_CS(CLR);
-    uint8_t tmp = L_PORT(MMO) & 0xff00;
+    select();
     set_addr(x0, y0, x1, y1);
+  #ifdef MIK32V2
+    reg red = (L_PORT(MMO) & ~0xff) | color.red;
+    reg green = (L_PORT(MMO) & ~0xff) | color.green;
+    reg blue = (L_PORT(MMO) & ~0xff) | color.blue;
+  #endif
     for (uint16_t i = y0; i <= y1; i++)
       for (uint16_t j = x0; j <= x1; j++) {
-        L_PORT(MMO) = color.red | tmp;
+      #ifdef MIK32V2
+        L_PORT(MMO) = red;
+        L_WR(CLR); L_WR(SET);
+        L_PORT(MMO) = green;
+        L_WR(CLR); L_WR(SET);
+        L_PORT(MMO) = blue;
+        L_WR(CLR); L_WR(SET);
+      #else
+        L_PORT(MMO) = color.red;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = color.green | tmp;
+        L_PORT(MMO) = color.green;
         L_WR(INV); L_WR(INV);
-        L_PORT(MMO) = color.blue | tmp;
+        L_PORT(MMO) = color.blue;
         L_WR(INV); L_WR(INV);
+      #endif
       }
+    L_WR(CLR);
 
-    L_CS(SET);
+    release();
   }
 
 private:

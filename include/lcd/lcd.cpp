@@ -16,11 +16,18 @@ int main(void)
   // lcd.font(standard_5x8);
 
 
-  uint16_t x = 0;
+  reg x = 0;
+
+  // while (true) {
+  //   lcd.demo(x);
+  //   lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
+  // }
+
+
   while (true) {
-    lcd.demo(x++);
-    // delay_ms(10);
-    // lcd.clear(RGB(-x, x, x * x));
+    lcd.clear(RGB(-x, x, x * x));
     // x += x % 7 + 1;
+    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
   }
+
 }
