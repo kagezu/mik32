@@ -18,10 +18,10 @@ int main(void)
 
   reg x = 0;
 
-  // while (true) {
-  //   lcd.demo(x);
-  //   lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
-  // }
+  while (true) {
+    lcd.demo(x);
+    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
+  }
 
 
   while (true) {

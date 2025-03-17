@@ -73,12 +73,10 @@ protected:
   void send_word(uint16_t data)
   {
   #ifdef MIK32V2
-    volatile reg tmp = (L_PORT(MMO) & ~0xff);
+    static volatile reg tmp = L_PORT(MMO) & ~(0xff | L_WR(MASK));
     L_PORT(MMO) = (data >> 8) | tmp;
-    L_WR(CLR);
     L_WR(SET);
     L_PORT(MMO) = (data & 0xff) | tmp;
-    L_WR(CLR);
     L_WR(SET);
   #else
     L_PORT(MMO) = to_byte(data, 1);
@@ -104,13 +102,13 @@ protected:
   void send_rgb(C color)
   {
   #ifdef MIK32V2
-    static reg tmp = L_PORT(MMO) & ~0xff;
-    L_PORT(MMO) = color.red | tmp;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.green | tmp;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.blue | tmp;
-    L_WR(CLR); L_WR(SET);
+    static volatile reg mask = L_PORT(MMO) & ~(0xff | L_WR(MASK));
+    L_PORT(MMO) = color.red | mask;
+    L_WR(SET);
+    L_PORT(MMO) = color.green | mask;
+    L_WR(SET);
+    L_PORT(MMO) = color.blue | mask;
+    L_WR(SET);
   #else
     L_PORT(MMO) = color.red;
     L_WR(INV); L_WR(INV);
@@ -128,24 +126,21 @@ protected:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    reg red = (L_PORT(MMO) & ~0xff) | color.red;
-    reg green = (L_PORT(MMO) & ~0xff) | color.green;
-    reg blue = (L_PORT(MMO) & ~0xff) | color.blue;
-    reg red_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.red;
-    reg green_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.green;
-    reg blue_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.blue;
+    volatile reg red = (L_PORT(MMO) & ~0xff) | color.red;
+    volatile reg green = (L_PORT(MMO) & ~0xff) | color.green;
+    volatile reg blue = (L_PORT(MMO) & ~0xff) | color.blue;
+    volatile reg red_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.red;
+    volatile reg green_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.green;
+    volatile reg blue_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | color.blue;
     reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      L_PORT(MMO) = red;
       L_PORT(MMO) = red_c;
-      L_WR(SET);
-      L_PORT(MMO) = green;
+      L_PORT(MMO) = red;
       L_PORT(MMO) = green_c;
-      L_WR(SET);
-      L_PORT(MMO) = blue;
+      L_PORT(MMO) = green;
       L_PORT(MMO) = blue_c;
-      L_WR(SET);
+      L_PORT(MMO) = blue;
     #else
     RGB32 rgb = color.rgb32();
     uint16_t x = x1 - x0;
@@ -180,16 +175,30 @@ void ILI9486<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
 {
   select();
   set_addr(x0, y0, x1, y1);
+
+#ifdef MIK32V2
+  volatile  reg h = (L_PORT(MMO) & ~0xff) | (color.rgb >> 8);
+  volatile  reg l = (L_PORT(MMO) & ~0xff) | (color.rgb & 0xff);
+  volatile  reg h_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | (color.rgb >> 8);
+  volatile  reg l_c = (L_PORT(MMO) & ~(0xff | L_WR(MASK))) | (color.rgb & 0xff);
+  reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+
+  while (len--) {
+    L_PORT(MMO) = h_c;
+    L_PORT(MMO) = h;
+    L_PORT(MMO) = l_c;
+    L_PORT(MMO) = l;
+  }
+#else
   uint16_t x = x1 - x0;
   uint16_t y = y1 - y0;
   for (uint16_t i = 0; i <= x; i++)
     for (uint16_t j = 0; j <= y; j++) {
       send_word(color.rgb);
     }
-
+#endif
   release();
 }
-
 
 template<>
 void ILI9486<RGB32>::set_rgb_format()
