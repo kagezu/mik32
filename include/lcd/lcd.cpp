@@ -17,6 +17,19 @@ int main(void)
 
 
   reg x = 0;
+  // #define XX(x) x(0,5)
+
+  //   XX(GPIO);
+  //   XX(OUT);
+  //   XX(CLR);
+
+  //   while (true) {
+  //     // L_PORT(MMO) = 0x0;
+  //     // delay_ms(1000);
+  //     // L_PORT(MMO) = 0xffff;
+  //     // delay_ms(1000);
+  //     L_WR(INV);
+  //   }
 
   while (true) {
     lcd.demo(x);

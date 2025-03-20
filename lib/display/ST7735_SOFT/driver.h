@@ -1,6 +1,6 @@
 #pragma once
 #include "pins.h"
-#include "const/ST7735.h"
+#include "const.h"
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SOFT

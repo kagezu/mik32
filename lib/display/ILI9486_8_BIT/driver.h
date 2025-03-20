@@ -1,6 +1,6 @@
 #pragma once
 #include "pins.h"
-#include "const/ILI9486.h"
+#include "const.h"
 #include "type/include.h"
 
 #define LCD_DRIVER    ILI9486
@@ -28,13 +28,15 @@ public:
 
     select();             // CS Выбор дисплея
     send_command(SLPOUT);	// Out of sleep mode
-    delay_ms(10);
+    // send_command(SWRESET);
+    delay_ms(50);
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
     send_command(MADCTL); send_byte((LCD_FLIP | 0x08));// BGR -> RBG & ~EX_X_Y
 
     set_rgb_format();
 
+    delay_ms(50);
     send_command(NORON);  // Normal Display on
     send_command(DISPON);	// Main screen turned on
     release();

@@ -20,13 +20,6 @@
 // #define LCD_FLIP    FLIP_X  | FLIP_Y            // 180°
 // #define LCD_FLIP    FLIP_X  |          EX_X_Y   // 270°
 
-
-// Выбрать пред-установку (только для ST7735_SОFT)
-
-// #define PRESET_ST7735_A5
-// #define PRESET_ST7735_A4
-// #define PRESET_ST7735_SPI
-
 // Либо указать самостоятельно
 
 // #define L_SCK(x)     x ( C, PC0)
@@ -34,11 +27,14 @@
 // #define L_RS(x)      x ( C, PC2)
 // #define L_RST(x)     x ( C, PC3)
 // #define L_CS(x)      x ( C, PC4)
+// #define L_PORT(x)    x ( D, PD0)
 
 // Драйвер дисплея
 
-// #include "ST7735_SOFT/driver.h"
-// #include "ST7735_SPI/driver.h"
-// #include "ST7789/driver.h"
+// #include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
+// #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
+// #include "ST7789/driver.h"           // RGB18
+// #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
+// #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
 
 // #include <display.h>
