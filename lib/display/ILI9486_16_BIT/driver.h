@@ -129,7 +129,7 @@ public:
 
 
     send_command(SLPOUT);	// Out of sleep mode
-    // send_command(SWRESET);
+    send_command(SWRESET);
     delay_ms(10);
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));

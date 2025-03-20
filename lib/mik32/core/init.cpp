@@ -96,7 +96,7 @@ void init_system()
     ;
 
   // Отключения тактирования устройств на шине APB_P.
-  PM->CLK_APB_P_CLEAR |= 0
+  // PM->CLK_APB_P_CLEAR |= 0
     // PM_CLOCK_APB_P_WDT_M
     // | PM_CLOCK_APB_P_UART_0_M
     // | PM_CLOCK_APB_P_UART_1_M
@@ -114,7 +114,7 @@ void init_system()
     // | PM_CLOCK_APB_P_GPIO_2_M
     // | PM_CLOCK_APB_P_ANALOG_REGS_M
     // | PM_CLOCK_APB_P_GPIO_IRQ_M;
-    ;
+    // ;
 }
 
 

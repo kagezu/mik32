@@ -28,7 +28,6 @@ public:
 
     select();             // CS Выбор дисплея
     send_command(SLPOUT);	// Out of sleep mode
-    // send_command(SWRESET);
     delay_ms(50);
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
@@ -36,7 +35,6 @@ public:
 
     set_rgb_format();
 
-    delay_ms(50);
     send_command(NORON);  // Normal Display on
     send_command(DISPON);	// Main screen turned on
     release();

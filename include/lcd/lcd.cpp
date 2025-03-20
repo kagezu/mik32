@@ -23,13 +23,13 @@ int main(void)
   //   XX(OUT);
   //   XX(CLR);
 
-  //   while (true) {
-  //     // L_PORT(MMO) = 0x0;
-  //     // delay_ms(1000);
-  //     // L_PORT(MMO) = 0xffff;
-  //     // delay_ms(1000);
-  //     L_WR(INV);
-  //   }
+  // while (true) {
+  //   L_PORT(MMO) = 0x0;
+  //   delay_ms(1000);
+  //   L_PORT(MMO) = 0xffff;
+  //   delay_ms(1000);
+  //   L_WR(INV); L_RS(INV); L_CS(INV);
+  // }
 
   while (true) {
     lcd.demo(x);
