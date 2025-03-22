@@ -10,6 +10,10 @@
 
 
 #ifdef MIK32V2
+// #define L_RD(x)   x ( 0, 8 )
+// #define L_WR(x)   x ( 0, 9 )
+// #define L_RS(x)   x ( 0, 10)
+
 #define L_WR(x)   x ( 1, 8 )
 #define L_RS(x)   x ( 1, 9 )
 #define L_CS(x)   x ( 1, 15)
