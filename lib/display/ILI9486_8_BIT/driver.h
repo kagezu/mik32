@@ -35,6 +35,7 @@ public:
 
     set_rgb_format();
 
+    delay_ms(50);
     send_command(NORON);  // Normal Display on
     send_command(DISPON);	// Main screen turned on
     release();

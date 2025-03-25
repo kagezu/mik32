@@ -2,11 +2,14 @@
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
 
+#define USER_B(f) f(2,6)
+
 Display lcd;
 
 int main(void)
 {
   init_system();
+
   // SPI.begin();
   lcd.init();
   lcd.background(RGB(0, 16, 32));
@@ -15,32 +18,18 @@ int main(void)
   lcd.font(arial_14);
   // lcd.font(standard_5x8);
 
+  USER_B(GPIO);
+  USER_B(IN);
 
   reg x = 0;
-  // #define XX(x) x(0,5)
-
-  //   XX(GPIO);
-  //   XX(OUT);
-  //   XX(CLR);
-
-  // while (true) {
-  //   L_PORT(MMO) = 0x0;
-  //   delay_ms(1000);
-  //   L_PORT(MMO) = 0xffff;
-  //   delay_ms(1000);
-  //   L_WR(INV); L_RS(INV); L_CS(INV);
-  // }
-
   while (true) {
-    lcd.demo(x);
+
+    if (USER_B(GET))
+      lcd.clear(RGB(-(x << 3), (x << 3), (x << 2)));
+    else
+      lcd.demo(x);
+
     lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
-  }
-
-
-  while (true) {
-    lcd.clear(RGB(-x, x, x * x));
-    x += 10;
-    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x);
   }
 
 }

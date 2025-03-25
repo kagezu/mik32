@@ -13,7 +13,7 @@ public:
 
   void init()
   {
-    SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR); // PORT 0.3 -> D9
+    // SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR); // PORT 0.3 -> D9
     L_WR(GPIO); L_RS(GPIO); L_CS(GPIO);
     PAD_CONFIG->PORT_0_CFG = 0;
     L_WR(OUT); L_RS(OUT); L_CS(OUT);
@@ -29,6 +29,7 @@ public:
 
     set_rgb_format();
 
+    delay_ms(50);
     send_command(NORON);  // Normal Display on
     send_command(DISPON);	// Main screen turned on
     release();
@@ -166,27 +167,32 @@ protected:
   void send_command(uint8_t command)
   {
     L_RS(CLR);
+    // delay_us(2);
     send_byte(command);
     L_RS(SET);
+    // delay_us(2);
   }
 
   void send_byte(uint8_t data)
   {
     L_PORT(MMO) = data;
-    delay_us(1);
+    // delay_us(2);
     L_WR(SET);
+    // delay_us(2);
     L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
     L_PORT(MMO) = (data >> 8);
-    delay_us(1);
+    // delay_us(2);
     L_WR(SET);
+    // delay_us(2);
     L_WR(CLR);
     L_PORT(MMO) = data;
-    delay_us(1);
+    // delay_us(2);
     L_WR(SET);
+    // delay_us(2);
     L_WR(CLR);
   }
 
@@ -205,8 +211,11 @@ protected:
 
   void send_rgb(C color)
   {
+    static reg set = L_WR(MMO) | L_WR(MASK);
+    static reg clr = L_WR(MMO) & ~L_WR(MASK);
     L_PORT(MMO) = color.rgb;
-    L_WR(SET); L_WR(CLR);
+    L_WR(MMO) = set;
+    L_WR(MMO) = clr;
   }
 
 
@@ -216,10 +225,12 @@ protected:
     set_addr(x0, y0, x1, y1);
 
     reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
-
+    reg set = L_WR(MMO) | L_WR(MASK);
+    reg clr = L_WR(MMO) & ~L_WR(MASK);
     L_PORT(MMO) = color.rgb;
     while (len--) {
-      L_WR(SET); L_WR(CLR);
+      L_WR(MMO) = set;
+      L_WR(MMO) = clr;
     }
     release();
   }
@@ -232,9 +243,21 @@ private:
 template<>
 void ILI9486<RGB18>::send_rgb(RGB18 color)
 {
-  L_PORT(MMO) = color.rgb16();
-  delay_us(1);
-  L_WR(SET); L_WR(CLR);
+  static uint16_t half, flag = 0;
+
+  if (flag) {
+    L_PORT(MMO) = color.red | half;
+    L_WR(SET); L_WR(CLR);
+    flag = 0;
+    L_PORT(MMO) = *(uint16_t *)&color.blue;
+    L_WR(SET); L_WR(CLR);
+  }
+  else {
+    L_PORT(MMO) = *(uint16_t *)&color.green;
+    L_WR(SET); L_WR(CLR);
+    half = color.blue << 8;
+    flag = 1;
+  }
 }
 
 template<>
@@ -243,20 +266,24 @@ void ILI9486<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
   select();
   set_addr(x0, y0, x1, y1);
   reg len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
+  reg set = L_WR(MMO) | L_WR(MASK);
+  reg clr = L_WR(MMO) & ~L_WR(MASK);
+  uint16_t hword = *(uint16_t *)&color.green;
+  uint16_t mword = color.red | (color.blue << 8);
+  uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
-    L_PORT(MMO) = color.red;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.green;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.blue;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.red;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.green;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(MMO) = color.blue;
-    L_WR(CLR); L_WR(SET);
+    L_PORT(MMO) = hword;
+    L_WR(MMO) = set;
+    L_WR(MMO) = clr;
+
+    L_PORT(MMO) = mword;
+    L_WR(MMO) = set;
+    L_WR(MMO) = clr;
+
+    L_PORT(MMO) = lword;
+    L_WR(MMO) = set;
+    L_WR(MMO) = clr;
   }
   release();
 }
