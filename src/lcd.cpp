@@ -2,7 +2,11 @@
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
 
+#ifdef __AVR__
+#define USER_B(f) f(B,5)
+#else
 #define USER_B(f) f(2,6)
+#endif
 
 Display lcd;
 

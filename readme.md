@@ -1,8 +1,8 @@
-# ![alt text](./doc/img/ace-uno.jpg)
+# Библиотеки для ATmega и MIK32 AMUR
 
-## Кроссплатформенное использование ATmega и MIK32 AMUR
+## ![alt text](./img/ace-uno.jpg)
 
-### Поддерживаемые MK / Платы
+### MK / Платы
 
 + **ATmega328P / Uno R3 - 16...27 МГц**
 + **MIK32 AMUR / ACE UNO**
@@ -20,7 +20,7 @@
 
 ### Используемые библиотеки
 
-+ **arduino-avr** только "Arduino.h"
++ **arduino-avr** "Arduino.h"
 + **mik32v2-sdk** только заголовки
 
 ### Используемые инструменты
