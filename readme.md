@@ -1,4 +1,4 @@
-# ![alt text](https://elron.tech/wp-content/uploads/2024/07/photo_2024-07-02_15-28-41_crop.jpg)
+# ![alt text](./doc/img/ace-uno.jpg)
 
 ## Кроссплатформенное использование ATmega и MIK32 AMUR
 
@@ -13,9 +13,10 @@
   + Программно
   + SPI
 + **ST7789**
-  + 8bit
+  + 8 bit
 + **ILI9486**
-  + 8bit
+  + 8 bit
+  + 16 bit
 
 ### Используемые библиотеки
 
