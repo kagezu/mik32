@@ -156,7 +156,7 @@ public:
   {
     select();            // CS Выбор дисплея
     send_command(VSCRSADD);
-    send_word(sl);
+    send_word(sl < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
     release();
   }
 

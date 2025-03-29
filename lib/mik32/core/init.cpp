@@ -91,7 +91,7 @@ void init_system()
     | PM_CLOCK_APB_P_GPIO_0_M
     | PM_CLOCK_APB_P_GPIO_1_M
     | PM_CLOCK_APB_P_GPIO_2_M
-    // | PM_CLOCK_APB_P_ANALOG_REGS_M
+    | PM_CLOCK_APB_P_ANALOG_REGS_M
     // | PM_CLOCK_APB_P_GPIO_IRQ_M
     ;
 
