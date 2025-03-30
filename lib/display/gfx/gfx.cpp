@@ -1,7 +1,6 @@
 #include "gfx.h"
 
-#define swap(a, b) { uint16_t t = a; a = b; b = t; }
-#define abs(x) ((x)>0?(x):-(x))
+#define swap(a, b) { uint16_t _t = a; a = b; b = _t; }
 
 // template<typename T>
 // void GFX::w_line(T x, T y, T x1)

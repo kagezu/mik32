@@ -11,6 +11,8 @@
 #define ADC1(f)   f(1,7)
 #endif
 
+#define FAT    4
+
 Display lcd;
 ADC mic;
 
@@ -20,7 +22,7 @@ int main(void)
 
   // SPI.begin();
   lcd.init();
-  lcd.background(RGB(16, 16, 16));
+  lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
   lcd.font(arial_14);
@@ -35,35 +37,51 @@ int main(void)
   mic.start();
 
   reg x = 1;
-  reg xx = lcd.max_x() >> 1;
-  reg pix[480];
+  reg speed = 4;
+  reg xx = (lcd.max_x() + 1) >> 1;
+  reg x2 = xx + (xx >> 1);
+  reg pix[lcd.max_y() + 1] = {};
+  reg yy = 0;
+  reg old = 0;
+  reg x3 = xx - FAT / 2 - 2;
 
-  while (true) {
-    reg kk = mic.value();
-    reg y = x % (lcd.max_y() + 1);
-    kk /= 13;
-    lcd.scroll(y + 1);
-    lcd.color(RGB(32, 32, 32));
-    lcd.pixel(pix[y], y);
-    lcd.color(RGB(64, 255, 64));
-    lcd.pixel(kk, y);
-    pix[y] = kk;
-    x++;
+  for (reg i = 0; i < FAT; i++) {
+    lcd.area(x3 - i, 0, x3 - i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
+    lcd.area(x3 + i, 0, x3 + i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
   }
 
   while (true) {
-    // reg kk = mic.value() - 150;
-    reg kk = (mic.value() - 1980);
-    if (kk > 4095) kk = -kk;
-    kk >>= 3;
-    if (kk >= xx) kk = xx - 1;
+    reg kk = mic.value() / 27;
     reg y = x % (lcd.max_y() + 1);
-    lcd.scroll(y + 1);
-    lcd.area(0, y, xx - kk - 1, y, RGB(32, 32, 32));
-    lcd.area(xx - kk, y, xx + kk, y, RGB(64, 255, 64));
-    lcd.area(xx + kk + 1, y, lcd.max_x(), y, RGB(32, 32, 32));
+
+    if (USER_B(GET)) {
+      speed = 2;
+    }
+    else {
+      speed = 3;
+    }
+
+    if (!(x & ((1 << speed) - 1))) {
+      reg y2 = (x >> speed) % (lcd.max_y() + 1);
+      reg k2 = kk - 70;
+      if (k2 > (xx >> 1) - 1) k2 = -k2;
+      if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
+      lcd.scroll(y2 + 1);
+      lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
+      lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
+      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
+    }
+
+    lcd.color(RGB(32, 32, 32));
+    lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
+    lcd.color(RGB(64, 255, 64));
+    lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
+
+    old = pix[y];
+    yy = kk;
+    pix[y] = kk;
+
     x++;
-    // delay_us(1000);
   }
 
 

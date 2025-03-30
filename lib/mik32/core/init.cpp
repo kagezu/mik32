@@ -9,14 +9,19 @@ void init_system()
   // Модуль WakeUp
 
   // Батарейный домен
-  WU->CLOCKS_BU |=
-    // WU_CLOCKS_BU_OSC32K_EN_M              // Отключение OSC32K
-    WU_CLOCKS_BU_OSC32K_EN_M              // Отключение LSI32К
-  //  | WU_CLOCKS_BU_RTC_CLK_MUX_LSI32K_M;   // Выбрать внутренний LSI32К
-    | WU_CLOCKS_BU_RTC_CLK_MUX_OSC32K_M;  // Выбрать внешний OSC32К
+  WU->CLOCKS_BU |= 0
+    // | WU_CLOCKS_BU_OSC32K_EN_M              // Отключение OSC32K (0 - включение)
+    | WU_CLOCKS_BU_LSI32K_EN_M             // Отключение LSI32К (0 - включение)
+    //  | WU_CLOCKS_BU_RTC_CLK_MUX_LSI32K_M;   // Выбрать внутренний LSI32К
+    | WU_CLOCKS_BU_RTC_CLK_MUX_OSC32K_M  // Выбрать внешний OSC32К
+    ;
 
   // Системный домен
-  WU->CLOCKS_SYS |= WU_CLOCKS_SYS_HSI32M_EN_M; // Отключить внутренний HSI32M
+  WU->CLOCKS_SYS |= 0
+    | WU_CLOCKS_SYS_HSI32M_EN_M // Отключить внутренний HSI32M (0 - включение)
+    // | WU_CLOCKS_SYS_OSC32M_EN_M // Отключить внутренний OSC32M (0 - включение)
+    | WU_CLOCKS_SYS_FORCE_32K_CLK_OSC32K_M // Принудительно выбрать OSC32K
+    ;
 
   // Модуль PowerManager
 
@@ -26,11 +31,11 @@ void init_system()
 
   // Включить тактирование модулей
   PM->CLK_AHB_SET |= 0
-    | PM_CLOCK_AHB_CPU_M
-    | PM_CLOCK_AHB_EEPROM_M
-    | PM_CLOCK_AHB_RAM_M
-    | PM_CLOCK_AHB_SPIFI_M
-    | PM_CLOCK_AHB_TCB_M
+    // | PM_CLOCK_AHB_CPU_M
+    // | PM_CLOCK_AHB_EEPROM_M
+    // | PM_CLOCK_AHB_RAM_M
+    // | PM_CLOCK_AHB_SPIFI_M
+    // | PM_CLOCK_AHB_TCB_M
     // | PM_CLOCK_AHB_DMA_M
     // | PM_CLOCK_AHB_CRYPTO_M
     // | PM_CLOCK_AHB_CRC32_M
@@ -91,7 +96,7 @@ void init_system()
     | PM_CLOCK_APB_P_GPIO_0_M
     | PM_CLOCK_APB_P_GPIO_1_M
     | PM_CLOCK_APB_P_GPIO_2_M
-    | PM_CLOCK_APB_P_ANALOG_REGS_M
+    // | PM_CLOCK_APB_P_ANALOG_REGS_M
     // | PM_CLOCK_APB_P_GPIO_IRQ_M
     ;
 

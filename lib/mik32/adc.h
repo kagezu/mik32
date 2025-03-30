@@ -1,13 +1,16 @@
 #pragma once
+#include <mik32_memory_map.h>
+#include <power_manager.h>
 #include <analog_reg.h>
-#include "macros/gpio.h"
-#include "macros/avr.h"
+// #include "macros/gpio.h"
+// #include "macros/avr.h"
 
 class ADC {
 public:
 
   void init(uint8_t chanel, uint16_t delay = 0x0C)
   {
+    PM->CLK_APB_P_SET = PM_CLOCK_APB_P_ANALOG_REGS_M; // Включить тактирование
     ANALOG_REG->ADC_CONFIG =
       (delay << ADC_CONFIG_SAH_TIME_WRITE_S)// Задержка
       | (chanel << ADC_CONFIG_SEL_S)        // Выборать канал
