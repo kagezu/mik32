@@ -65,3 +65,29 @@
 #define T32_0_TOP(top)            TIMER32_0->TOP = top;
 #define T32_1_TOP(top)            TIMER32_1->TOP = top;
 #define T32_2_TOP(top)            TIMER32_2->TOP = top;
+
+
+
+// Установка частоты для таймера 0
+void timer0(uint32_t fq)
+{
+  uint8_t presc_m = 0;
+  uint16_t min_fq = OSC_SYSTEM_VALUE / 65535 + 1;
+
+  while (presc_m < 0x07) {
+    if (fq >= min_fq) break;
+    min_fq <<= 1;
+    presc_m++;
+  }
+  // Отключаем таймер, если был включён
+  TIMER16_0->CR = 0;
+
+  // Включение тактирования
+  PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M;
+  // Установить делитель частоты
+  TIMER16_0->CFGR = presc_m << TIMER16_PRESCALER_S;
+  // Значение сброса таймера
+  TIMER16_0->ARR = OSC_SYSTEM_VALUE / (1 << presc_m) / fq - 1;
+  // запустить таймер
+  TIMER16_0->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M;
+}

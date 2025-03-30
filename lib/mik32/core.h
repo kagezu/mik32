@@ -1,4 +1,3 @@
 #pragma once
+#include "core/init.h"
 #include "macros/gpio.h"
-#include "macros/avr.h"
-#include "core/mik32.h"

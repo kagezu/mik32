@@ -2,8 +2,6 @@
 #include <mik32_memory_map.h>
 #include <power_manager.h>
 #include <analog_reg.h>
-// #include "macros/gpio.h"
-// #include "macros/avr.h"
 
 class ADC {
 public:
