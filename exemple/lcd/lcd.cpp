@@ -1,14 +1,20 @@
 #include "config.h"
+#include "adc.h"
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
 
 #ifdef __AVR__
-#define USER_B(f) f(B,7)
+#define USER_B(f) f(B,5)
 #else
 #define USER_B(f) f(2,6)
+#define ADC0(f)   f(1,5)
+#define ADC1(f)   f(1,7)
 #endif
 
+#define FAT    4
+
 Display lcd;
+ADC mic;
 
 int main(void)
 {
@@ -16,8 +22,8 @@ int main(void)
 
   // SPI.begin();
   lcd.init();
-  lcd.background(RGB(0, 16, 32));
-  lcd.color(RGB(255, 255, 64));
+  lcd.background(RGB(32, 32, 32));
+  lcd.color(RGB(64, 255, 64));
   lcd.clear();
   lcd.font(arial_14);
   // lcd.font(standard_5x8);
@@ -25,14 +31,66 @@ int main(void)
   USER_B(GPIO);
   USER_B(IN);
 
-  reg x = 0;
-  while (true) {
+  ADC0(AN);
+  ADC1(AN);
+  mic.init(1, 0x3f);
+  mic.start();
 
+  reg x = 1;
+  reg speed = 4;
+  reg xx = (lcd.max_x() + 1) >> 1;
+  reg x2 = xx + (xx >> 1);
+  reg pix[lcd.max_y() + 1] = {};
+  reg yy = 0;
+  reg old = 0;
+  reg x3 = xx - FAT / 2 - 2;
+
+  for (reg i = 0; i < FAT; i++) {
+    lcd.area(x3 - i, 0, x3 - i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
+    lcd.area(x3 + i, 0, x3 + i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
+  }
+
+  while (true) {
+    reg kk = mic.value() / 27;
+    reg y = x % (lcd.max_y() + 1);
+
+    if (USER_B(GET)) {
+      speed = 2;
+    }
+    else {
+      speed = 4;
+    }
+
+    if (!(x & ((1 << speed) - 1))) {
+      reg y2 = (x >> speed) % (lcd.max_y() + 1);
+      reg k2 = kk - 70;
+      if (k2 > (xx >> 1) - 1) k2 = -k2;
+      if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
+      lcd.scroll(y2 + 1);
+      lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
+      lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
+      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
+    }
+
+    lcd.color(RGB(32, 32, 32));
+    lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
+    lcd.color(RGB(64, 255, 64));
+    lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
+
+    old = pix[y];
+    yy = kk;
+    pix[y] = kk;
+
+    x++;
+  }
+
+
+  while (true) {
+    mic.single();
     if (USER_B(GET))
       lcd.clear(RGB(-(x << 3), (x << 3), (x << 2)));
     else
       lcd.demo(x);
-
     lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
   }
 

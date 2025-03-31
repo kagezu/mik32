@@ -1,7 +1,8 @@
 #include "config.h"
-#include "adc.h"
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
+
+Display lcd;
 
 #ifdef __AVR__
 #define USER_B(f) f(B,5)
@@ -9,32 +10,15 @@
 #define USER_B(f) f(2,6)
 #define ADC0(f)   f(1,5)
 #define ADC1(f)   f(1,7)
-#endif
+
+#include "adc.h"
 
 #define FAT    4
 
-Display lcd;
 ADC mic;
 
-int main(void)
+void mic_view()
 {
-  init_system();
-
-  // SPI.begin();
-  lcd.init();
-  lcd.background(RGB(32, 32, 32));
-  lcd.color(RGB(64, 255, 64));
-  lcd.clear();
-  lcd.font(arial_14);
-  // lcd.font(standard_5x8);
-
-  USER_B(GPIO);
-  USER_B(IN);
-
-  ADC0(AN);
-  ADC1(AN);
-  mic.init(1, 0x3f);
-  mic.start();
 
   reg x = 1;
   reg speed = 4;
@@ -58,7 +42,7 @@ int main(void)
       speed = 2;
     }
     else {
-      speed = 3;
+      speed = 4;
     }
 
     if (!(x & ((1 << speed) - 1))) {
@@ -66,7 +50,7 @@ int main(void)
       reg k2 = kk - 70;
       if (k2 > (xx >> 1) - 1) k2 = -k2;
       if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
-      lcd.scroll(y2 + 1);
+      // lcd.scroll(y2 + 1);
       lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
       lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
       lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
@@ -83,15 +67,41 @@ int main(void)
 
     x++;
   }
+}
+#endif
 
+reg inv(reg arg)
+{
+  arg = (arg << 4) | (arg >> 4);
+
+  return arg;
+}
+
+int main(void)
+{
+  init_system();
+
+  USER_B(GPIO);
+  USER_B(IN);
+
+  // SPI.begin();
+  lcd.init();
+  lcd.background(RGB(32, 32, 32));
+  lcd.color(RGB(64, 255, 64));
+  lcd.clear();
+  // lcd.font(arial_14);
+  lcd.font(standard_5x8);
+
+  // mic_view();
+
+  reg x = 1;
 
   while (true) {
-    mic.single();
     if (USER_B(GET))
       lcd.clear(RGB(-(x << 3), (x << 3), (x << 2)));
     else
       lcd.demo(x);
-    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
+    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
   }
 
 }
