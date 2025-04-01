@@ -1,10 +1,10 @@
 #ifdef MIK32V2
 #include "SPI.h"
 
-// SPI_Master SPI;
+SPI_Class SPI;
 
 // Частота в кГц
-void SPI_Master::init(uint16_t fq, uint8_t mode)
+void SPI_Class::init(uint16_t fq, uint8_t mode)
 {
   uint8_t baud_rate_div = 0;
   uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
@@ -43,7 +43,7 @@ void SPI_Master::init(uint16_t fq, uint8_t mode)
   SPI_1->ENABLE = SPI_ENABLE_M;                     // Включение модуля
 }
 
-void SPI_Master::end()
+void SPI_Class::end()
 {
   SPI_1->ENABLE = 0;                                // Отключение модуля
   SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
@@ -52,7 +52,7 @@ void SPI_Master::end()
   (void)unused;
 }
 
-uint8_t SPI_Master::transfer(uint8_t data)
+uint8_t SPI_Class::transfer(uint8_t data)
 {
   clear_fifo();
   SPI_1->TXDATA = data;
@@ -60,7 +60,7 @@ uint8_t SPI_Master::transfer(uint8_t data)
   return  SPI_1->RXDATA;
 }
 
-uint16_t SPI_Master::transfer16(uint16_t data)
+uint16_t SPI_Class::transfer16(uint16_t data)
 {
   uint16_t rx_dbyte;
   clear_fifo();
@@ -73,7 +73,7 @@ uint16_t SPI_Master::transfer16(uint16_t data)
   return rx_dbyte;
 }
 
-uint32_t SPI_Master::read32()
+uint32_t SPI_Class::read32()
 {
   uint32_t rx = SPI_1->RXDATA;
   rx = (rx << 8) | SPI_1->RXDATA;
@@ -82,7 +82,7 @@ uint32_t SPI_Master::read32()
   return rx;
 }
 
-void SPI_Master::write32(uint32_t data)
+void SPI_Class::write32(uint32_t data)
 {
   SPI_1->TXDATA = data >> 8;
   SPI_1->TXDATA = data >> 8;

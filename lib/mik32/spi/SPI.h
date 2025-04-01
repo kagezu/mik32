@@ -12,10 +12,24 @@
 #define SPI_MODE2 0x02
 #define SPI_MODE3 0x03
 
-
-class SPI_Master {
+class SPI_Settings {
 public:
-  SPI_Master() {}
+  void init()
+  {
+
+  }
+
+private:
+};
+
+class SPI_Class {
+public:
+
+  void beginTransaction(SPI_Settings settings) {}
+  void endTransaction(void) {}
+  void begin() { init(); }
+
+  SPI_Class() {}
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MODE0);
   void end();
   uint8_t transfer(uint8_t);
@@ -39,6 +53,6 @@ private:
 
 };
 
-// extern SPI_Master SPI;
+extern SPI_Class SPI;
 
 #endif

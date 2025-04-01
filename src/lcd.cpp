@@ -2,10 +2,24 @@
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
 
+#define COLORS    8
+
+RGB color[COLORS] = {
+  RGB(0,0,0),
+  RGB(255,0,0),
+  RGB(0,255,0),
+  RGB(0,0,255),
+  RGB(255,255,0),
+  RGB(0,255,255),
+  RGB(255,0,255),
+  RGB(255,255,255)
+};
+
 Display lcd;
 
 #ifdef __AVR__
-#define USER_B(f) f(B,5)
+SPI_Class SPI;
+#define USER_B(f) f(B,0)
 #else
 #define USER_B(f) f(2,6)
 #define ADC0(f)   f(1,5)
@@ -73,18 +87,19 @@ void mic_view()
 reg inv(reg arg)
 {
   arg = (arg << 4) | (arg >> 4);
+  // arg = ((arg << 2) & 0b11001100) | ((arg >> 2) & 0b00110011);
+  // arg = ((arg << 1) & 0b10101010) | ((arg >> 1) & 0b01010101);
 
   return arg;
 }
 
 int main(void)
 {
-  init_system();
-
   USER_B(GPIO);
   USER_B(IN);
 
   // SPI.begin();
+  SPI.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
@@ -97,10 +112,12 @@ int main(void)
   reg x = 1;
 
   while (true) {
-    if (USER_B(GET))
-      lcd.clear(RGB(-(x << 3), (x << 3), (x << 2)));
+    if (USER_B(GET)) {
+      lcd.clear(color[x % COLORS]);
+    }
     else
       lcd.demo(x);
+
     lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
   }
 

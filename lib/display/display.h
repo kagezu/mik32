@@ -80,20 +80,21 @@ public:
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    uint32_t yy = 0;
+    uint16_t yy = 0;
     for (uint16_t y = 0; y < max_y() + 1; y++) {
-      uint32_t xx = 0;
-      uint32_t xy = 0;
+      uint16_t xx = 0;
+      uint16_t xy = 0;
       for (uint16_t x = 0; x < max_x() + 1; x++) {
 
         uint8_t e = d << 2;
-        uint16_t r = ((xx + yy) >> div) + e;
-        uint16_t g = ((yy - xx) >> div) + e;
-        uint16_t b = (xy >> div) - e;
+        uint8_t r = ((xx + yy) >> div) + e;
+        uint8_t g = ((yy - xx) >> div) + e;
+        uint8_t b = (xy >> div) - e;
 
         xy += y;  // Заменяем умножение сложением
         xx += x;
 
+        // send_rgb(r, g, b);
         send_rgb(C(r, g, b));
       }
       yy += y;

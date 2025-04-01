@@ -1,8 +1,6 @@
 #pragma once
 #include "type/include.h"
 
-#define abs(x) ((x)>0?(x):-(x))
-
 class  GFX :private IDisplay {
 protected:
   uint16_t _fat = 2;

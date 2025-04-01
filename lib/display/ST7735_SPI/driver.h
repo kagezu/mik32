@@ -5,7 +5,7 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SPI
-extern SPI_Class SPI;
+// extern SPI_Class SPI;
 
 template<typename C>
 class ST7735_SPI {
@@ -18,6 +18,7 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
     L_CS(SET);L_RS(SET);L_RST(CLR);
     _spi.init();
     L_RST(SET);
+    delay_us(15000);          // Ждать стабилизации напряжений
     select();                  // CS Выбор дисплея
     send_command(SWRESET);
     delay_us(15000);          // Ждать стабилизации напряжений
