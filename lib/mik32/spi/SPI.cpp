@@ -9,11 +9,11 @@ void SPI_Class::init(uint16_t fq, uint8_t mode)
   uint8_t baud_rate_div = 0;
   uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
 
-  while (baud_rate_div < 0x07) {
-    if (fq >= max_fq) break;
-    max_fq >>= 1;
-    baud_rate_div++;
-  }
+  // while (baud_rate_div < 0x07) {
+  //   if (fq >= max_fq) break;
+  //   max_fq >>= 1;
+  //   baud_rate_div++;
+  // }
 
   PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_1_M;      // Тактирование модуля
 

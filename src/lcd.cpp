@@ -98,8 +98,8 @@ int main(void)
   USER_B(GPIO);
   USER_B(IN);
 
-  // SPI.begin();
-  SPI.init();
+  SPI.begin();
+  // SPI.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));

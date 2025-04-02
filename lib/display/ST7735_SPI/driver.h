@@ -5,7 +5,9 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SPI
-// extern SPI_Class SPI;
+#ifdef __AVR__
+extern SPI_Class SPI;
+#endif
 
 template<typename C>
 class ST7735_SPI {
@@ -97,7 +99,7 @@ private:
 template<>
   inline void ST7735_SPI<RGB16>::send_rgb(RGB16 color) 
   { 
-    SPI.wait();
+    // SPI.wait();
     SPI.send16(color.rgb); 
   }
 
@@ -127,7 +129,7 @@ template<>
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
-    while (len--) { SPI.send16(color.rgb); SPI.wait(); }
+    while (len--) { SPI.send16(color.rgb);}// SPI.wait(); }
     SPI.wait();
     release();
   }
