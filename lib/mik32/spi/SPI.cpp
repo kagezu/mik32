@@ -3,70 +3,73 @@
 
 SPI_Class SPI;
 
-// Частота в кГц
-void SPI_Class::init(uint16_t fq, uint8_t mode)
+/* Номер интерфейса SPI */
+void SPI_Class::init(uint8_t spi_n = 1)
 {
-  uint8_t baud_rate_div = 0;
-  uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
-
-  // while (baud_rate_div < 0x07) {
-  //   if (fq >= max_fq) break;
-  //   max_fq >>= 1;
-  //   baud_rate_div++;
-  // }
-
-  PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_1_M;      // Тактирование модуля
-
   // Настройка порта ввода/вывода
-  SPI_MISO_1(SER); SPI_MOSI_1(SER); SPI_SCK_1(SER); SPI_SS_1(SER);
-  SPI_MISO_1(NC); SPI_MOSI_1(NC); SPI_SCK_1(NC); SPI_SS_1(VCC);
+  if (spi_n) {
+    SPI_N = SPI_1;
+    SPI_MISO_1(SER); SPI_MOSI_1(SER); SPI_SCK_1(SER); SPI_SS_1(SER);
+    SPI_MISO_1(NC); SPI_MOSI_1(NC); SPI_SCK_1(NC); SPI_SS_1(VCC);
+  }
+  else {
+    SPI_N = SPI_0;
+    SPI_MISO_0(SER); SPI_MOSI_0(SER); SPI_SCK_0(SER); SPI_SS_0(SER);
+    SPI_MISO_0(NC); SPI_MOSI_0(NC); SPI_SCK_0(NC); SPI_SS_0(VCC);
+  }
 
+  // Тактирование модуля
+  PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_1_M;
 
-  SPI_1->ENABLE = 0;                                // Отключение модуля
-  SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
-  SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
-  volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
+  // Включение модуля
+  SPI_N->ENABLE = SPI_ENABLE_M;
+
+  // Сброс маски прерываний
+  SPI_N->INT_DISABLE = 0x3F;
+
+  /* Очистка флагов ошибок чтением */
+  volatile uint32_t unused = SPI_N->INT_STATUS;
   (void)unused;
 
-  SPI_1->INT_DISABLE = 0x3F;                        // Сброс маски прерываний
+  SPI_N->DELAY = SPI_DELAY;
+  SPI_N->TX_THR = SPI_TX_THR;
+}
 
-  SPI_1->CONFIG =
-    SPI_CONFIG_MANUAL_CS_M                          // Ручной режим
-    | SPI_CONFIG_CS_NONE_M                          // Устройства не выбраны
-    | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S) // Делитель частоты
-    | (mode << SPI_CONFIG_CLK_POL_S)                // Фаза и полярность
-    | SPI_CONFIG_MASTER_M;                          // Мастер
-
-  SPI_1->DELAY = 0;
-  SPI_1->TX_THR = 7;                                // Задает уровень, при котором TX_FIFO считается не заполненным 1-8
-
-  SPI_1->ENABLE = SPI_ENABLE_M;                     // Включение модуля
+void SPI_Class::begin(SPI_Settings settings)
+{
+  // Включение модуля
+  SPI_N->ENABLE = SPI_ENABLE_M;
+  SPI_N->CONFIG = settings.config;
+  // SPI_N->DELAY = settings.delay_ext_clk;
+  // SPI_N->TX_THR = settings.tx_thr;
 }
 
 void SPI_Class::end()
 {
-  SPI_1->ENABLE = 0;                                // Отключение модуля
-  SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
-  SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
-  volatile uint32_t unused = SPI_1->INT_STATUS;     /* Очистка флагов ошибок чтением */
+  wait_clr();
+  SPI_N->CONFIG |= SPI_CONFIG_CS_NONE_M;            // Отключение устройства
+  SPI_N->ENABLE = SPI_ENABLE_M;                     // Отключение модуля
+  SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
+  SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
+  volatile uint32_t unused = SPI_N->INT_STATUS;     /* Очистка флагов ошибок чтением */
   (void)unused;
 }
 
 uint8_t SPI_Class::transfer(uint8_t data)
 {
-  clear_fifo();
+  clear_rx();
   SPI_1->TXDATA = data;
-  wait();
+  wait_clr();
   return  SPI_1->RXDATA;
 }
 
 uint16_t SPI_Class::transfer16(uint16_t data)
 {
   uint16_t rx_dbyte;
-  clear_fifo();
+  clear_rx();
   SPI_1->TXDATA = data >> 8;
   SPI_1->TXDATA = data;
-  wait();
+  wait_clr();
   rx_dbyte = SPI_1->RXDATA << 8;
   rx_dbyte |= SPI_1->RXDATA;
 
