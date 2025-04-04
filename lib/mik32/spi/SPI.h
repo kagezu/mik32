@@ -2,7 +2,6 @@
 #pragma once
 #include <mik32_memory_map.h>
 #include <power_manager.h>
-// #include <padconfig.h>
 #include <gpio.h>
 #include "spi.h"
 #include "pins.h"
@@ -14,6 +13,8 @@
 
 #define SPI_TX_THR      0x07
 #define SPI_DELAY       0x00
+
+#define SPI_N           SPI_1
 
 class SPI_Settings {
 public:
@@ -86,24 +87,24 @@ public:
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);
 
-  inline void clear_rx() { SPI_1->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
-  inline void clear_tx() { SPI_1->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }
-  inline void wait_thr() { while (!(SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
-  inline void wait_full() { while (SPI_1->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
-  inline void wait_clr() { while (SPI_1->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  inline void send(uint8_t data) { wait_full(); SPI_1->TXDATA = data; }
-  inline void send16(uint16_t data) { wait_thr(); SPI_1->TXDATA = data >> 8; SPI_1->TXDATA = data; }
+  inline void clear_rx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
+  inline void clear_tx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  inline void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+  inline void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
+  inline void wait_clr() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
+  inline void send(uint8_t data) { wait_full(); SPI_N->TXDATA = data; }
+  inline void send16(uint16_t data) { wait_thr(); SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
 
   // без проверок
-  inline  uint8_t read() { return SPI_1->RXDATA; }
-  inline  uint16_t read16() { uint16_t rx = SPI_1->RXDATA << 8; return SPI_1->RXDATA | rx; }
+  inline  uint8_t read() { return SPI_N->RXDATA; }
+  inline  uint16_t read16() { uint16_t rx = SPI_N->RXDATA << 8; return SPI_N->RXDATA | rx; }
   inline  uint32_t read32();
-  inline  void  write(uint8_t data) { SPI_1->TXDATA = data; }
-  inline  void  write16(uint16_t data) { SPI_1->TXDATA = data >> 8; SPI_1->TXDATA = data; }
+  inline  void  write(uint8_t data) { SPI_N->TXDATA = data; }
+  inline  void  write16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
   inline  void  write32(uint32_t data);
 
 private:
-  SPI_TypeDef *SPI_N;
+  // SPI_TypeDef *SPI_N;
 };
 
 extern SPI_Class SPI;

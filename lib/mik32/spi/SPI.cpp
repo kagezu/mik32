@@ -8,12 +8,12 @@ void SPI_Class::init(uint8_t spi_n = 1)
 {
   // Настройка порта ввода/вывода
   if (spi_n) {
-    SPI_N = SPI_1;
+    // SPI_N = SPI_1;
     SPI_MISO_1(SER); SPI_MOSI_1(SER); SPI_SCK_1(SER); SPI_SS_1(SER);
     SPI_MISO_1(NC); SPI_MOSI_1(NC); SPI_SCK_1(NC); SPI_SS_1(VCC);
   }
   else {
-    SPI_N = SPI_0;
+    // SPI_N = SPI_0;
     SPI_MISO_0(SER); SPI_MOSI_0(SER); SPI_SCK_0(SER); SPI_SS_0(SER);
     SPI_MISO_0(NC); SPI_MOSI_0(NC); SPI_SCK_0(NC); SPI_SS_0(VCC);
   }
@@ -58,39 +58,39 @@ void SPI_Class::end()
 uint8_t SPI_Class::transfer(uint8_t data)
 {
   clear_rx();
-  SPI_1->TXDATA = data;
+  SPI_N->TXDATA = data;
   wait_clr();
-  return  SPI_1->RXDATA;
+  return  SPI_N->RXDATA;
 }
 
 uint16_t SPI_Class::transfer16(uint16_t data)
 {
   uint16_t rx_dbyte;
   clear_rx();
-  SPI_1->TXDATA = data >> 8;
-  SPI_1->TXDATA = data;
+  SPI_N->TXDATA = data >> 8;
+  SPI_N->TXDATA = data;
   wait_clr();
-  rx_dbyte = SPI_1->RXDATA << 8;
-  rx_dbyte |= SPI_1->RXDATA;
+  rx_dbyte = SPI_N->RXDATA << 8;
+  rx_dbyte |= SPI_N->RXDATA;
 
   return rx_dbyte;
 }
 
 uint32_t SPI_Class::read32()
 {
-  uint32_t rx = SPI_1->RXDATA;
-  rx = (rx << 8) | SPI_1->RXDATA;
-  rx = (rx << 8) | SPI_1->RXDATA;
-  rx = (rx << 8) | SPI_1->RXDATA;
+  uint32_t rx = SPI_N->RXDATA;
+  rx = (rx << 8) | SPI_N->RXDATA;
+  rx = (rx << 8) | SPI_N->RXDATA;
+  rx = (rx << 8) | SPI_N->RXDATA;
   return rx;
 }
 
 void SPI_Class::write32(uint32_t data)
 {
-  SPI_1->TXDATA = data >> 8;
-  SPI_1->TXDATA = data >> 8;
-  SPI_1->TXDATA = data >> 8;
-  SPI_1->TXDATA = data;
+  SPI_N->TXDATA = data >> 8;
+  SPI_N->TXDATA = data >> 8;
+  SPI_N->TXDATA = data >> 8;
+  SPI_N->TXDATA = data;
 }
 
 #endif
