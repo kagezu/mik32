@@ -20,7 +20,7 @@ upload_port = usb
 upload_command = ./uploader/mk32/uploader --com /dev/ttyUSB0 $SOURCE
 lib_ignore = avr
 
-[env:MIK32-JTAG]
+[env:MIK32-V2]
 platform = MIK32
 board = mik32v2
 framework = framework-mik32v2-sdk
@@ -35,7 +35,7 @@ board_build.ldscript = spifi
 ; board_build.ldscript = eeprom
 lib_ignore = avr
 
-[env:AVR-25MHz]
+[env:UNO-25MHz]
 platform = atmelavr
 board = uno
 framework = arduino
@@ -45,7 +45,7 @@ build_flags =
 	-Wl,-Tdata,0x800100
 lib_ignore = mik32
 
-[env:AVR-16MHz]
+[env:UNO-16MHz]
 platform = atmelavr
 board = uno
 framework = arduino
@@ -54,3 +54,35 @@ build_flags =
 	-Wl,--defsym=__stack=0x08FF
 	-Wl,-Tdata,0x800100
 lib_ignore = mik32
+
+[env:AT128]
+platform = atmelavr
+board = ATmega128
+framework = arduino
+board_build.f_cpu = 22118400L
+build_flags = 
+	-Wl,--defsym=__stack=0x10FF
+	-Wl,-Tdata,0x800100
+upload_protocol = custom
+upload_port = usb
+upload_flags = 
+	-C
+	${platformio.packages_dir}/tool-avrdude/avrdude.conf
+	-p
+	m128
+	-P
+	com1
+	-c
+	usbasp
+	-b
+	19200
+upload_command = avrdude $UPLOAD_FLAGS -U flash:w:$SOURCE:i
+lib_ignore = mik32
+
+; [env:NANO]
+; platform = atmelavr
+; framework = arduino
+; board = nanoatmega328new
+; board_build.mcu = atmega328p
+; board_build.f_cpu = 16000000L
+; lib_ignore = mik32

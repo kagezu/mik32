@@ -1,4 +1,4 @@
-# Библиотеки для ATmega и MIK32 AMUR
+# Песочница для ATmega и MIK32 AMUR
 
 ## ![alt text](./img/ace-uno.jpg)
 
