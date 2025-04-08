@@ -12,7 +12,7 @@
 #define SPI_MODE3       0x03
 
 #define SPI_TX_THR      0x07
-#define SPI_DELAY       0x00
+// #define SPI_DELAY       0x00
 
 #define SPI_N           SPI_1
 
@@ -79,10 +79,12 @@ private:
 
 class SPI_Class {
 public:
-  void init(uint8_t spi_n);
+  void init(uint8_t spi_n = 1);
 
   void begin(SPI_Settings settings);
   void end(void);
+
+  void wait(void) {}//wait_clr(); }
 
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);

@@ -28,7 +28,7 @@ public:
 
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER)
   {
-    uint8_t sck = 0, spi2x = 0;
+    uint8_t sck = 0, spi2x = 1;//0;
 
     if (fq >= F_CPU / 2000) { sck = SPI_DIV_4; spi2x = _BV(SPI2X); }
     else if (fq >= F_CPU / 4000) sck = SPI_DIV_4;
@@ -38,7 +38,7 @@ public:
     else if (fq >= F_CPU / 64000) sck = SPI_DIV_64;
     else sck = SPI_DIV_128;
 
-    spcr = _BV(SPE) | mode | sck;
+    spcr = _BV(SPE) | mode;// | sck;
     spsr = spi2x;
   }
 
@@ -54,7 +54,7 @@ public:
   // Инициализация
 
   SPI_Class() {}
-  void begin()
+  void init()
   {
     SPI_MOSI(OUT);
     SPI_MISO(OUT);
@@ -62,16 +62,16 @@ public:
     SPI_SS(IN);
     SPI_SS(SET);
   }
-  void end() { SPI_MOSI(IN); SPI_SCK(IN); SPI_MISO(IN); SPI_SS(IN); SPCR = 0; }
+  // void end() { SPI_MOSI(IN); SPI_SCK(IN); SPI_MISO(IN); SPI_SS(IN); SPCR = 0; }
 
-  void beginTransaction(SPI_Settings settings)
+  void begin(SPI_Settings settings)
   {
     // if (transaction == 0) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
     SPSR = settings.spsr;
   }
 
-  void endTransaction(void)
+  void end(void)
   {
     // transaction = 0;
     // SREG = sreg;

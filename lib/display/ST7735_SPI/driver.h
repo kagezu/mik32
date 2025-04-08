@@ -35,8 +35,8 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
   }
 
 protected:
-  inline void select() { SPI.beginTransaction(_spi); L_CS(CLR); }
-  inline void release() { SPI.wait(); L_CS(SET); SPI.endTransaction(); }
+  inline void select() { SPI.begin(_spi); L_CS(CLR); }
+  inline void release() { SPI.wait(); L_CS(SET); SPI.end(); }
 
   void send_byte(uint8_t data) { SPI.send(data);SPI.wait(); }
   void send_command(uint8_t command)
@@ -99,7 +99,7 @@ private:
 template<>
   inline void ST7735_SPI<RGB16>::send_rgb(RGB16 color) 
   { 
-    // SPI.wait();
+    SPI.wait();
     SPI.send16(color.rgb); 
   }
 
@@ -129,8 +129,8 @@ template<>
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
-    while (len--) { SPI.send16(color.rgb);}// SPI.wait(); }
-    SPI.wait();
+    while (len--) { SPI.send16(color.rgb); SPI.wait(); }
+    // SPI.wait();
     release();
   }
 
