@@ -1,6 +1,22 @@
 #pragma once
 #include "macros/common.h"
-#include "pins.h"
+#include "macros/attribute.h"
+#include "macros/gpio.h"
+
+#ifdef __AVR_ATmega328P__
+#define SPI_SS(x)     x (B, PB2)
+#define SPI_MOSI(x)   x (B, PB3)
+#define SPI_MISO(x)   x (B, PB4)
+#define SPI_SCK(x)    x (B, PB5)
+#endif
+
+#ifdef __AVR_ATmega128__
+#define SPI_SS(x)     x (B, PB0)
+#define SPI_SCK(x)    x (B, PB1)
+#define SPI_MOSI(x)   x (B, PB2)
+#define SPI_MISO(x)   x (B, PB3)
+#endif
+
 
 #define SPI_MASTER    _BV(MSTR)
 #define SPI_SLAVE     0x00
@@ -28,7 +44,7 @@ public:
 
   void init(uint16_t fq = 0xffff, uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER)
   {
-    uint8_t sck = 0, spi2x = 1;//0;
+    uint8_t sck = 0, spi2x = 0;
 
     if (fq >= F_CPU / 2000) { sck = SPI_DIV_4; spi2x = _BV(SPI2X); }
     else if (fq >= F_CPU / 4000) sck = SPI_DIV_4;
@@ -38,7 +54,7 @@ public:
     else if (fq >= F_CPU / 64000) sck = SPI_DIV_64;
     else sck = SPI_DIV_128;
 
-    spcr = _BV(SPE) | mode;// | sck;
+    spcr = _BV(SPE) | mode | sck;
     spsr = spi2x;
   }
 
@@ -79,11 +95,11 @@ public:
 
   // Передача данных
 
-  inline static  void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
-  inline static uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
-  inline static void send(uint8_t data) { SPDR = data; }
-  inline static void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
-  inline static uint8_t read() { return SPDR; };
+  GCC_INLINE void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
+  GCC_INLINE uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
+  GCC_INLINE void send(uint8_t data) { SPDR = data; }
+  GCC_INLINE void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
+  GCC_INLINE uint8_t read() { return SPDR; };
 
   uint16_t transfer16(uint16_t data)
   {

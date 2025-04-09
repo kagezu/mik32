@@ -1,10 +1,22 @@
-#ifdef MIK32V2
 #pragma once
+#include "macros/attribute.h"
 #include <mik32_memory_map.h>
 #include <power_manager.h>
 #include <gpio.h>
 #include "spi.h"
-#include "pins.h"
+#include "macros/gpio.h"
+
+#define SPI_MISO_0(x)   x (0, 0)
+#define SPI_MOSI_0(x)   x (0, 1)
+#define SPI_SCK_0(x)    x (0, 2)
+#define SPI_SS_0(x)     x (0, 3)
+
+#define SPI_MISO_1(x)   x (1, 0)
+#define SPI_MOSI_1(x)   x (1, 1)
+#define SPI_SCK_1(x)    x (1, 2)
+#define SPI_SS_1(x)     x (1, 3)
+
+
 
 #define SPI_MODE0       0x00
 #define SPI_MODE1       0x01
@@ -89,13 +101,13 @@ public:
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);
 
-  inline void clear_rx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
-  inline void clear_tx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }
-  inline void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
-  inline void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
-  inline void wait_clr() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  inline void send(uint8_t data) { wait_full(); SPI_N->TXDATA = data; }
-  inline void send16(uint16_t data) { wait_thr(); SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
+  GCC_INLINE void clear_rx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
+  GCC_INLINE void clear_tx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  GCC_INLINE void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+  GCC_INLINE void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
+  GCC_INLINE void wait_clr() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
+  GCC_INLINE void send(uint8_t data) { wait_full(); SPI_N->TXDATA = data; }
+  GCC_INLINE void send16(uint16_t data) { wait_thr(); SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
 
   // без проверок
   inline  uint8_t read() { return SPI_N->RXDATA; }
@@ -108,7 +120,3 @@ public:
 private:
   // SPI_TypeDef *SPI_N;
 };
-
-extern SPI_Class SPI;
-
-#endif

@@ -1,13 +1,12 @@
 #pragma once
-#include "spi/SPI.h"
+#include "SPI.h"
 #include "pins.h"
 #include "const.h"
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SPI
-#ifdef __AVR__
+
 extern SPI_Class SPI;
-#endif
 
 template<typename C>
 class ST7735_SPI {
@@ -130,7 +129,6 @@ template<>
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
     while (len--) { SPI.send16(color.rgb); SPI.wait(); }
-    // SPI.wait();
     release();
   }
 

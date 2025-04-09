@@ -1,8 +1,6 @@
 #ifdef MIK32V2
 #include "SPI.h"
 
-SPI_Class SPI;
-
 /* Номер интерфейса SPI */
 void SPI_Class::init(uint8_t spi_n)
 {

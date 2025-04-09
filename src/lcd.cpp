@@ -1,6 +1,7 @@
 #include "config.h"
 #include "font/arial_14.h"
 #include "font/standard_5x8.h"
+#include "SPI.h"
 
 #define COLORS    8
 
@@ -16,9 +17,9 @@ RGB color[COLORS] = {
 };
 
 Display lcd;
+SPI_Class SPI;
 
 #ifdef __AVR__
-SPI_Class SPI;
 #define USER_B(f) f(B,0)
 #else
 #define USER_B(f) f(2,6)
