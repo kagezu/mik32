@@ -1,5 +1,6 @@
 #pragma once
 #include "avr.h"
+#include "macros/attribute.h"
 
 #undef  ADC
 #define ADCW  _SFR_MEM16(0x78)
@@ -38,13 +39,23 @@ public:
     wait();                   // Ждать завершения
   }
 
-  // Выборать канал
-  void chanel(uint8_t ch) { ADMUX = ch | (ADC_AVCC << REFS0); }
+#if ADC_ADLAR
+  uint8_t next(uint8_t ch)
+  #else
+  uint16_t next(uint8_t ch)
+  #endif
+  {
+    single();
+    wait();
+    chanel(ch);
+    return value();
+  }
 
-  void single() { ADCSRA |= _BV(ADSC); }
-  void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
-  void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
-  void wait() { while (!(ADCSRA & _BV(ADIF))); }
+  GCC_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_AVCC << REFS0); }
+  GCC_INLINE void single() { ADCSRA |= _BV(ADSC); }
+  GCC_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
+  GCC_INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
+  GCC_INLINE void wait() { while (!(ADCSRA & _BV(ADIF))); }
 
 #if ADC_ADLAR
   uint8_t value() { return ADCH; }
@@ -52,8 +63,3 @@ public:
   uint16_t value() { return ADCW; }
 #endif
 };
-
-
-
-
-

@@ -1,11 +1,9 @@
 #include "config.h"
-#include "font/arial_14.h"
 #include "font/standard_5x8.h"
 #include "SPI.h"
+#include "adc.h"
 
-#define COLORS    8
-
-RGB color[COLORS] = {
+RGB color[] = {
   RGB(0,0,0),
   RGB(255,0,0),
   RGB(0,255,0),
@@ -18,6 +16,7 @@ RGB color[COLORS] = {
 
 Display lcd;
 SPI_Class SPI;
+ADC mic;
 
 #ifdef __AVR__
 #define USER_B(f) f(B,0)
@@ -26,11 +25,7 @@ SPI_Class SPI;
 #define ADC0(f)   f(1,5)
 #define ADC1(f)   f(1,7)
 
-#include "adc.h"
-
 #define FAT    4
-
-ADC mic;
 
 void mic_view()
 {
@@ -85,27 +80,17 @@ void mic_view()
 }
 #endif
 
-reg inv(reg arg)
-{
-  arg = (arg << 4) | (arg >> 4);
-  // arg = ((arg << 2) & 0b11001100) | ((arg >> 2) & 0b00110011);
-  // arg = ((arg << 1) & 0b10101010) | ((arg >> 1) & 0b01010101);
-
-  return arg;
-}
 
 int main(void)
 {
   USER_B(GPIO);
   USER_B(IN);
 
-  // SPI.begin();
   SPI.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
-  // lcd.font(arial_14);
   lcd.font(standard_5x8);
 
   // mic_view();
@@ -114,7 +99,7 @@ int main(void)
 
   while (true) {
     if (USER_B(GET)) {
-      lcd.clear(color[x % COLORS]);
+      lcd.clear(color[x & 7]);
     }
     else
       lcd.demo(x);

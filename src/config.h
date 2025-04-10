@@ -21,8 +21,8 @@
 
 // Драйвер дисплея
 
-#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
-// #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
+// #include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
+#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
 // #include "ST7789/driver.h"           // RGB18
 // #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
 // #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18

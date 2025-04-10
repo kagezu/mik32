@@ -2,6 +2,7 @@
 #include <mik32_memory_map.h>
 #include <power_manager.h>
 #include <analog_reg.h>
+#include "macros/attribute.h"
 
 class ADC {
 public:
@@ -18,13 +19,31 @@ public:
     single(); // Выполнить измерение
     wait();   // Ждать завершения
   }
-  void chanel(uint8_t ch) {}
+
+  void chanel(uint8_t ch)
+  {
+    ANALOG_REG->ADC_CONFIG =
+      (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M)
+      | (ch << ADC_CONFIG_SEL_S);
+    single(); // Выполнить измерение
+    wait();   // Ждать завершения
+  }
+
+  uint16_t next(uint8_t ch)
+  {
+    ANALOG_REG->ADC_CONFIG =
+      (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M)
+      | (ch << ADC_CONFIG_SEL_S);
+    single(); // Выполнить измерение
+    wait();   // Ждать завершения
+    return value();
+  }
 
 
-  void single() { ANALOG_REG->ADC_SINGLE = 1; }
-  void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
-  void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
+  GCC_INLINE void single() { ANALOG_REG->ADC_SINGLE = 1; }
+  GCC_INLINE void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
+  GCC_INLINE void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
   void wait() { while (!(ANALOG_REG->ADC_VALID)); }
 
-  uint16_t value() { return ANALOG_REG->ADC_VALUE; }
+  GCC_INLINE uint16_t value() { return ANALOG_REG->ADC_VALUE; }
 };

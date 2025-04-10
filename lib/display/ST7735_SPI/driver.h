@@ -35,7 +35,7 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
 
 protected:
   inline void select() { SPI.begin(_spi); L_CS(CLR); }
-  inline void release() { SPI.wait(); L_CS(SET); SPI.end(); }
+  inline void release() { SPI.wait(); SPI.end(); L_CS(SET); }
 
   void send_byte(uint8_t data) { SPI.send(data);SPI.wait(); }
   void send_command(uint8_t command)
