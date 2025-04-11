@@ -15,7 +15,7 @@
 
 #define ADC_ADLAR   1
 
-class ADC_Class {
+class ADC {
 public:
   // Частота в КГц
   void init(uint8_t ch, uint16_t fq = 0xffff)

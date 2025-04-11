@@ -1,5 +1,6 @@
 #include "config.h"
 #include "font/standard_5x8.h"
+#include "font/arial_14.h"
 #include "SPI.h"
 #include "adc.h"
 
@@ -29,6 +30,9 @@ ADC mic;
 
 void mic_view()
 {
+  ADC1(AN);
+  mic.init(1);
+  mic.start();
 
   reg x = 1;
   reg speed = 4;
@@ -60,7 +64,7 @@ void mic_view()
       reg k2 = kk - 70;
       if (k2 > (xx >> 1) - 1) k2 = -k2;
       if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
-      // lcd.scroll(y2 + 1);
+      lcd.scroll(y2 + 1);
       lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
       lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
       lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
@@ -91,9 +95,9 @@ int main(void)
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
-  lcd.font(standard_5x8);
+  lcd.font(arial_14);
 
-  // mic_view();
+  mic_view();
 
   reg x = 1;
 
@@ -103,8 +107,8 @@ int main(void)
     }
     else
       lcd.demo(x);
-
-    lcd.printf(P("\f\n\n\n\n\n\n\n\n\n\n\n\n\n %u "), x++);
+    lcd.at(10, lcd.max_y() - 20);
+    lcd.printf(P("%u"), x++);
   }
 
 }

@@ -44,7 +44,7 @@ private:
   char buffer[PRINT_BUFFER_SIZE] = {};
 
 private:
-  void LF() { point_y += _interline; }
+  void LF() { point_y += _interline; if (point_y + _font.height > max_y()) { point_x = point_y = 0; } }
   void CR() { point_x = 0; }
   void TAB() { point_x = ((point_x / ((_font.weight + _interval) << FONT_TAB_FACTOR) + 1) * (_font.weight + _interval)) << FONT_TAB_FACTOR; }
   void BS() { point_x -= (_font.weight + _interval); if (point_x > max_x()) point_x = 0; }
