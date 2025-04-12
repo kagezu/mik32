@@ -26,7 +26,8 @@ ADC mic;
 #define ADC0(f)   f(1,5)
 #define ADC1(f)   f(1,7)
 
-#define FAT    4
+#define FAT           4
+#define MED_FACTOR    6
 
 void mic_view()
 {
@@ -42,6 +43,7 @@ void mic_view()
   reg yy = 0;
   reg old = 0;
   reg x3 = xx - FAT / 2 - 2;
+  reg med = 70 * 27;
 
   for (reg i = 0; i < FAT; i++) {
     lcd.area(x3 - i, 0, x3 - i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
@@ -61,7 +63,10 @@ void mic_view()
 
     if (!(x & ((1 << speed) - 1))) {
       reg y2 = (x >> speed) % (lcd.max_y() + 1);
-      reg k2 = kk - 70;
+      // reg k2 = kk - 70;
+      reg k = mic.value();
+      med = ((med << MED_FACTOR) - med + k) >> MED_FACTOR;
+      reg k2 = k > med ? (k - med) / 27 : (med - k) / 27;
       if (k2 > (xx >> 1) - 1) k2 = -k2;
       if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
       lcd.scroll(y2 + 1);
