@@ -4,8 +4,6 @@
 #include "type/include.h"
 
 #define LCD_DRIVER    ST7735_SOFT
-#define L_BEGIN       L_CS(CLR);
-#define L_END         L_CS(SET);
 
 template<typename C>
 class ST7735_SOFT {
@@ -36,7 +34,7 @@ public:
 
 protected:
   inline void select() { L_CS(CLR); }
-  inline void release() { L_CS(SET); }
+  inline void release() { L_SCK(CLR); L_CS(SET); }
 
   void send_command(uint8_t command)
   {
@@ -276,44 +274,26 @@ template<>
     L_SCK(MMO) = rgb & 0x1 ? d1 : d0;
     L_SCK(MMO) = s0;
     #else
-  if (rgb & 0x8000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x4000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x2000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x1000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-  if (rgb & 0x800) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x400) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x200) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x100) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-  if (rgb & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-  if (rgb & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x2) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-  if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-  else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+  reg mask = 0x8000;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
   #endif
   
-    L_SCK(CLR);
+    // L_SCK(CLR);
   }
 
   template<>
@@ -459,7 +439,7 @@ template<>
     reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
     #endif
 
-    // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
+    // Дублирование кода намеренно, так как оптимизация ускоряет тут выполнение в 2 раза
     while (len--) {
       #ifdef __AVR__
       L_SCK(MMO) = rgb & 0x8000 ? d1 : d0;
@@ -498,41 +478,23 @@ template<>
       L_SCK(MMO) = rgb & 0x1 ? d1 : d0;
       L_SCK(MMO) = s0;
       #else
-    if (rgb & 0x8000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x4000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x2000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x1000) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-    if (rgb & 0x800) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x400) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x200) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x100) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-    if (rgb & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-
-    if (rgb & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x2) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+      reg mask = 0x8000;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
     #endif
     }
     L_SCK(CLR);

@@ -19,11 +19,19 @@ public:
     PM->CLK_AHB_SET = PM_CLOCK_AHB_DMA_M;   // Включить тактирование модуля
     DMA_CONFIG->CONFIG_STATUS = 0;          // Значения DMA по умолчанию
     DMA_CH = &DMA_CONFIG->CHANNELS[ch];     // Адрес регистров управления каналом
-    config = prior << DMA_CH_CFG_PRIOR_S;   // Установка приоритета
+    config = DMA_CH_CFG_ENABLE_M
+      | (prior << DMA_CH_CFG_PRIOR_S);   // Установка приоритета
   }
 
   // Сбросить канал
   void reset() { DMA_CH->CFG = 0; }
+
+  // Повтор
+  void encore()
+  {
+    DMA_CH->CFG = config;
+    while (!(DMA_CONFIG->CONFIG_STATUS & DMA_STATUS_READY(0)));
+  }
 
   // Запуск канала
   void start(uint32_t dst, uint32_t src, uint32_t len = 0)
@@ -34,6 +42,17 @@ public:
     DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
+  // mem -> gpio
+  void memout(uint32_t dst, uint32_t src, uint32_t len = 0)
+  {
+    DMA_CH->DST = dst;
+    DMA_CH->SRC = src;
+    DMA_CH->LEN = (1 << len) - 1;
+    source(DMA::INST, WORD, HALF, ON, OFF);
+    dest(DMA::INST, HALF, HALF, OFF, OFF);
+    DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
+  }
+
   /*
   + perf - Источник запроса
   + brust - Размер пакета = 2^brust
@@ -41,15 +60,16 @@ public:
   + inc - Инкремент [DMA::OFF, DMA::ON]
   + ack - Подтверждение [DMA::OFF, DMA::ON]
    */
-  void src(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
+  void source(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
   {
-    config = (config & ~(
-      DMA_CH_CFG_READ_MODE_MEMORY_M             // Сбросить режим памяти
-      | DMA_CH_CFG_READ_NO_INCREMENT_M          // Очистить инкремент
-      | DMA_CH_CFG_READ_SIZE_REZ_M              // Очистить разрядность
-      | (0b111 << DMA_CH_CFG_READ_BURST_SIZE_S) // Сбросить размер пакета
-      | DMA_CH_CFG_READ_REQUEST_M               // Очистить периферийную линию
-      | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
+    config |= 0
+      // (config & ~(
+        // DMA_CH_CFG_READ_MODE_MEMORY_M             // Сбросить режим памяти
+        // | DMA_CH_CFG_READ_NO_INCREMENT_M          // Очистить инкремент
+        // | DMA_CH_CFG_READ_SIZE_REZ_M              // Очистить разрядность
+        // | (0b111 << DMA_CH_CFG_READ_BURST_SIZE_S) // Сбросить размер пакета
+        // | DMA_CH_CFG_READ_REQUEST_M               // Очистить периферийную линию
+        // | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
       | (perf == INST
         ? DMA_CH_CFG_READ_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_READ_REQUEST_S))  // Установить периферийную линию 
@@ -66,15 +86,16 @@ public:
   + inc - Инкремент [DMA::OFF, DMA::ON]
   + ack - Подтверждение [DMA::OFF, DMA::ON]
    */
-  void dst(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
+  void dest(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
   {
-    config = (config & ~(
-      DMA_CH_CFG_WRITE_MODE_MEMORY_M             // Сбросить режим памяти
-      | DMA_CH_CFG_WRITE_NO_INCREMENT_M          // Очистить инкремент
-      | DMA_CH_CFG_WRITE_SIZE_REZ_M              // Очистить разрядность
-      | (0b111 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Сбросить размер пакета
-      | DMA_CH_CFG_WRITE_REQUEST_M               // Очистить периферийную линию
-      | DMA_CH_CFG_WRITE_ACK_EN_M))              // Очистить подтверждение
+    config = 0
+      // (config & ~(
+      //   DMA_CH_CFG_WRITE_MODE_MEMORY_M             // Сбросить режим памяти
+      //   | DMA_CH_CFG_WRITE_NO_INCREMENT_M          // Очистить инкремент
+      //   | DMA_CH_CFG_WRITE_SIZE_REZ_M              // Очистить разрядность
+      //   | (0b111 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Сбросить размер пакета
+      //   | DMA_CH_CFG_WRITE_REQUEST_M               // Очистить периферийную линию
+      //   | DMA_CH_CFG_WRITE_ACK_EN_M))              // Очистить подтверждение
       | (perf == INST
         ? DMA_CH_CFG_WRITE_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_WRITE_REQUEST_S))  // Установить периферийную линию 

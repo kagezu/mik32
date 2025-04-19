@@ -40,8 +40,8 @@ void mic_view()
   reg xx = (lcd.max_x() + 1) >> 1;
   reg x2 = xx + (xx >> 1);
   reg pix[lcd.max_y() + 1] = {};
-  reg yy = 0;
-  reg old = 0;
+  // reg yy = 0;
+  // reg old = 0;
   reg x3 = xx - FAT / 2 - 2;
   reg med = 70 * 27;
 
@@ -55,10 +55,10 @@ void mic_view()
     reg y = x % (lcd.max_y() + 1);
 
     if (USER_B(GET)) {
-      speed = 2;
+      speed = 3;
     }
     else {
-      speed = 4;
+      speed = 7;
     }
 
     if (!(x & ((1 << speed) - 1))) {
@@ -69,19 +69,22 @@ void mic_view()
       reg k2 = k > med ? (k - med) / 27 : (med - k) / 27;
       if (k2 > (xx >> 1) - 1) k2 = -k2;
       if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
-      lcd.scroll(y2 + 1);
+      // lcd.scroll(y2 + 1);
       lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
       lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
+      // lcd.area(x2 - k2, y2, x2 + k2, y2, color[(k2 >> 4) + 1]);
       lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
     }
 
     lcd.color(RGB(32, 32, 32));
-    lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
-    lcd.color(RGB(64, 255, 64));
-    lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
+    // lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
+    lcd.pixel(pix[y], y);
+    lcd.color(RGB(127, 255, 255));
+    // lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
+    lcd.pixel(kk, y);
 
-    old = pix[y];
-    yy = kk;
+    // old = pix[y];
+    // yy = kk;
     pix[y] = kk;
 
     x++;
@@ -99,10 +102,10 @@ int main(void)
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
-  lcd.clear();
+  // lcd.clear();
   lcd.font(arial_14);
 
-  mic_view();
+  // mic_view();
 
   reg x = 1;
 
