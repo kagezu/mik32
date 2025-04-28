@@ -1,18 +1,6 @@
 #pragma once
 #include "mik32.h"
 
-// ISR
-
-void set_isr(void(*)());
-void sei();
-void cli();
-
-// Delay
-
-void delay_us(uint32_t us);
-void delay_ms(uint32_t ms);
-
-
 // #define ISR_TIMER32_0        0
 // #define ISR_USART_0          1
 // #define ISR_USART_1          2

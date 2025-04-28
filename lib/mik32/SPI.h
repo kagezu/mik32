@@ -1,10 +1,5 @@
 #pragma once
-#include "macros/attribute.h"
-#include <mik32_memory_map.h>
-#include <power_manager.h>
-#include <gpio.h>
-#include "spi.h"
-#include "macros/gpio.h"
+#include "mik32.h"
 
 #define SPI_MISO_0(x)   x (0, 0)
 #define SPI_MOSI_0(x)   x (0, 1)

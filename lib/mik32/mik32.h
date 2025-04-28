@@ -49,5 +49,7 @@ typedef uint32_t reg;
 typedef uint32_t adr;
 
 #include "macros/pgmspace.h"
+#include "macros/attribute.h"
+#include "macros/gpio.h"
 
 #define P(x)  x
