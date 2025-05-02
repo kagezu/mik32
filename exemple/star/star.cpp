@@ -2,7 +2,7 @@
 #include "font/arial_14.h"
 
 #define COUNT_STAR  250
-int rand();
+uint32_t rnd();
 
 int main(void)
 {
@@ -10,7 +10,6 @@ int main(void)
   RGB black(0, 16, 32);
   RGB white(255, 255, 96);
   Display lcd;
-  init_system();
   lcd.init();
   lcd.background(black);
   lcd.color(white);
@@ -23,10 +22,10 @@ int main(void)
     lcd.color(white);
     lcd.printf(P("Hello  World"));
     for (char j = 0; j < 5; j++) {
-      int16_t x = rand() % MAX_X, y = rand() % MAX_Y;
+      int16_t x = rnd() % MAX_X, y = rnd() % MAX_Y;
       lcd.color(black);
       lcd.pixel(cycle[i][0], cycle[i][1]);
-      lcd.color(RGB(rand()));
+      lcd.color(RGB(rnd()));
       lcd.pixel(x, y);
       cycle[i][0] = x;
       cycle[i][1] = y;
@@ -38,9 +37,9 @@ int main(void)
 }
 
 
-static unsigned long int next = 1;
-int rand()
+static int64_t next = 1;
+uint32_t rnd()
 {
   next = next * 1103515245 + 12345;
-  return (unsigned int)(next >> 8);
+  return next >> 16;
 }

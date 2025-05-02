@@ -19,8 +19,6 @@ void SPI_Class::init(uint8_t spi_n)
     SPI_MISO_0(NC); SPI_MOSI_0(NC); SPI_SCK_0(NC); SPI_SS_0(VCC);
   }
 
-
-
   SPI_N->ENABLE = 0;                                // Отключение модуля
   SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M;       // Очищение FIFO
   SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M;       // Очищение FIFO
@@ -31,15 +29,13 @@ void SPI_Class::init(uint8_t spi_n)
   // Сброс маски прерываний
   SPI_N->INT_DISABLE = 0x3F;
 
-
-
   SPI_N->CONFIG =
     SPI_CONFIG_MANUAL_CS_M                          // Ручной режим
     | SPI_CONFIG_CS_NONE_M                          // Устройства не выбраны
     | SPI_CONFIG_MASTER_M;                          // Мастер
 
 
-  SPI_N->DELAY = 0;//SPI_DELAY;
+  SPI_N->DELAY = SPI_DELAY_DIV;
   SPI_N->TX_THR = SPI_TX_THR;
 
   // Включение модуля
@@ -55,15 +51,16 @@ void SPI_Class::init(uint8_t spi_n)
 void SPI_Class::begin(SPI_Settings settings)
 {
   // Включение модуля
-  // SPI_N->ENABLE = SPI_ENABLE_M;
+  SPI_N->ENABLE = SPI_ENABLE_M;
 
   /* Очистка флагов ошибок чтением */
-  // volatile uint32_t unused = SPI_N->INT_STATUS;
-  // (void)unused;
-  // SPI_N->CONFIG = settings.config;
+  volatile uint32_t unused = SPI_N->INT_STATUS;
+  (void)unused;
 
+  SPI_N->CONFIG = settings.config;
   // SPI_N->DELAY = settings.delay_ext_clk;
   // SPI_N->TX_THR = settings.tx_thr;
+
 }
 
 void SPI_Class::end()

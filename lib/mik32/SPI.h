@@ -19,7 +19,7 @@
 #define SPI_MODE3       0x03
 
 #define SPI_TX_THR      0x07
-// #define SPI_DELAY       0x00
+#define SPI_DELAY_DIV   0x00
 
 #define SPI_N           SPI_1
 
@@ -32,7 +32,7 @@ public:
       | SPI_CONFIG_CS_NONE_M                          // Устройства не выбраны
       | SPI_CONFIG_MASTER_M;                          // Мастер
 
-    delay_ext_clk = SPI_DELAY;
+    delay_ext_clk = SPI_DELAY_DIV;
     tx_thr = SPI_TX_THR;
   }
 
@@ -96,8 +96,8 @@ public:
   uint8_t transfer(uint8_t);
   uint16_t transfer16(uint16_t);
 
-  GCC_INLINE void clear_rx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }
-  GCC_INLINE void clear_tx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  GCC_INLINE void clear_rx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M; }// | SPI_ENABLE_M; }
+  GCC_INLINE void clear_tx() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_TX_FIFO_M; }// | SPI_ENABLE_M; }
   GCC_INLINE void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
   GCC_INLINE void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
   GCC_INLINE void wait_clr() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }

@@ -4,7 +4,7 @@
 // init
 
 void _init();
-extern "C" void SmallSystemInit() { _init(); }
+extern "C" void GCC_WEAK SmallSystemInit() { _init(); }
 
 // ISR
 
