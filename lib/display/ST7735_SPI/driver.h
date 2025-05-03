@@ -6,7 +6,7 @@
 
 #define LCD_DRIVER    ST7735_SPI
 
-extern SPI_Class SPI;
+extern CSPI SPI;
 
 template<typename C>
 class ST7735_SPI {

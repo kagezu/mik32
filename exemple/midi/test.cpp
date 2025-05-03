@@ -7,7 +7,7 @@
 
 Display lcd;
 VS1053 midi;
-SPI_Class SPI;
+CSPI SPI;
 
 int main(void)
 {

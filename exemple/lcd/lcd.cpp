@@ -16,7 +16,7 @@ RGB color[] = {
 };
 
 Display lcd;
-SPI_Class SPI;
+CSPI SPI;
 ADC mic;
 
 #ifdef __AVR__

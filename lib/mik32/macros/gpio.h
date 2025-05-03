@@ -25,5 +25,5 @@
 #define GET(port, pin)      (GPIO_ ## port ->STATE & (1 << pin))
 
 #define MASK(port, pin)     (1 << pin)
-#define MMO(port, pin)      (GPIO_ ## port ->OUTPUT)
-#define MMI(port, pin)      (GPIO_ ## port ->STATE)
+#define SFR(port, pin)      (GPIO_ ## port ->OUTPUT)
+#define SFRI(port, pin)     (GPIO_ ## port ->STATE)

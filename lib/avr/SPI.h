@@ -62,14 +62,14 @@ private:
   uint8_t spcr;
   uint8_t spsr;
 
-  friend class SPI_Class;
+  friend class CSPI;
 };
 
-class SPI_Class {
+class CSPI {
 public:
   // Инициализация
 
-  SPI_Class() {}
+  CSPI() {}
   void init()
   {
     SPI_MOSI(OUT);

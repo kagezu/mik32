@@ -89,61 +89,61 @@ protected:
     uint8_t g = color.green;
     uint8_t b = color.blue;
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
-    if (r & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (r & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
 
-    if (g & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (g & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
 
-    if (b & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (b & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
 
     L_SCK(CLR);
   }
@@ -158,63 +158,63 @@ protected:
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
     // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
     while (len--) {
-    if (r & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (r & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (r & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (r & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
 
-    if (g & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (g & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (g & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (g & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
 
-    if (b & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (b & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = d0;
-    L_SCK(MMO) = s0;
+    if (b & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (b & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = d0;
+    L_SCK(SFR) = s0;
     }
     L_SCK(CLR);
     L_CS(SET);
@@ -230,67 +230,67 @@ template<>
   {
     uint16_t rgb = color.rgb;
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
     #ifndef __AVR__
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
     #endif
 
     #ifdef __AVR__
-    L_SCK(MMO) = rgb & 0x8000 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x4000 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x2000 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x1000 ? d1 : d0;
-    L_SCK(MMO) = s0;
+    L_SCK(SFR) = rgb & 0x8000 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x4000 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x2000 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x1000 ? d1 : d0;
+    L_SCK(SFR) = s0;
     
-    L_SCK(MMO) = rgb & 0x800 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x400 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x200 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x100 ? d1 : d0;
-    L_SCK(MMO) = s0;
+    L_SCK(SFR) = rgb & 0x800 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x400 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x200 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x100 ? d1 : d0;
+    L_SCK(SFR) = s0;
     
-    L_SCK(MMO) = rgb & 0x80 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x40 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x20 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x10 ? d1 : d0;
-    L_SCK(MMO) = s0;
+    L_SCK(SFR) = rgb & 0x80 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x40 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x20 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x10 ? d1 : d0;
+    L_SCK(SFR) = s0;
     
-    L_SCK(MMO) = rgb & 0x8 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x4 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x2 ? d1 : d0;
-    L_SCK(MMO) = s0;
-    L_SCK(MMO) = rgb & 0x1 ? d1 : d0;
-    L_SCK(MMO) = s0;
+    L_SCK(SFR) = rgb & 0x8 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x4 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x2 ? d1 : d0;
+    L_SCK(SFR) = s0;
+    L_SCK(SFR) = rgb & 0x1 ? d1 : d0;
+    L_SCK(SFR) = s0;
     #else
   reg mask = 0x8000;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-  if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+  if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
   #endif
   
     // L_SCK(CLR);
@@ -299,85 +299,85 @@ template<>
   template<>
     void ST7735_SOFT<RGB16>::send_rgb(uint8_t red, uint8_t green, uint8_t blue)
     {  
-      reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-      reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-      reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
+      reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+      reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+      reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
       #ifndef __AVR__
-      reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+      reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
       #endif
   
       #ifdef __AVR__
 
-      L_SCK(MMO) = red & 0x80 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = red & 0x40 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = red & 0x20 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = red & 0x10 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = red & 0x8 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = red & 0x80 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = red & 0x40 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = red & 0x20 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = red & 0x10 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = red & 0x8 ? d1 : d0;
+      L_SCK(SFR) = s0;
 
-      L_SCK(MMO) = green & 0x80 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = green & 0x40 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = green & 0x20 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = green & 0x10 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = green & 0x8 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = green & 0x4 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = green & 0x80 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = green & 0x40 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = green & 0x20 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = green & 0x10 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = green & 0x8 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = green & 0x4 ? d1 : d0;
+      L_SCK(SFR) = s0;
 
-      L_SCK(MMO) = blue & 0x80 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = blue & 0x40 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = blue & 0x20 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = blue & 0x10 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = blue & 0x8 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = blue & 0x80 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = blue & 0x40 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = blue & 0x20 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = blue & 0x10 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = blue & 0x8 ? d1 : d0;
+      L_SCK(SFR) = s0;
 
       #else
-      if (red & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (red & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (red & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (red & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (red & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+      if (red & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (red & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (red & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (red & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (red & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-      if (green & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (green & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (green & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (green & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (green & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (green & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+      if (green & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (green & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (green & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (green & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (green & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (green & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-      if (blue & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (blue & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (blue & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (blue & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-      if (blue & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-      else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+      if (blue & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (blue & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (blue & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (blue & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+      if (blue & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+      else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
     #endif
     
       L_SCK(CLR);
@@ -388,37 +388,37 @@ template<>
   {
     uint16_t rgb = color.rgb;
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
 
-    if (rgb & 0x800) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x400) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x200) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x100) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x800) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x400) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x200) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x100) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-    if (rgb & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-    if (rgb & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x2) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x2) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x1) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
   
     L_SCK(CLR);
   }
@@ -432,69 +432,69 @@ template<>
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
     #ifndef __AVR__
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
     #endif
 
     // Дублирование кода намеренно, так как оптимизация ускоряет тут выполнение в 2 раза
     while (len--) {
       #ifdef __AVR__
-      L_SCK(MMO) = rgb & 0x8000 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x4000 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x2000 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x1000 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x8000 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x4000 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x2000 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x1000 ? d1 : d0;
+      L_SCK(SFR) = s0;
       
-      L_SCK(MMO) = rgb & 0x800 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x400 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x200 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x100 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x800 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x400 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x200 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x100 ? d1 : d0;
+      L_SCK(SFR) = s0;
       
-      L_SCK(MMO) = rgb & 0x80 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x40 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x20 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x10 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x80 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x40 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x20 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x10 ? d1 : d0;
+      L_SCK(SFR) = s0;
       
-      L_SCK(MMO) = rgb & 0x8 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x4 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x2 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x1 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x8 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x4 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x2 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x1 ? d1 : d0;
+      L_SCK(SFR) = s0;
       #else
       reg mask = 0x8000;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; } mask >>=1;
-      if (rgb & mask) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; } else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; } mask >>=1;
+      if (rgb & mask) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; } else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
     #endif
     }
     L_SCK(CLR);
@@ -510,69 +510,69 @@ template<>
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-    reg d0 = L_SCK(MMO) & ~(L_SDA(MASK) | L_SCK(MASK));
-    reg d1 = (L_SCK(MMO) | L_SDA(MASK)) & ~L_SCK(MASK);
-    reg s0 = (L_SCK(MMO) & ~L_SDA(MASK)) | L_SCK(MASK);
+    reg d0 = L_SCK(SFR) & ~(L_SDA(MASK) | L_SCK(MASK));
+    reg d1 = (L_SCK(SFR) | L_SDA(MASK)) & ~L_SCK(MASK);
+    reg s0 = (L_SCK(SFR) & ~L_SDA(MASK)) | L_SCK(MASK);
     #ifndef __AVR__
-    reg s1 = L_SCK(MMO) | L_SDA(MASK) | L_SCK(MASK);
+    reg s1 = L_SCK(SFR) | L_SDA(MASK) | L_SCK(MASK);
     #endif
 
     // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
     while (len--) {
       #ifdef __AVR__      
-      L_SCK(MMO) = rgb & 0x800 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x400 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x200 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x100 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x800 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x400 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x200 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x100 ? d1 : d0;
+      L_SCK(SFR) = s0;
       
-      L_SCK(MMO) = rgb & 0x80 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x40 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x20 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x10 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x80 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x40 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x20 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x10 ? d1 : d0;
+      L_SCK(SFR) = s0;
       
-      L_SCK(MMO) = rgb & 0x8 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x4 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x2 ? d1 : d0;
-      L_SCK(MMO) = s0;
-      L_SCK(MMO) = rgb & 0x1 ? d1 : d0;
-      L_SCK(MMO) = s0;
+      L_SCK(SFR) = rgb & 0x8 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x4 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x2 ? d1 : d0;
+      L_SCK(SFR) = s0;
+      L_SCK(SFR) = rgb & 0x1 ? d1 : d0;
+      L_SCK(SFR) = s0;
       #else
-    if (rgb & 0x800) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x400) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x200) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x100) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x800) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x400) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x200) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x100) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-    if (rgb & 0x80) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x40) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x20) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x10) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x80) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x40) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x20) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x10) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
 
-    if (rgb & 0x8) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x4) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x2) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
-    if (rgb & 0x1) { L_SCK(MMO) = d1; L_SCK(MMO) = s1; }
-    else { L_SCK(MMO) = d0; L_SCK(MMO) = s0; }
+    if (rgb & 0x8) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x4) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x2) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
+    if (rgb & 0x1) { L_SCK(SFR) = d1; L_SCK(SFR) = s1; }
+    else { L_SCK(SFR) = d0; L_SCK(SFR) = s0; }
     #endif
     }
     L_SCK(CLR);

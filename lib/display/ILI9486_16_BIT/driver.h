@@ -57,17 +57,17 @@ protected:
 
   void send_byte(uint8_t data)
   {
-    L_PORT(MMO) = data;
+    L_PORT(SFR) = data;
     L_WR(SET);
     L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
-    L_PORT(MMO) = (data >> 8);
+    L_PORT(SFR) = (data >> 8);
     L_WR(SET);
     L_WR(CLR);
-    L_PORT(MMO) = data;
+    L_PORT(SFR) = data;
     L_WR(SET);
     L_WR(CLR);
   }
@@ -87,11 +87,11 @@ protected:
 
   void send_rgb(C color)
   {
-    static reg set = L_WR(MMO) | L_WR(MASK);
-    static reg clr = L_WR(MMO) & ~L_WR(MASK);
-    L_PORT(MMO) = color.rgb;
-    L_WR(MMO) = set;
-    L_WR(MMO) = clr;
+    static reg set = L_WR(SFR) | L_WR(MASK);
+    static reg clr = L_WR(SFR) & ~L_WR(MASK);
+    L_PORT(SFR) = color.rgb;
+    L_WR(SFR) = set;
+    L_WR(SFR) = clr;
   }
 
 
@@ -101,12 +101,12 @@ protected:
     set_addr(x0, y0, x1, y1);
 
     reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
-    reg set = L_WR(MMO) | L_WR(MASK);
-    reg clr = L_WR(MMO) & ~L_WR(MASK);
-    L_PORT(MMO) = color.rgb;
+    reg set = L_WR(SFR) | L_WR(MASK);
+    reg clr = L_WR(SFR) & ~L_WR(MASK);
+    L_PORT(SFR) = color.rgb;
     while (len--) {
-      L_WR(MMO) = set;
-      L_WR(MMO) = clr;
+      L_WR(SFR) = set;
+      L_WR(SFR) = clr;
     }
     release();
   }
@@ -122,14 +122,14 @@ void ILI9486<RGB18>::send_rgb(RGB18 color)
   static uint16_t half, flag = 0;
 
   if (flag) {
-    L_PORT(MMO) = color.red | half;
+    L_PORT(SFR) = color.red | half;
     L_WR(SET); L_WR(CLR);
     flag = 0;
-    L_PORT(MMO) = *(uint16_t *)&color.blue;
+    L_PORT(SFR) = *(uint16_t *)&color.blue;
     L_WR(SET); L_WR(CLR);
   }
   else {
-    L_PORT(MMO) = *(uint16_t *)&color.green;
+    L_PORT(SFR) = *(uint16_t *)&color.green;
     L_WR(SET); L_WR(CLR);
     half = color.blue << 8;
     flag = 1;
@@ -142,24 +142,24 @@ void ILI9486<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
   select();
   set_addr(x0, y0, x1, y1);
   reg len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
-  reg set = L_WR(MMO) | L_WR(MASK);
-  reg clr = L_WR(MMO) & ~L_WR(MASK);
+  reg set = L_WR(SFR) | L_WR(MASK);
+  reg clr = L_WR(SFR) & ~L_WR(MASK);
   uint16_t hword = *(uint16_t *)&color.green;
   uint16_t mword = color.red | (color.blue << 8);
   uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
-    L_PORT(MMO) = hword;
-    L_WR(MMO) = set;
-    L_WR(MMO) = clr;
+    L_PORT(SFR) = hword;
+    L_WR(SFR) = set;
+    L_WR(SFR) = clr;
 
-    L_PORT(MMO) = mword;
-    L_WR(MMO) = set;
-    L_WR(MMO) = clr;
+    L_PORT(SFR) = mword;
+    L_WR(SFR) = set;
+    L_WR(SFR) = clr;
 
-    L_PORT(MMO) = lword;
-    L_WR(MMO) = set;
-    L_WR(MMO) = clr;
+    L_PORT(SFR) = lword;
+    L_WR(SFR) = set;
+    L_WR(SFR) = clr;
   }
   release();
 }
