@@ -30,8 +30,8 @@ public:
       | SPI_CONFIG_CS_NONE_M                          // Устройства не выбраны
       | SPI_CONFIG_MASTER_M;                          // Мастер
 
-    // delay_clk = SPI_DELAY_DIV;
-    // tx_thr = SPI_TX_THR;
+    delay_clk = SPI_DELAY_DIV;
+    tx_thr = SPI_TX_THR;
   }
 
   void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
@@ -48,13 +48,6 @@ public:
   {
     uint8_t baud_rate_div = 0;
     uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
-    if(fq < 13400)baud_rate_div++;
-    if(fq < 7300)baud_rate_div++;
-    if(fq < 3800)baud_rate_div++;
-    if(fq < 1900)baud_rate_div++;
-    if(fq < 950)baud_rate_div++;
-    if(fq < 480)baud_rate_div++;
-    if(fq < 240)baud_rate_div++;
     
     while (baud_rate_div < 0x07) {
       if (fq >= max_fq) break;
@@ -66,18 +59,18 @@ public:
       | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S); // Делитель частоты
   }
 
-  // void delay(uint32_t btwn = 0, uint32_t after = 0, uint32_t ini = 0)
-  // {
-  //   delay_clk =
-  //     (ini << SPI_DELAY_INIT_S)
-  //     | (after << SPI_DELAY_AFTER_S)
-  //     | (btwn << SPI_DELAY_BTWN_S);
-  // }
+  void delay(uint32_t btwn = 0, uint32_t after = 0, uint32_t ini = 0)
+  {
+    delay_clk =
+      (ini << SPI_DELAY_INIT_S)
+      | (after << SPI_DELAY_AFTER_S)
+      | (btwn << SPI_DELAY_BTWN_S);
+  }
 
 private:
   uint32_t config;
-  // uint32_t delay_clk;
-  // uint32_t tx_thr;
+  uint32_t delay_clk;
+  uint32_t tx_thr;
 
   friend class CSPI0;
   friend class CSPI1;
