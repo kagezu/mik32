@@ -3,6 +3,8 @@
 #include "font/arial_14.h"
 #include "SPI.h"
 #include "adc.h"
+#include "timer.h"
+#include "dma.h"
 
 RGB color[] = {
   RGB(0,0,0),
@@ -17,81 +19,52 @@ RGB color[] = {
 
 Display lcd;
 CSPI SPI;
-ADC mic;
+ADC adc;
+DMA dma(0);
 
-#ifdef __AVR__
-#define USER_B(f) f(B,0)
-#else
 #define USER_B(f) f(2,6)
 #define ADC0(f)   f(1,5)
 #define ADC1(f)   f(1,7)
 
-#define FAT           4
-#define MED_FACTOR    6
+#define CYCLES  1000
 
-void mic_view()
+// reg buffer[CYCLES];
+
+void GCC_RAM test()
 {
-  ADC1(AN);
-  mic.init(1);
-  mic.start();
+  ADC0(AN);
+  // ADC1(AN);// ADC1(OUT); ADC1(CLR);
+  T32_0_POWER_ON;
+  T32_0_ON;
 
-  reg x = 1;
-  reg speed = 4;
-  reg xx = (lcd.max_x() + 1) >> 1;
-  reg x2 = xx + (xx >> 1);
-  reg pix[lcd.max_y() + 1] = {};
-  // reg yy = 0;
-  // reg old = 0;
-  reg x3 = xx - FAT / 2 - 2;
-  reg med = 70 * 27;
+  for (uint32_t i = 2; i < 25; i += 2) {
+    adc.init(0, i);
+    adc.start();
+    T32_0_CLR;
+    T32_0_ON;
+    reg value = adc.value();
+    for (reg n = 1; n < CYCLES; n++) {
+      // ADC1(INV);
+      while (value == adc.value());
+      value = adc.value();
+    }
+    reg time = T32_0;
+    adc.stop();
+    // delay_ms(300);
+    // reg count = 0;
+    // reg value = buffer[0];
+    // for (reg n = 1; n < CYCLES; n++) {
+    //   if (value != buffer[n]) {
+    //     count++;
+    //     value = buffer[n];
+    //   }
+    // }
 
-  for (reg i = 0; i < FAT; i++) {
-    lcd.area(x3 - i, 0, x3 - i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
-    lcd.area(x3 + i, 0, x3 + i, lcd.max_y(), RGB(32, 32, 63 + (64 >> i)));
+    lcd.printf("%2lu %5lu %5lu \n", i, time / CYCLES, time);
   }
-
-  while (true) {
-    reg kk = mic.value() / 27;
-    reg y = x % (lcd.max_y() + 1);
-
-    if (USER_B(GET)) {
-      speed = 3;
-    }
-    else {
-      speed = 7;
-    }
-
-    if (!(x & ((1 << speed) - 1))) {
-      reg y2 = (x >> speed) % (lcd.max_y() + 1);
-      // reg k2 = kk - 70;
-      reg k = mic.value();
-      med = ((med << MED_FACTOR) - med + k) >> MED_FACTOR;
-      reg k2 = k > med ? (k - med) / 27 : (med - k) / 27;
-      if (k2 > (xx >> 1) - 1) k2 = -k2;
-      if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
-      // lcd.scroll(y2 + 1);
-      lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
-      lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
-      // lcd.area(x2 - k2, y2, x2 + k2, y2, color[(k2 >> 4) + 1]);
-      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
-    }
-
-    lcd.color(RGB(32, 32, 32));
-    // lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
-    lcd.pixel(pix[y], y);
-    lcd.color(RGB(127, 255, 255));
-    // lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
-    lcd.pixel(kk, y);
-
-    // old = pix[y];
-    // yy = kk;
-    pix[y] = kk;
-
-    x++;
-  }
+  T32_0_OFF;
+  T32_0_POWER_OFF;
 }
-#endif
-
 
 int main(void)
 {
@@ -102,22 +75,23 @@ int main(void)
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
-  // lcd.clear();
-  lcd.font(arial_14);
+  lcd.clear();
+  lcd.font(standard_5x8);
+  // lcd.font(arial_14);
 
-  // mic_view();
 
-  reg x = 1;
+  // reg x = 1;
 
+  test();
   while (true) {
-    if (USER_B(GET)) {
-      lcd.clear(color[x & 7]);
-    }
-    else
-      lcd.demo(x);
+    //   if (USER_B(GET)) {
+    //     lcd.clear(color[x & 7]);
+    //   }
+    //   else
+    //     lcd.demo(x);
 
-    lcd.at(10, lcd.max_y() - 20);
-    lcd.printf(P("%u"), x++);
+    //   lcd.at(10, lcd.max_y() - 20);
+    //   lcd.printf(P("%u"), x++);
   }
 
 }

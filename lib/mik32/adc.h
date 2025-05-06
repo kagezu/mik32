@@ -13,7 +13,7 @@ public:
     ANALOG_REG->ADC_CONFIG =
       (delay << ADC_CONFIG_SAH_TIME_WRITE_S)// Задержка
       | (ch << ADC_CONFIG_SEL_S)            // Выборать канал
-      | ADC_CONFIG_RN_M                     // Сброс
+      // | ADC_CONFIG_RN_M                     // Сброс
       | ADC_CONFIG_EN_M;                    // Включить
 
     single(); // Выполнить измерение
@@ -43,7 +43,7 @@ public:
   GCC_INLINE void single() { ANALOG_REG->ADC_SINGLE = 1; }
   GCC_INLINE void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
   GCC_INLINE void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
-  void wait() { while (!(ANALOG_REG->ADC_VALID)); }
+  GCC_INLINE void wait() { while (!(ANALOG_REG->ADC_VALID)); }
 
   GCC_INLINE uint16_t value() { return ANALOG_REG->ADC_VALUE; }
 };

@@ -7,7 +7,7 @@ class DMA {
 public:
   enum DMA_REQUEST : uint8_t {
     USART0, USART1, CRYPT, SPI0, SPI1, I2C0, I2C1,
-    SPIFI, TIMER1, TIMER2, DAC0, DAC1, TIMER0, INST
+    SPIFI, TIMER1, TIMER2, DAC0, DAC1, TIMER0, MEM
   };
   enum DMA_SIZE : uint8_t { BYTE, HALF, WORD };
   enum DMA_PRIOR : uint8_t { LOW, MEDIUM, HIGH, VERY };
@@ -34,22 +34,22 @@ public:
   }
 
   // Запуск канала
-  void start(uint32_t dst, uint32_t src, uint32_t len = 0)
+  void start(uint32_t dst, uint32_t src, uint32_t len)
   {
     DMA_CH->DST = dst;
     DMA_CH->SRC = src;
-    DMA_CH->LEN = len;
+    DMA_CH->LEN = len - 1;
     DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
   // mem -> gpio
-  void memout(uint32_t dst, uint32_t src, uint32_t len = 0)
+  void memout(uint32_t dst, uint32_t src, uint32_t len)
   {
     DMA_CH->DST = dst;
     DMA_CH->SRC = src;
-    DMA_CH->LEN = (1 << len) - 1;
-    source(DMA::INST, WORD, HALF, ON, OFF);
-    dest(DMA::INST, HALF, HALF, OFF, OFF);
+    DMA_CH->LEN = len - 1;
+    source(DMA::MEM, WORD, HALF, ON, OFF);
+    dest(DMA::MEM, HALF, HALF, OFF, OFF);
     DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
@@ -70,7 +70,7 @@ public:
         // | (0b111 << DMA_CH_CFG_READ_BURST_SIZE_S) // Сбросить размер пакета
         // | DMA_CH_CFG_READ_REQUEST_M               // Очистить периферийную линию
         // | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
-      | (perf == INST
+      | (perf == MEM
         ? DMA_CH_CFG_READ_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_READ_REQUEST_S))  // Установить периферийную линию 
       | (even << DMA_CH_CFG_READ_SIZE_S)        // Разрядность данных
@@ -96,7 +96,7 @@ public:
       //   | (0b111 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Сбросить размер пакета
       //   | DMA_CH_CFG_WRITE_REQUEST_M               // Очистить периферийную линию
       //   | DMA_CH_CFG_WRITE_ACK_EN_M))              // Очистить подтверждение
-      | (perf == INST
+      | (perf == MEM
         ? DMA_CH_CFG_WRITE_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_WRITE_REQUEST_S))  // Установить периферийную линию 
       | (even << DMA_CH_CFG_WRITE_SIZE_S)        // Разрядность данных
