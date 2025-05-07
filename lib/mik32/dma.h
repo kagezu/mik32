@@ -11,7 +11,8 @@ public:
   };
   enum DMA_SIZE : uint8_t { BYTE, HALF, WORD };
   enum DMA_PRIOR : uint8_t { LOW, MEDIUM, HIGH, VERY };
-  enum DMA_FLAG : uint8_t { OFF, ON };
+  enum DMA_INCREMENT : uint8_t { IMM, INC };
+  enum DMA_ACK : uint8_t { NONE, ACK };
 
 public:
   DMA(uint8_t ch, DMA_PRIOR prior = LOW)
@@ -20,11 +21,15 @@ public:
     DMA_CONFIG->CONFIG_STATUS = 0;          // Значения DMA по умолчанию
     DMA_CH = &DMA_CONFIG->CHANNELS[ch];     // Адрес регистров управления каналом
     config = DMA_CH_CFG_ENABLE_M
-      | (prior << DMA_CH_CFG_PRIOR_S);   // Установка приоритета
+      | (prior << DMA_CH_CFG_PRIOR_S);      // Установка приоритета
+    dma_ready = DMA_STATUS_READY(0);        // Признак, что канал свободен.
   }
 
   // Сбросить канал
   void reset() { DMA_CH->CFG = 0; }
+
+  // Ожидание завершения работы канала
+  void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)); }
 
   // Повтор
   void encore()
@@ -34,10 +39,10 @@ public:
   }
 
   // Запуск канала
-  void start(uint32_t dst, uint32_t src, uint32_t len)
+  void start(void *dst, void *src, uint32_t len)
   {
-    DMA_CH->DST = dst;
-    DMA_CH->SRC = src;
+    DMA_CH->DST = (uint32_t)dst;
+    DMA_CH->SRC = (uint32_t)src;
     DMA_CH->LEN = len - 1;
     DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
@@ -48,8 +53,8 @@ public:
     DMA_CH->DST = dst;
     DMA_CH->SRC = src;
     DMA_CH->LEN = len - 1;
-    source(DMA::MEM, WORD, HALF, ON, OFF);
-    dest(DMA::MEM, HALF, HALF, OFF, OFF);
+    source(DMA::MEM, WORD, HALF, INC, NONE);
+    dest(DMA::MEM, HALF, HALF, IMM, NONE);
     DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
@@ -60,7 +65,7 @@ public:
   + inc - Инкремент [DMA::OFF, DMA::ON]
   + ack - Подтверждение [DMA::OFF, DMA::ON]
    */
-  void source(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
+  void source(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
   {
     config |= 0
       // (config & ~(
@@ -72,7 +77,7 @@ public:
         // | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
       | (perf == MEM
         ? DMA_CH_CFG_READ_MODE_MEMORY_M         // Установить режим памяти
-        : (perf << DMA_CH_CFG_READ_REQUEST_S))  // Установить периферийную линию 
+        : (perf << DMA_CH_CFG_READ_REQUEST_S))  // Установить периферийную линию
       | (even << DMA_CH_CFG_READ_SIZE_S)        // Разрядность данных
       | (brust << DMA_CH_CFG_READ_BURST_SIZE_S) // Установить размер пакета
       | (inc << DMA_CH_CFG_READ_INCREMENT_S)    // Установить инкремент
@@ -86,7 +91,7 @@ public:
   + inc - Инкремент [DMA::OFF, DMA::ON]
   + ack - Подтверждение [DMA::OFF, DMA::ON]
    */
-  void dest(DMA_REQUEST perf, uint8_t brust = 0, DMA_SIZE even = BYTE, DMA_FLAG inc = OFF, DMA_FLAG ack = OFF)
+  void dest(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
   {
     config = 0
       // (config & ~(
@@ -108,4 +113,5 @@ public:
 protected:
   DMA_CHANNEL_TypeDef *DMA_CH;
   uint32_t config;
+  uint32_t dma_ready;
 };

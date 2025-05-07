@@ -7,8 +7,8 @@ void CSPI::init(uint8_t spi_n)
     PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_0_M;
 
     // Настройка порта ввода/вывода
-    SPI_MISO_0(SER); SPI_MOSI_0(SER); SPI_SCK_0(SER); SPI_SS_0(SER);
-    SPI_MISO_0(NC); SPI_MOSI_0(NC); SPI_SCK_0(NC); SPI_SS_0(VCC);
+    SPI_MISO_0(SERIAL); SPI_MOSI_0(SERIAL); SPI_SCK_0(SERIAL); SPI_SS_0(SERIAL);
+    SPI_MISO_0(P_NC); SPI_MOSI_0(P_NC); SPI_SCK_0(P_NC); SPI_SS_0(P_VCC);
 
     SPI_N = SPI_0;
   }
@@ -17,8 +17,8 @@ void CSPI::init(uint8_t spi_n)
     PM->CLK_APB_P_SET = PM_CLOCK_APB_P_SPI_1_M;
 
     // Настройка порта ввода/вывода
-    SPI_MISO_1(SER); SPI_MOSI_1(SER); SPI_SCK_1(SER); SPI_SS_1(SER);
-    SPI_MISO_1(NC); SPI_MOSI_1(NC); SPI_SCK_1(NC); SPI_SS_1(VCC);
+    SPI_MISO_1(SERIAL); SPI_MOSI_1(SERIAL); SPI_SCK_1(SERIAL); SPI_SS_1(SERIAL);
+    SPI_MISO_1(P_NC); SPI_MOSI_1(P_NC); SPI_SCK_1(P_NC); SPI_SS_1(P_VCC);
 
     SPI_N = SPI_1;
   }

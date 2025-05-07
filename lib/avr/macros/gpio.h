@@ -16,5 +16,5 @@
 #define INV(port, pin)        PORT(port) ^=  _BV(pin)
 #define GET(port, pin)        (PIN(port)  &  _BV(pin))
 #define MASK(port, pin)                      _BV(pin)
-#define SFR(port, pin)        PORT(port)
-#define SFRI(port, pin)        PIN(port)
+#define OUTPUT(port, pin)        PORT(port)
+#define STATE(port, pin)        PIN(port)

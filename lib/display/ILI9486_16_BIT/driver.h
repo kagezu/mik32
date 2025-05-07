@@ -57,17 +57,17 @@ protected:
 
   void send_byte(uint8_t data)
   {
-    L_PORT(SFR) = data;
+    L_PORT(OUTPUT) = data;
     L_WR(SET);
     L_WR(CLR);
   }
 
   void send_word(uint16_t data)
   {
-    L_PORT(SFR) = (data >> 8);
+    L_PORT(OUTPUT) = (data >> 8);
     L_WR(SET);
     L_WR(CLR);
-    L_PORT(SFR) = data;
+    L_PORT(OUTPUT) = data;
     L_WR(SET);
     L_WR(CLR);
   }
@@ -87,11 +87,11 @@ protected:
 
   void send_rgb(C color)
   {
-    static reg set = L_WR(SFR) | L_WR(MASK);
-    static reg clr = L_WR(SFR) & ~L_WR(MASK);
-    L_PORT(SFR) = color.rgb;
-    L_WR(SFR) = set;
-    L_WR(SFR) = clr;
+    static reg set = L_WR(OUTPUT) | L_WR(MASK);
+    static reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
+    L_PORT(OUTPUT) = color.rgb;
+    L_WR(OUTPUT) = set;
+    L_WR(OUTPUT) = clr;
   }
 
 
@@ -101,12 +101,12 @@ protected:
     set_addr(x0, y0, x1, y1);
 
     reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
-    reg set = L_WR(SFR) | L_WR(MASK);
-    reg clr = L_WR(SFR) & ~L_WR(MASK);
-    L_PORT(SFR) = color.rgb;
+    reg set = L_WR(OUTPUT) | L_WR(MASK);
+    reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
+    L_PORT(OUTPUT) = color.rgb;
     while (len--) {
-      L_WR(SFR) = set;
-      L_WR(SFR) = clr;
+      L_WR(OUTPUT) = set;
+      L_WR(OUTPUT) = clr;
     }
     release();
   }
@@ -122,14 +122,14 @@ void ILI9486<RGB18>::send_rgb(RGB18 color)
   static uint16_t half, flag = 0;
 
   if (flag) {
-    L_PORT(SFR) = color.red | half;
+    L_PORT(OUTPUT) = color.red | half;
     L_WR(SET); L_WR(CLR);
     flag = 0;
-    L_PORT(SFR) = *(uint16_t *)&color.blue;
+    L_PORT(OUTPUT) = *(uint16_t *)&color.blue;
     L_WR(SET); L_WR(CLR);
   }
   else {
-    L_PORT(SFR) = *(uint16_t *)&color.green;
+    L_PORT(OUTPUT) = *(uint16_t *)&color.green;
     L_WR(SET); L_WR(CLR);
     half = color.blue << 8;
     flag = 1;
@@ -142,24 +142,24 @@ void ILI9486<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
   select();
   set_addr(x0, y0, x1, y1);
   reg len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
-  reg set = L_WR(SFR) | L_WR(MASK);
-  reg clr = L_WR(SFR) & ~L_WR(MASK);
+  reg set = L_WR(OUTPUT) | L_WR(MASK);
+  reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
   uint16_t hword = *(uint16_t *)&color.green;
   uint16_t mword = color.red | (color.blue << 8);
   uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
-    L_PORT(SFR) = hword;
-    L_WR(SFR) = set;
-    L_WR(SFR) = clr;
+    L_PORT(OUTPUT) = hword;
+    L_WR(OUTPUT) = set;
+    L_WR(OUTPUT) = clr;
 
-    L_PORT(SFR) = mword;
-    L_WR(SFR) = set;
-    L_WR(SFR) = clr;
+    L_PORT(OUTPUT) = mword;
+    L_WR(OUTPUT) = set;
+    L_WR(OUTPUT) = clr;
 
-    L_PORT(SFR) = lword;
-    L_WR(SFR) = set;
-    L_WR(SFR) = clr;
+    L_PORT(OUTPUT) = lword;
+    L_WR(OUTPUT) = set;
+    L_WR(OUTPUT) = clr;
   }
   release();
 }

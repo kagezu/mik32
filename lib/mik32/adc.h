@@ -13,7 +13,7 @@ public:
     ANALOG_REG->ADC_CONFIG =
       (delay << ADC_CONFIG_SAH_TIME_WRITE_S)// Задержка
       | (ch << ADC_CONFIG_SEL_S)            // Выборать канал
-      // | ADC_CONFIG_RN_M                     // Сброс
+      | ADC_CONFIG_RN_M                  // Сброс
       | ADC_CONFIG_EN_M;                    // Включить
 
     single(); // Выполнить измерение

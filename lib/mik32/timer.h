@@ -65,9 +65,9 @@
 #define T32_1_FQ(fq)              TIMER32_1->TOP = OSC_SYSTEM_VALUE / fq - 1
 #define T32_2_FQ(fq)              TIMER32_2->TOP = OSC_SYSTEM_VALUE / fq - 1
 
-#define T32_0_TOP(top)            TIMER32_0->TOP = top
-#define T32_1_TOP(top)            TIMER32_1->TOP = top
-#define T32_2_TOP(top)            TIMER32_2->TOP = top
+#define T32_0_TOP(top)            TIMER32_0->TOP = (top - 1)
+#define T32_1_TOP(top)            TIMER32_1->TOP = (top - 1)
+#define T32_2_TOP(top)            TIMER32_2->TOP = (top - 1)
 
 #define T32_0                     TIMER32_0->VALUE
 #define T32_1                     TIMER32_1->VALUE

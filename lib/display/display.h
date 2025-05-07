@@ -48,6 +48,16 @@ public:
     release();
   }
 
+  void pixel(uint16_t x, uint16_t y, C color)
+  {
+    if (x > max_x() || y > max_y()) return;
+    select();
+    set_addr(x, y, x, y);
+    send_rgb(color);
+    send_rgb(color);
+    release();
+  }
+
   // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {

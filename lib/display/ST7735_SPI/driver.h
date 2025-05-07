@@ -28,7 +28,7 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
     delay_ms(10);
     select();             // CS Выбор дисплея
     send_command(SWRESET);	// Out of sleep mode
-    delay_ms(10);
+    delay_ms(50);
     send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
     send_command(MADCTL);
     send_byte(LCD_FLIP);
