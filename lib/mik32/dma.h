@@ -18,11 +18,10 @@ public:
   DMA(uint8_t ch, DMA_PRIOR prior = LOW)
   {
     PM->CLK_AHB_SET = PM_CLOCK_AHB_DMA_M;   // Включить тактирование модуля
-    DMA_CONFIG->CONFIG_STATUS = 0;          // Значения DMA по умолчанию
     DMA_CH = &DMA_CONFIG->CHANNELS[ch];     // Адрес регистров управления каналом
     config = DMA_CH_CFG_ENABLE_M
       | (prior << DMA_CH_CFG_PRIOR_S);      // Установка приоритета
-    dma_ready = DMA_STATUS_READY(0);        // Признак, что канал свободен.
+    dma_ready = DMA_STATUS_READY(ch);        // Признак, что канал свободен.
   }
 
   // Сбросить канал
@@ -38,25 +37,14 @@ public:
     while (!(DMA_CONFIG->CONFIG_STATUS & DMA_STATUS_READY(0)));
   }
 
-  // Запуск канала
-  void start(void *dst, void *src, uint32_t len)
+  // Установка данных
+  void setup(void *dst, void *src, uint32_t len)
   {
     DMA_CH->DST = (uint32_t)dst;
     DMA_CH->SRC = (uint32_t)src;
     DMA_CH->LEN = len - 1;
-    DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
-  // mem -> gpio
-  void memout(uint32_t dst, uint32_t src, uint32_t len)
-  {
-    DMA_CH->DST = dst;
-    DMA_CH->SRC = src;
-    DMA_CH->LEN = len - 1;
-    source(DMA::MEM, WORD, HALF, INC, NONE);
-    dest(DMA::MEM, HALF, HALF, IMM, NONE);
-    DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
-  }
 
   /*
   + perf - Источник запроса
@@ -108,6 +96,19 @@ public:
       | (brust << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Установить размер пакета
       | (inc << DMA_CH_CFG_WRITE_INCREMENT_S)    // Установить инкремент
       | (ack << DMA_CH_CFG_WRITE_ACK_EN_S);      // Установить подтверждение
+  }
+
+  // Типичные конфигурации
+
+    // mem -> gpio
+  void memout(uint32_t dst, uint32_t src, uint32_t len)
+  {
+    DMA_CH->DST = dst;
+    DMA_CH->SRC = src;
+    DMA_CH->LEN = len - 1;
+    source(DMA::MEM, WORD, HALF, INC, NONE);
+    dest(DMA::MEM, HALF, HALF, IMM, NONE);
+    DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
   }
 
 protected:

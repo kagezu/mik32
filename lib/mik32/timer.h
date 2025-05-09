@@ -2,6 +2,7 @@
 #include <mik32_memory_map.h>
 #include <power_manager.h>
 #include <timer16.h>
+#include <timer32.h>
 
 /*
   ### Настройка таймера:
@@ -72,6 +73,18 @@
 #define T32_0                     TIMER32_0->VALUE
 #define T32_1                     TIMER32_1->VALUE
 #define T32_2                     TIMER32_2->VALUE
+
+#define T32_0_OVF                 TIMER32_0->INT_MASK = TIMER32_INT_OVERFLOW_M
+#define T32_1_OVF                 TIMER32_1->INT_MASK = TIMER32_INT_OVERFLOW_M
+#define T32_2_OVF                 TIMER32_2->INT_MASK = TIMER32_INT_OVERFLOW_M
+
+#define T32_0_UDF                 TIMER32_0->INT_MASK |= TIMER32_INT_UNDERFLOW_M
+#define T32_1_UDF                 TIMER32_1->INT_MASK |= TIMER32_INT_UNDERFLOW_M
+#define T32_2_UDF                 TIMER32_2->INT_MASK |= TIMER32_INT_UNDERFLOW_M
+
+#define T32_0_INT_CLR             TIMER32_0->INT_MASK = 0
+#define T32_1_INT_CLR             TIMER32_1->INT_MASK = 0
+#define T32_2_INT_CLR             TIMER32_2->INT_MASK = 0
 
 
 // Установка частоты для таймера 0
