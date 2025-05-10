@@ -13,11 +13,12 @@
 #define BLACK     RGB(32, 32, 32)
 #define LIGHT     RGB(64, 255, 64)
 #define BLUE      RGB(0, 0, 127)
+#define ADC_V     (uint32_t)&ANALOG_REG->ADC_VALUE  // 0x0008504C
 
 Display lcd;
 CSPI SPI;
 ADC adc;
-DMA dma(0);
+DMA dma(0, DMA::VERY);
 
 uint16_t buffer[SAMPLES];
 // reg buffer[SAMPLES];
@@ -29,43 +30,16 @@ void GCC_RAM sample()
   // adc.init(3, 63);
   adc.init(3, 1);
 
-  adc.start();
-  while (adc.value() >= 2000);
-  while (adc.value() < 2000);
   // adc.stop();
 
   // count = 0;
   // T32_1_OVF;
 
-  // dma.source(DMA::MEM, 2, 2, 0);
-  // dma.dest(DMA::MEM, 2, 2, 1);
-  // dma.start(buffer, (void *)0x0008504C, CYCLES * 4);
-  // while (!(DMA_CONFIG->CONFIG_STATUS & DMA_STATUS_READY(0)));
-  // dma.wait();
-
-  // PM->CLK_AHB_SET = PM_CLOCK_AHB_DMA_M;   // Включить тактирование модуля
-  DMA_CONFIG->CHANNELS[0].DST = (uint32_t)buffer;
-  DMA_CONFIG->CHANNELS[0].SRC = 0x0008504C;
-  DMA_CONFIG->CHANNELS[0].LEN = SAMPLES * 2 - 1;
-  DMA_CONFIG->CHANNELS[0].CFG = 0 |
-    // DMA_CH_CFG_READ_MODE_MEMORY_M         // Установить режим памяти
-    (8 << DMA_CH_CFG_READ_REQUEST_S)      // Установить периферийную линию
-    | (1 << DMA_CH_CFG_READ_SIZE_S)        // Разрядность данных
-    | (1 << DMA_CH_CFG_READ_BURST_SIZE_S) // Установить размер пакета
-    | (0 << DMA_CH_CFG_READ_INCREMENT_S)    // Установить инкремент
-    | (1 << DMA_CH_CFG_READ_ACK_EN_S)      // Установить подтверждение
-    | DMA_CH_CFG_WRITE_MODE_MEMORY_M         // Установить режим памяти
-    | (2 << DMA_CH_CFG_WRITE_SIZE_S)        // Разрядность данных
-    | (2 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Установить размер пакета
-    | (1 << DMA_CH_CFG_WRITE_INCREMENT_S)    // Установить инкремент
-    | (0 << DMA_CH_CFG_WRITE_ACK_EN_S)      // Установить подтверждение
-    | (3 << DMA_CH_CFG_PRIOR_S)           // Установка приоритета
-    | DMA_CH_CFG_ENABLE_M;                  // Включить
-
-  // while (!(DMA_CONFIG->CONFIG_STATUS & DMA_STATUS_READY(0)));
-
-  delay_us(160);
-
+  adc.start();
+  while (adc.value() >= 2000);
+  while (adc.value() < 2000);
+  dma.start();
+  dma.wait();
   adc.stop();
 
   // lcd.clear(BLACK);
@@ -77,8 +51,6 @@ void GCC_RAM sample()
   for (reg i = 1; i < 13; i++) {
     lcd.h_line(i * 10, 0, 159);
   }
-
-  // delay_ms(10);
 
   reg old = point[0];
   reg draw = buffer[0] >> 5;
@@ -95,17 +67,16 @@ void GCC_RAM sample()
     draw = point[i];
   }
 
-  // delay_ms(100);
-
+  delay_ms(100);
 }
 
 int main(void)
 {
-  T32_1_POWER_ON;
+  T32_1_PS;
   // T32_1_TOP(94);
   T32_1_TOP(32);
   // T32_1_TOP(120);
-  T32_1_ON;
+  T32_1_E;
 
   ADC0(ANALOG);
   ADC1(ANALOG);
@@ -113,25 +84,27 @@ int main(void)
 
   SPI.init();
   lcd.init();
+  lcd.font(standard_5x8);
   lcd.clear(BLACK);
 
+  dma.setup(buffer, ADC_V, SAMPLES << 1);
+  dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
+  dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
+
   // sei();
-  // EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_1_S);
-  while (true) sample();
+  // T32_1_IS;
+  while (true)
+    sample();
 }
 
 extern "C" {
   __attribute__((used, interrupt))
     void isr_handler(void)
   {
-    //Одинчное преобразование
-    ANALOG_REG->ADC_SINGLE = 1;
-    // Сохраняем предыдущий результат
-    buffer[count++] = ANALOG_REG->ADC_VALUE;
-    // Отключаем прерывание, если буфер заполнен
-    if (count > SAMPLES) TIMER32_1->INT_MASK = 0;
-    // Сбрасываем флаги прерываний
-    TIMER32_1->INT_CLEAR = -1;
-    EPIC->CLEAR = -1;
+    ANALOG_REG->ADC_SINGLE = 1;               //Одинчное преобразование
+    buffer[count++] = ANALOG_REG->ADC_VALUE;  // Сохраняем предыдущий результат
+    if (count > SAMPLES) T32_1_IC;            // Отключаем прерывание, если буфер заполнен
+    T32_1_FC;                                 // Сбрасываем флаги прерываний
+    EPIC_C;
   }
 }

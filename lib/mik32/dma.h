@@ -28,14 +28,9 @@ public:
   void reset() { DMA_CH->CFG = 0; }
 
   // Ожидание завершения работы канала
-  void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)); }
-
-  // Повтор
-  void encore()
-  {
-    DMA_CH->CFG = config;
-    while (!(DMA_CONFIG->CONFIG_STATUS & DMA_STATUS_READY(0)));
-  }
+  GCC_INLINE void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)) for (uint32_t i = 0; i < 100; i++); }
+  // Начать работу
+  GCC_INLINE void start() { DMA_CH->CFG = config; }
 
   // Установка данных
   void setup(void *dst, void *src, uint32_t len)
@@ -44,25 +39,41 @@ public:
     DMA_CH->SRC = (uint32_t)src;
     DMA_CH->LEN = len - 1;
   }
-
+  void setup(void *dst, uint32_t src, uint32_t len)
+  {
+    DMA_CH->DST = (uint32_t)dst;
+    DMA_CH->SRC = src;
+    DMA_CH->LEN = len - 1;
+  }
+  void setup(uint32_t dst, void *src, uint32_t len)
+  {
+    DMA_CH->DST = dst;
+    DMA_CH->SRC = (uint32_t)src;
+    DMA_CH->LEN = len - 1;
+  }
+  void setup(uint32_t dst, uint32_t src, uint32_t len)
+  {
+    DMA_CH->DST = dst;
+    DMA_CH->SRC = src;
+    DMA_CH->LEN = len - 1;
+  }
 
   /*
   + perf - Источник запроса
   + brust - Размер пакета = 2^brust
   + even - Разрядность [DMA::BYTE, DMA::HALF, DMA::WORD]
-  + inc - Инкремент [DMA::OFF, DMA::ON]
-  + ack - Подтверждение [DMA::OFF, DMA::ON]
+  + inc - Инкремент [DMA::IMM, DMA::INC]
+  + ack - Подтверждение [DMA::NONE, DMA::ACK]
    */
-  void source(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
+  void read(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
   {
-    config |= 0
-      // (config & ~(
-        // DMA_CH_CFG_READ_MODE_MEMORY_M             // Сбросить режим памяти
-        // | DMA_CH_CFG_READ_NO_INCREMENT_M          // Очистить инкремент
-        // | DMA_CH_CFG_READ_SIZE_REZ_M              // Очистить разрядность
-        // | (0b111 << DMA_CH_CFG_READ_BURST_SIZE_S) // Сбросить размер пакета
-        // | DMA_CH_CFG_READ_REQUEST_M               // Очистить периферийную линию
-        // | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
+    config = (config & ~(
+      DMA_CH_CFG_READ_MODE_MEMORY_M             // Сбросить режим памяти
+      | DMA_CH_CFG_READ_NO_INCREMENT_M          // Очистить инкремент
+      | DMA_CH_CFG_READ_SIZE_REZ_M              // Очистить разрядность
+      | (0b111 << DMA_CH_CFG_READ_BURST_SIZE_S) // Сбросить размер пакета
+      | DMA_CH_CFG_READ_REQUEST_M               // Очистить периферийную линию
+      | DMA_CH_CFG_READ_ACK_EN_M))              // Очистить подтверждение
       | (perf == MEM
         ? DMA_CH_CFG_READ_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_READ_REQUEST_S))  // Установить периферийную линию
@@ -76,19 +87,18 @@ public:
   + perf - Источник запроса
   + brust - Размер пакета = 2^brust
   + even - Разрядность [DMA::BYTE, DMA::HALF, DMA::WORD]
-  + inc - Инкремент [DMA::OFF, DMA::ON]
-  + ack - Подтверждение [DMA::OFF, DMA::ON]
+  + inc - Инкремент [DMA::IMM, DMA::INC]
+  + ack - Подтверждение [DMA::NONE, DMA::ACK]
    */
-  void dest(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
+  void write(uint8_t  perf, uint8_t brust = 0, uint8_t  even = BYTE, uint8_t  inc = IMM, uint8_t  ack = NONE)
   {
-    config = 0
-      // (config & ~(
-      //   DMA_CH_CFG_WRITE_MODE_MEMORY_M             // Сбросить режим памяти
-      //   | DMA_CH_CFG_WRITE_NO_INCREMENT_M          // Очистить инкремент
-      //   | DMA_CH_CFG_WRITE_SIZE_REZ_M              // Очистить разрядность
-      //   | (0b111 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Сбросить размер пакета
-      //   | DMA_CH_CFG_WRITE_REQUEST_M               // Очистить периферийную линию
-      //   | DMA_CH_CFG_WRITE_ACK_EN_M))              // Очистить подтверждение
+    config = (config & ~(
+      DMA_CH_CFG_WRITE_MODE_MEMORY_M             // Сбросить режим памяти
+      | DMA_CH_CFG_WRITE_NO_INCREMENT_M          // Очистить инкремент
+      | DMA_CH_CFG_WRITE_SIZE_REZ_M              // Очистить разрядность
+      | (0b111 << DMA_CH_CFG_WRITE_BURST_SIZE_S) // Сбросить размер пакета
+      | DMA_CH_CFG_WRITE_REQUEST_M               // Очистить периферийную линию
+      | DMA_CH_CFG_WRITE_ACK_EN_M))              // Очистить подтверждение
       | (perf == MEM
         ? DMA_CH_CFG_WRITE_MODE_MEMORY_M         // Установить режим памяти
         : (perf << DMA_CH_CFG_WRITE_REQUEST_S))  // Установить периферийную линию 
@@ -98,17 +108,16 @@ public:
       | (ack << DMA_CH_CFG_WRITE_ACK_EN_S);      // Установить подтверждение
   }
 
-  // Типичные конфигурации
 
-    // mem -> gpio
+  // mem -> gpio
   void memout(uint32_t dst, uint32_t src, uint32_t len)
   {
     DMA_CH->DST = dst;
     DMA_CH->SRC = src;
     DMA_CH->LEN = len - 1;
-    source(DMA::MEM, WORD, HALF, INC, NONE);
-    dest(DMA::MEM, HALF, HALF, IMM, NONE);
-    DMA_CH->CFG = config | DMA_CH_CFG_ENABLE_M;
+    read(DMA::MEM, WORD, HALF, INC, NONE);
+    write(DMA::MEM, HALF, HALF, IMM, NONE);
+    DMA_CH->CFG = config;
   }
 
 protected:
