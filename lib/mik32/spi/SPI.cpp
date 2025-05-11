@@ -54,7 +54,7 @@ void CSPI::end()
 {
   wait_clr();
   SPI_N->CONFIG |= SPI_CONFIG_CS_NONE_M;            // Отключение устройства
-  SPI_N->ENABLE = SPI_ENABLE_M;                     // Отключение модуля
+  SPI_N->ENABLE = 0;                                // Отключение модуля
 }
 
 uint8_t CSPI::transfer(uint8_t data)

@@ -7,45 +7,47 @@
 
 // template<typename T>
 // void GFX::w_line(T x, T y, T x1)
-void GFX::w_line(uint16_t x, uint16_t y, uint16_t x1)
+void GFX::w_line(int16_t x, int16_t y, int16_t x1)
 {
-  // if (x > x1) swap(x, x1);
-
-  if (x > max_x()) x = 0;
+  if (x > x1) swap(x, x1);
+  if (x < 0) x = 0;
+  if (x1 < 0) x1 = 0;
+  if (x > max_x()) x = max_x();
   if (x1 > max_x()) x1 = max_x();
   if (x == x1) pixel(x, y);
   else  rect(x, y, x1, y);
 }
 
-void GFX::h_line(uint16_t x, uint16_t y, uint16_t y1)
+void GFX::h_line(int16_t x, int16_t y, int16_t y1)
 {
-  // if (y > y1) swap(y, y1);
-
-  if (y > max_y()) y = 0;
+  if (y > y1) swap(y, y1);
+  if (y < 0) y = 0;
+  if (y1 < 0) y1 = 0;
+  if (y > max_y()) y = max_y();
   if (y1 > max_y()) y1 = max_y();
   if (y == y1) pixel(x, y);
   else  rect(x, y, x, y1);
 }
 
-void GFX::w_line_fat(uint16_t x, uint16_t y, uint16_t x1)
+void GFX::w_line_fat(int16_t x, int16_t y, int16_t x1)
 {
   uint16_t y1 = y + ((_fat + 1) >> 1) - 1;
   y -= _fat >> 1;
-  if (y > max_y()) y = 0;
+  if (y > max_y()) y = max_y();
   if (y1 > max_y()) y1 = max_y();
   rect(x, y, x1, y1);
 }
 
-void GFX::h_line_fat(uint16_t x, uint16_t y, uint16_t y1)
+void GFX::h_line_fat(int16_t x, int16_t y, int16_t y1)
 {
   uint16_t x1 = x + ((_fat + 1) >> 1) - 1;
   x -= _fat >> 1;
-  if (x > max_x()) x = 0;
+  if (x > max_x()) x = max_x();
   if (x1 > max_x()) x1 = max_x();
   rect(x, y, x1, y1);
 }
 
-void GFX::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+void GFX::line(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 {
   bool steep = abs((int16_t)y1 - (int16_t)y0) > abs((int16_t)x1 - (int16_t)x0);
   if (steep) {
@@ -77,7 +79,7 @@ void GFX::line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
     }
   }
 }
-void GFX::circle(uint16_t x, uint16_t y, uint16_t radius)
+void GFX::circle(int16_t x, int16_t y, int16_t radius)
 {
   int16_t f = 1 - radius;
   uint16_t ddF_x = 1;
@@ -111,7 +113,7 @@ void GFX::circle(uint16_t x, uint16_t y, uint16_t radius)
   }
 }
 
-void GFX::circle_fat(uint16_t x, uint16_t y, uint16_t radius)
+void GFX::circle_fat(int16_t x, int16_t y, int16_t radius)
 {
   int16_t f = 1 - radius;
   uint16_t ddF_x = 1;
@@ -156,7 +158,7 @@ void GFX::circle_fat(uint16_t x, uint16_t y, uint16_t radius)
   }
 }
 
-void GFX::circle_fill(uint16_t x, uint16_t y, uint16_t radius)
+void GFX::circle_fill(int16_t x, int16_t y, int16_t radius)
 {
   radius++;
   int16_t f = 1 - radius;
@@ -183,7 +185,7 @@ void GFX::circle_fill(uint16_t x, uint16_t y, uint16_t radius)
   }
 }
 
-void GFX::round_rect_fill(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t radius)
+void GFX::round_rect_fill(int16_t x, int16_t y, int16_t width, int16_t height, int16_t radius)
 {
   int16_t f = 1 - radius;
   uint16_t ddF_x = 1;
@@ -216,7 +218,7 @@ void GFX::round_rect_fill(uint16_t x, uint16_t y, uint16_t width, uint16_t heigh
   }
 }
 
-void GFX::round_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t radius)
+void GFX::round_rect(int16_t x, int16_t y, int16_t width, int16_t height, int16_t radius)
 {
   int16_t f = 1 - radius;
   uint16_t ddF_x = 1;
@@ -255,7 +257,7 @@ void GFX::round_rect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, ui
   }
 }
 
-void GFX::line_fat(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+void GFX::line_fat(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
 {
   bool steep = abs((int16_t)y1 - (int16_t)y0) > abs((int16_t)x1 - (int16_t)x0);
   if (steep) {
@@ -292,7 +294,7 @@ void GFX::line_fat(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
   }
 }
 
-void GFX::rect_line(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+void GFX::rect_line(int16_t x, int16_t y, int16_t width, int16_t height)
 {
   w_line(x, y, x + width - 1);
   w_line(x, y + height - 1, x + width - 1);
@@ -300,7 +302,7 @@ void GFX::rect_line(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
   h_line(x + width - 1, y + 1, y + height - 2);
 }
 
-void GFX::rect_fat(uint16_t x, uint16_t y, uint16_t width, uint16_t height)
+void GFX::rect_fat(int16_t x, int16_t y, int16_t width, int16_t height)
 {
   uint16_t d0 = _fat >> 1;
   uint16_t d1 = ((_fat + 1) >> 1);
