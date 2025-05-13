@@ -7,7 +7,7 @@
 class ADC {
 public:
 
-  void init(uint8_t ch, uint16_t delay = 0x0C)
+  void init(uint8_t ch, uint8_t delay = 0x20)
   {
     PM->CLK_APB_P_SET = PM_CLOCK_APB_P_ANALOG_REGS_M; // Включить тактирование
     ANALOG_REG->ADC_CONFIG =

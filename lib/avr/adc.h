@@ -18,17 +18,8 @@
 class ADC {
 public:
   // Частота в КГц
-  void init(uint8_t ch, uint16_t fq = 0xffff)
+  void init(uint8_t ch, uint8_t div = 0)
   {
-    uint8_t div = 0;
-    uint16_t max_fq = F_CPU / 26000;
-
-    while (div < 0x07) {
-      if (fq >= max_fq) break;
-      max_fq >>= 1;
-      div++;
-    }
-
     DIDR0 |= _BV(ch);         // Отключить цифровой вход
     ADMUX = ch                // Выборать канал
       | (ADC_AVCC << REFS0);  // AREF = AVCC
@@ -40,10 +31,11 @@ public:
   }
 
 #if ADC_ADLAR
-  uint8_t next(uint8_t ch)
+  uint8_t
   #else
-  uint16_t next(uint8_t ch)
+  uint16_t
   #endif
+    next(uint8_t ch)
   {
     single();
     wait();
@@ -61,5 +53,6 @@ public:
   uint8_t value() { return ADCH; }
 #else
   uint16_t value() { return ADCW; }
-#endif
+#endif 
+
 };
