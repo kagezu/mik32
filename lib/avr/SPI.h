@@ -69,10 +69,10 @@ private:
   uint8_t spcr;
   uint8_t spsr;
 
-  friend class CSPI;
+  friend class SPI;
 };
 
-class CSPI {
+class SPI {
 public:
   void init()
   {

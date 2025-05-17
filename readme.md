@@ -1,6 +1,6 @@
 # Песочница для ATmega и MIK32 AMUR
 
-## ![alt text](./img/ace-uno.jpg)
+## ![alt text](./castom/img/ace-uno.jpg)
 
 ### MK / Платы
 

@@ -16,7 +16,7 @@ RGB color[] = {
 };
 
 Display lcd;
-CSPI SPI;
+SPI spi;
 ADC mic;
 
 #ifdef __AVR__
@@ -31,7 +31,7 @@ ADC mic;
 
 void mic_view()
 {
-  ADC1(AN);
+  ADC1(ANALOG);
   mic.init(1);
   mic.start();
 
@@ -98,7 +98,7 @@ int main(void)
   USER_B(GPIO);
   USER_B(IN);
 
-  SPI.init();
+  spi.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));

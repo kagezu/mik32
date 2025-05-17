@@ -3,12 +3,11 @@
 
 // init
 
-void _init();
-extern "C" void GCC_WEAK SmallSystemInit() { _init(); }
+// void _init();
+// extern "C" GCC_WEAK void SmallSystemInit() { _init(); }
 
 // ISR
 
-void set_isr(void(*)());
 void sei();
 void cli();
 

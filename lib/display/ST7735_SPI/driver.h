@@ -8,7 +8,7 @@
 #define SPI_THR_2     7
 #define SPI_THR_3     6
 
-extern CSPI SPI;
+extern SPI spi;
 
 template<typename C>
 class ST7735_SPI {
@@ -38,10 +38,10 @@ inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y;}
   }
 
 protected:
-  inline void select() { SPI.begin(_spi); L_CS(CLR); }
-  inline void release() { SPI.end(); L_CS(SET); }
+  inline void select() { spi.begin(_spi); L_CS(CLR); }
+  inline void release() { spi.end(); L_CS(SET); }
 
-  void send_byte(uint8_t data) { SPI.send(data); SPI.wait_clr(); }
+  void send_byte(uint8_t data) { spi.send(data); spi.wait_clr(); }
   void send_command(uint8_t command)
   {
     L_RS(CLR); // Запись команды
@@ -52,28 +52,28 @@ protected:
   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
   {
     send_command(CASET); // Column Address Set
-    SPI.send16(x0);
-    SPI.wait();
-    SPI.send16(x1);
-    SPI.wait_clr();
+    spi.send16(x0);
+    spi.wait();
+    spi.send16(x1);
+    spi.wait_clr();
 
     send_command(RASET); // Row Address Set
-    SPI.send16(y0);
-    SPI.wait();
-    SPI.send16(y1);
-    SPI.wait_clr();
+    spi.send16(y0);
+    spi.wait();
+    spi.send16(y1);
+    spi.wait_clr();
 
     send_command(RAMWR); // Memory Write
   }
 
   void send_rgb(C color)
   {
-    SPI.wait_thr();
-    SPI.send(color.red);
-    SPI.wait();
-    SPI.send(color.green);
-    SPI.wait();
-    SPI.send(color.blue);
+    spi.wait_thr();
+    spi.send(color.red);
+    spi.wait();
+    spi.send(color.green);
+    spi.wait();
+    spi.send(color.blue);
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
@@ -83,12 +83,12 @@ protected:
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      SPI.wait_thr();
-      SPI.send(color.red);
-      SPI.wait();
-      SPI.send(color.green);
-      SPI.wait();
-      SPI.send(color.blue);
+      spi.wait_thr();
+      spi.send(color.red);
+      spi.wait();
+      spi.send(color.green);
+      spi.wait();
+      spi.send(color.blue);
     }
     release();
   }
@@ -102,8 +102,8 @@ private:
 template<>
   inline void ST7735_SPI<RGB16>::send_rgb(RGB16 color) 
   { 
-    SPI.wait_thr();
-    SPI.send16(color.rgb); 
+    spi.wait_thr();
+    spi.send16(color.rgb); 
   }
 
 template<>
@@ -112,14 +112,14 @@ template<>
     static uint8_t half, flag = 0;
 
   if (flag) {
-    SPI.wait_thr();
-    SPI.send(half | (color.rgb >> 8));
+    spi.wait_thr();
+    spi.send(half | (color.rgb >> 8));
     flag = 0;
-    SPI.wait();
-    SPI.send(color.rgb);
+    spi.wait();
+    spi.send(color.rgb);
   }
   else {
-    SPI.send(color.rgb >> 4);
+    spi.send(color.rgb >> 4);
     half = color.rgb << 4;
     flag = 1;
   }
@@ -132,7 +132,7 @@ template<>
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     
-    while (len--) {SPI.wait_thr();  SPI.send16(color.rgb); }
+    while (len--) {spi.wait_thr();  spi.send16(color.rgb); }
     release();
   }
 
@@ -148,12 +148,12 @@ template<>
     uint8_t lbyte = color.rgb;
 
     while (len--) {
-      SPI.wait_thr();
-      SPI.send(hbyte);
-      SPI.wait();
-      SPI.send(mbyte);
-      SPI.wait();
-      SPI.send(lbyte);
+      spi.wait_thr();
+      spi.send(hbyte);
+      spi.wait();
+      spi.send(mbyte);
+      spi.wait();
+      spi.send(lbyte);
     }
     release();
   }

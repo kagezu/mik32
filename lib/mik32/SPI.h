@@ -70,11 +70,11 @@ private:
   uint32_t delay_clk;
   uint32_t tx_thr;
 
-  friend class CSPI;
+  friend class SPI;
 };
 
 
-class CSPI {
+class SPI {
 public:
   void init(uint8_t spi_n = 1);
   void begin(SPI_Settings settings);

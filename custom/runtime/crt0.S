@@ -1,13 +1,8 @@
+.globl _start, main, SystemInit
+.weak SystemInit
 
-#define EXCEPTION_STACK_SPACE 32*4
-#define EXCEPTION_SAVED_REGISTERS 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
-
-.globl _start, main
-.weak SmallSystemInit, SystemInit
-
-.globl isr_handler
-.globl trap_entry
-.weak isr_handler
+.globl trap_handler
+.weak trap_handler
 
 .altmacro
 .macro memcpy src_beg, src_end, dst, tmp_reg
@@ -60,13 +55,6 @@ memset_2:
 .text
 
 _start:
-    
-    # li t0, 128000
-    # start_loop_delay:
-    # nop
-    # addi t0, t0, -1
-    # bnez t0, start_loop_delay
-
     # Init stack and global pointer
     #
     la_abs  sp, __C_STACK_TOP__
@@ -79,28 +67,12 @@ _start:
     la_abs  a3, __DATA_START__
     memcpy  a1, a2, a3, t0
 
-    # Init ramfunc
-    #
-    la_abs  a1, __RAM_TEXT_IMAGE_START__
-    la_abs  a2, __RAM_TEXT_IMAGE_END__
-    la_abs  a3, __RAM_TEXT_START__
-    memcpy  a1, a2, a3, t0
-    
     # Clear bss
     #
     la_abs  a1, __BSS_START__
     la_abs  a2, __BSS_END__
     memset a1, a2, zero
-
-    # #ifdef MIK32V0
-    # # Enable pad_config clocking
-    # #
-    # li t0, (1 << 3)
-    # li t1, 0x50014
-    # sw t0, (t1)
-    # #endif
     
-    jalr_abs ra, SmallSystemInit
     jalr_abs ra, SystemInit
     jalr_abs ra, main
 1:  wfi
@@ -109,7 +81,6 @@ _start:
     
 // Actions before main: none by default
 // (weak symbol here - may be redefined)
-SmallSystemInit:
 SystemInit:
     ret
 
@@ -117,8 +88,5 @@ SystemInit:
 // .org should be consistent with
 // default mtvec value (set in scr1_arch_description.svh)
 //.org 0xC0
-trap_entry:
-    j isr_handler
-
-isr_handler:
+trap_handler:
 1:  j 1b

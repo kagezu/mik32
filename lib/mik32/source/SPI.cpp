@@ -1,6 +1,6 @@
 #include "SPI.h"
 
-void CSPI::init(uint8_t spi_n)
+void SPI::init(uint8_t spi_n)
 {
   if (!spi_n) {
     // Тактирование модуля
@@ -41,7 +41,7 @@ void CSPI::init(uint8_t spi_n)
   SPI_N->ENABLE = SPI_ENABLE_M;               // Включение модуля
 }
 
-void CSPI::begin(SPI_Settings settings)
+void SPI::begin(SPI_Settings settings)
 {
   // Очищение FIFO
   SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M;
@@ -50,21 +50,21 @@ void CSPI::begin(SPI_Settings settings)
   SPI_N->ENABLE = SPI_ENABLE_M;               // Включение модуля
 }
 
-void CSPI::end()
+void SPI::end()
 {
   wait_clr();
   SPI_N->CONFIG |= SPI_CONFIG_CS_NONE_M;            // Отключение устройства
   SPI_N->ENABLE = 0;                                // Отключение модуля
 }
 
-uint8_t CSPI::transfer(uint8_t data)
+uint8_t SPI::transfer(uint8_t data)
 {
   SPI_N->TXDATA = data;
   wait_clr();
   return  SPI_N->RXDATA;
 }
 
-uint16_t CSPI::transfer16(uint16_t data)
+uint16_t SPI::transfer16(uint16_t data)
 {
   uint16_t rx_dbyte;
   SPI_N->TXDATA = data >> 8;
@@ -75,7 +75,7 @@ uint16_t CSPI::transfer16(uint16_t data)
   return rx_dbyte;
 }
 
-void CSPI::clear_rx()
+void SPI::clear_rx()
 {
   volatile uint32_t dummy;
   while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M))

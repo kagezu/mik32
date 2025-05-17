@@ -13,7 +13,7 @@
 #define ADC1(f)   f(1,7)
 #define ADC3(f)   f(0,4)
 
-#define ADC_V     (uint32_t)&ANALOG_REG->ADC_VALUE  // 0x0008504C
+#define ADC_VALUE (uint32_t)&ANALOG_REG->ADC_VALUE  // 0x0008504C
 
 #define POINTES   600
 #define SAMPLES   (POINTES / Lx + 10)
@@ -100,7 +100,7 @@ int main(void)
   lcd.font(arial_14);
   lcd.clear(BLACK);
 
-  dma.setup(buffer, ADC_V, sizeof(buffer));
+  dma.setup(buffer, ADC_VALUE, sizeof(buffer));
   dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
   dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
 
