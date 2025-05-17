@@ -40,9 +40,9 @@
 
 class SPI_Settings {
 public:
-  void init()
+  void init(uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER)
   {
-    spcr = _BV(SPE) | SPI_MSB | SPI_MODE0 | SPI_MASTER;
+    spcr = _BV(SPE) | mode;
     fq();
   }
 
