@@ -1,27 +1,48 @@
 #include "mik32.h"
 
+#define SPIFI_FLASH_SIZE    (32*1024*1024)
+
+
 extern "C" {
 
   __attribute__((noinline, used, section(".init"))) void _init()
   {
-    // Модуль WakeUp
+    // Модуль WakeUp ====================================================================
 
     // Батарейный домен
     WU->CLOCKS_BU = 0
-      // | WU_CLOCKS_BU_OSC32K_EN_M              // Отключение OSC32K (0 - включение)
-      | WU_CLOCKS_BU_LSI32K_EN_M             // Отключение LSI32К (0 - включение)
-      //  | WU_CLOCKS_BU_RTC_CLK_MUX_LSI32K_M;   // Выбрать внутренний LSI32К
-      | WU_CLOCKS_BU_RTC_CLK_MUX_OSC32K_M  // Выбрать внешний OSC32К
+      // | WU_CLOCKS_BU_OSC32K_EN_M             // Отключение OSC32K (0 - включение)
+      | WU_CLOCKS_BU_LSI32K_EN_M                // Отключение LSI32К (0 - включение)
+      //  | WU_CLOCKS_BU_RTC_CLK_MUX_LSI32K_M;  // Выбрать внутренний LSI32К
+      | WU_CLOCKS_BU_RTC_CLK_MUX_OSC32K_M       // Выбрать внешний OSC32К
       ;
 
     // Системный домен
     WU->CLOCKS_SYS = 0
-      | WU_CLOCKS_SYS_HSI32M_EN_M // Отключить внутренний HSI32M (0 - включение)
-      // | WU_CLOCKS_SYS_OSC32M_EN_M // Отключить внутренний OSC32M (0 - включение)
-      | WU_CLOCKS_SYS_FORCE_32K_CLK_OSC32K_M // Принудительно выбрать OSC32K
+      | WU_CLOCKS_SYS_HSI32M_EN_M               // Отключить внутренний HSI32M (0 - включение)
+      // | WU_CLOCKS_SYS_OSC32M_EN_M            // Отключить внешний OSC32M (0 - включение)
+      | WU_CLOCKS_SYS_FORCE_32K_CLK_OSC32K_M    // Принудительно выбрать OSC32K
       ;
 
-    // Модуль PowerManager
+    // Выбор источника тактирования системы
+    PM->AHB_CLK_MUX =
+      PM_AHB_CLK_MUX_OSC32M_M       // 0 – внешний OSC32M
+      // PM_AHB_CLK_MUX_HSI32M_M    // 1 – внутренний HSI32M
+      // PM_AHB_CLK_MUX_OSC32K_M    // 2 – внешний OSC32K
+      // PM_AHB_CLK_MUX_LSI32K_M    // 3 – внутренний LSI32К
+      | PM_AHB_FORCE_MUX_FIXED      // запрет автоматической смены частоты
+      ;
+
+    // Выбор источника тактирования сторожевого таймера
+    PM->WDT_CLK_MUX =
+      PM_WDT_CLK_MUX_OSC32M_M       // 0 – внешний OSC32M
+      // PM_WDT_CLK_MUX_HSI32M_M    // 1 – внутренний HSI32M
+      // PM_WDT_CLK_MUX_OSC32K_M    // 2 – внешний OSC32K
+      // PM_WDT_CLK_MUX_LSI32K_M    // 3 – внутренний LSI32К
+      ;
+
+
+    // Модуль PowerManager ==============================================================
 
     // PM->DIV_AHB = 0;    // Задает значение делителя шины AHB.
     // PM->DIV_APB_M = 0;  // Задает значение делителя шины APB_M.
@@ -37,7 +58,7 @@ extern "C" {
       // | PM_CLOCK_AHB_DMA_M
       // | PM_CLOCK_AHB_CRYPTO_M
       // | PM_CLOCK_AHB_CRC32_M
-    ;
+      // ;
 
     // Отключить тактирование модулей
     // PM->CLK_AHB_CLEAR = 0
@@ -49,7 +70,7 @@ extern "C" {
       // | PM_CLOCK_AHB_DMA_M
       // | PM_CLOCK_AHB_CRYPTO_M
       // | PM_CLOCK_AHB_CRC32_M
-      // ;
+    ;
 
     // Включение тактирования устройств на шине APB_M.
     PM->CLK_APB_M_SET = 0
@@ -118,6 +139,54 @@ extern "C" {
       // | PM_CLOCK_APB_P_ANALOG_REGS_M
       // | PM_CLOCK_APB_P_GPIO_IRQ_M;
       // ;
+
+      // Настройка SPIFI ================================================================
+
+    // сброс SPIFI
+    SPIFI_CONFIG->STAT = SPIFI_CONFIG_STAT_RESET_M;
+    while (SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_RESET_M);
+
+    // Enable QPI (38h) (передача всего по 4 линиям)
+    SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+    SPIFI_CONFIG->CMD =
+      (1 << SPIFI_CONFIG_CMD_FRAMEFORM_S) // только код команды
+      | (0x38 << SPIFI_CONFIG_CMD_OPCODE_S)
+      ;
+    // ожидаем завершения отработки команды
+    while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
+
+    // Настройка Fast Read Quad I/O на работу с передачей исключительно адреса
+    SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+    SPIFI_CONFIG->ADDR = 0;
+    SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh)
+    SPIFI_CONFIG->CMD =
+      (1 << SPIFI_CONFIG_CMD_DATALEN_S)         // прочитаем один байт
+      | (1 << SPIFI_CONFIG_MCMD_INTLEN_S)       // один dummy байт 0x0 для режима QPI
+      | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
+      | (4 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды и три байта адреса
+      | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
+      ;
+    // читаем один байт
+    SPIFI_CONFIG->DATA8;
+    // ожидаем завершения отработки команды
+    while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
+
+    // настроим SPIFI на работу "с памятью"
+    SPIFI_CONFIG->CTRL = (SPIFI_CONFIG->CTRL & ~(SPIFI_CONFIG_CTRL_CSHIGH_M))
+      | (0 << SPIFI_CONFIG_CTRL_CSHIGH_S)       // 1 такт сигнала SCK между командами
+      | SPIFI_CONFIG_CTRL_CACHE_EN_M            // включение кэширования
+      | SPIFI_CONFIG_CTRL_D_CACHE_DIS_M         // отключение кэширования данных
+      ;
+    SPIFI_CONFIG->ADDR = 0;
+    SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh) (продолжаем использовать режим чтения без кода команды)
+    SPIFI_CONFIG->CLIMIT = SPIFI_BASE_ADDRESS + SPIFI_FLASH_SIZE; // граница кэширования
+    SPIFI_CONFIG->MCMD =
+      (1 << SPIFI_CONFIG_MCMD_INTLEN_S)         // один dummy байт 0x00 для режима QPI и только адреса
+      | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
+      | (6 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды, три байта адреса
+      | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
+      ;
+
   }
 
   extern void (*__preinit_array_start[]) (void) __attribute__((weak));
@@ -179,13 +248,13 @@ GCC_RAM void delay_ms(uint32_t ms)
 void sei()
 {
   set_csr(mstatus, MSTATUS_MIE);
-  set_csr(mie, MIE_MEIE);
+  // set_csr(mie, MIE_MEIE);
   // set_csr(mie, MIE_MTIE);
 }
 
 void cli()
 {
   clear_csr(mstatus, MSTATUS_MIE);
-  clear_csr(mie, MIE_MEIE);
+  // clear_csr(mie, MIE_MEIE);
   // clear_csr(mie, MIE_MTIE);
 }
