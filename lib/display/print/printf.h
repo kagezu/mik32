@@ -5,7 +5,7 @@
 // для mik32 должно быть чётным + 1 байт
 #define PRINT_BUFFER_SIZE   33
 
-class PrintF :private IDisplay {
+class PrintF :public IDisplay {
 public:
   void printf(const char *, ...);
   void print(const char *);

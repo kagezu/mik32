@@ -30,8 +30,9 @@ private:
 
 public:
   using Driver::area;
-  inline const  uint16_t max_x() { return Driver::max_x(); }
-  inline const  uint16_t max_y() { return Driver::max_y(); }
+  GCC_INLINE const uint16_t max_x() { return Driver::max_x(); }
+  GCC_INLINE const uint16_t max_y() { return Driver::max_y(); }
+
   inline void color(C c) { _color = c; }
   inline void background(C b) { _background = b; }
   inline void clear() { area(0, 0, max_x(), max_y(), _background); }

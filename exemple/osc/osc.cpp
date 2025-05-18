@@ -69,7 +69,7 @@ GCC_RAM void sample()
 
   lcd.color(WHITE);
   lcd.at(5, 5);
-  lcd.printf(" 1 us X 0.1 V  :  Ampl %u mV  :  Lagrange n = %u   \n", ((a_max - a_min) * 3300) >> 12, Ln);
+  // lcd.printf(" 1 us X 0.1 V  :  Ampl %u mV  :  Lagrange n = %u   \n", ((a_max - a_min) * 3300) >> 12, Ln);
 
   //////////////////////////
 

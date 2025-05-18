@@ -1,7 +1,7 @@
 #pragma once
 #include "type/include.h"
 
-class  GFX :private IDisplay {
+class  GFX :public IDisplay {
 protected:
   int16_t _fat = 2;
 
