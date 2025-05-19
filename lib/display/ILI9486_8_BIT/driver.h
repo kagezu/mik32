@@ -3,7 +3,6 @@
 #include "const.h"
 #include "type/include.h"
 
-#define LCD_DRIVER    ILI9486
 #define L_BEGIN       L_CS(CLR);
 #define L_END         L_CS(SET);
 
@@ -11,7 +10,7 @@
 #define L_READ   L_PORT(IN) & 0x00; L_RD(CLR);
 
 template<typename C>
-class ILI9486 {
+class ILI9486_8 {
 public:
   inline constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
   inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
@@ -155,24 +154,33 @@ protected:
         L_PORT(OUTPUT) = rgb.blue;
         L_WR(INV); L_WR(INV);
       #endif
-      }
+    }
 
     release();
-    }
+  }
 
 private:
   void set_rgb_format();
-  virtual  void send_config(const uint8_t *, uint8_t) = 0;
-  };
+  void send_config(const uint8_t * config, uint8_t size)
+  {
+    while (size) {
+      uint8_t count = pgm_read_byte(config++);
+      uint8_t comand = pgm_read_byte(config++);
+      size -= 2 + count;
+      send_command(comand);
+      while (count--) send_byte(pgm_read_byte(config++));
+    }
+  }
+};
 
 template<>
-void ILI9486<RGB16>::send_rgb(RGB16 color)
+void ILI9486_8<RGB16>::send_rgb(RGB16 color)
 {
   send_word(color.rgb);
 }
 
 template<>
-void ILI9486<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+void ILI9486_8<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
 {
   select();
   set_addr(x0, y0, x1, y1);
@@ -202,19 +210,19 @@ void ILI9486<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
 }
 
 template<>
-void ILI9486<RGB32>::set_rgb_format()
+void ILI9486_8<RGB32>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x66); // 6x6x6 bit (24 bit transfer)
 }
 template<>
-void ILI9486<RGB18>::set_rgb_format()
+void ILI9486_8<RGB18>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x06); // 6x6x6 bit (24 bit transfer)
 }
 template<>
-void ILI9486<RGB16>::set_rgb_format()
+void ILI9486_8<RGB16>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x05); // 5x6x5 bit

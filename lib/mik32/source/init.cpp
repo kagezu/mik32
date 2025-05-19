@@ -141,7 +141,7 @@ extern "C" {
       // ;
 
       // Настройка SPIFI ================================================================
-
+/*
     // сброс SPIFI
     SPIFI_CONFIG->STAT = SPIFI_CONFIG_STAT_RESET_M;
     while (SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_RESET_M);
@@ -186,7 +186,7 @@ extern "C" {
       | (6 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды, три байта адреса
       | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
       ;
-
+*/
   }
 
   extern void (*__preinit_array_start[]) (void) __attribute__((weak));

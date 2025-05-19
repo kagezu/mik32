@@ -27,3 +27,9 @@
 // #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
 #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
 #include "display.h"
+
+// #define Display   CDisplay<ST7735_SOFT<RGB>, RGB>
+// #define Display   CDisplay<ST7735_SPI<RGB>, RGB>
+// #define Display   CDisplay<ST7789<RGB>, RGB>
+// #define Display   CDisplay<ILI9486_8<RGB>, RGB>
+#define Display   CDisplay<ILI9486_16<RGB>, RGB>

@@ -2,42 +2,61 @@
 #include "print/printf.h"
 #include "gfx/gfx.h"
 
-#define Display   CDisplay<LCD_DRIVER<RGB>, RGB>
+#define FONT_TAB_FACTOR     2
 
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
 private:
-  C _color = 0x00ffffff;
-  C _background = 0;
+  C _color = 0x00ffffff;    // Цвет
+  C _background = 0;        // Фон
+  Font  _font = {};         // Шрифт
+  uint8_t  _charSize = 0;   // Размер символа в байтах
+  uint8_t  _line = 0;       // Высота символа в байтах
+  uint8_t  _interline = 0;  // Расстояние между строками
+  uint8_t  _interval = 0;   // Расстояние между символами
+  uint8_t  _tab_factor = FONT_TAB_FACTOR;
+  uint16_t point_x = 0;
+  uint16_t point_y = 0;
 
   using Driver::set_addr;
   using Driver::send_rgb;
   using Driver::send_command;
-  using Driver::send_byte;
+  // using Driver::send_byte;
   using Driver::select;
   using Driver::release;
 
-  void send_config(const uint8_t *config, uint8_t size)
-  {
-    while (size) {
-      uint8_t count = pgm_read_byte(config++);
-      uint8_t comand = pgm_read_byte(config++);
-      size -= 2 + count;
-      send_command(comand);
-      while (count--) send_byte(pgm_read_byte(config++));
-    }
-  }
+  // void send_config(const uint8_t *config, uint8_t size)
+  // {
+  //   while (size) {
+  //     uint8_t count = pgm_read_byte(config++);
+  //     uint8_t comand = pgm_read_byte(config++);
+  //     size -= 2 + count;
+  //     send_command(comand);
+  //     while (count--) send_byte(pgm_read_byte(config++));
+  //   }
+  // }
 
 public:
   using Driver::area;
-  GCC_INLINE const uint16_t max_x() { return Driver::max_x(); }
-  GCC_INLINE const uint16_t max_y() { return Driver::max_y(); }
+  using Driver::max_x;
+  using Driver::max_y;
+  // GCC_INLINE const uint16_t max_x() { return Driver::max_x(); }
+  // GCC_INLINE const uint16_t max_y() { return Driver::max_y(); }
 
-  inline void color(C c) { _color = c; }
-  inline void background(C b) { _background = b; }
-  inline void clear() { area(0, 0, max_x(), max_y(), _background); }
-  inline void clear(C color) { area(0, 0, max_x(), max_y(), color); }
-  inline void rect(uint16_t x, uint16_t y, uint16_t x1, uint16_t y1) { area(x, y, x1, y1, _color); }
+  GCC_INLINE inline void color(C c) { _color = c; }
+  GCC_INLINE inline void background(C b) { _background = b; }
+  GCC_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
+  GCC_INLINE inline void clear(C color) { area(0, 0, max_x(), max_y(), color); }
+
+  void rect(uint16_t x, uint16_t y, uint16_t x1, uint16_t y1)
+  {
+    if (x > max_x()) x = max_x();
+    if (x1 > max_x()) x1 = max_x();
+    if (y > max_y()) y = max_y();
+    if (y1 > max_y()) y1 = max_y();
+    if (x == x1 && y == y1) pixel(x, y);
+    area(x, y, x1, y1, _color);
+  }
 
   void pixel(uint16_t x, uint16_t y)
   {
@@ -59,6 +78,82 @@ public:
     release();
   }
 
+
+private:
+
+public:
+  void font(const Font &font)
+  {
+  #ifdef MIK32V2
+    _font = font;
+  #else
+    memcpy_P(&_font, &font, sizeof(Font));
+  #endif
+    _line = (1 + ((_font.height - 1) >> 3));
+    _charSize = _font.weight * _line;
+    set_interline(2);
+    set_interval(1);
+  }
+
+  GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = x; point_y = y; }
+  GCC_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
+  GCC_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
+  GCC_INLINE inline uint8_t get_height() { return _font.height; }
+  GCC_INLINE inline uint8_t get_weight() { return _font.weight; }
+
+
+private:
+  void LF() { point_y += _interline; if (point_y + _font.height > max_y()) { point_x = point_y = 0; } }
+  void CR() { point_x = 0; }
+  void TAB() { point_x = ((point_x / ((_font.weight + _interval) << FONT_TAB_FACTOR) + 1) * (_font.weight + _interval)) << FONT_TAB_FACTOR; }
+  void BS() { point_x -= (_font.weight + _interval); if (point_x > max_x()) point_x = 0; }
+  void escape() {}
+  reg get_length(char *);
+
+  void putc(char ch)
+  {
+    switch ((uint8_t)ch) {
+      case 0xd0: break; // Символ в русской кодировке, пропускаем префикс
+      case 0xd1: break;
+      case '\f': point_x = point_y = 0; break;  // Новая страница
+      case '\n': LF(); CR(); break;             // Перевод строки с возвратом
+      case '\r': CR(); break;                   // Возврат каретки
+      case '\b': BS(); break;                   // Шаг назад
+      case '\t': TAB(); break;                  // Табуляция
+      case '\v': LF(); break;                   // Вертикальная табуляция / Перевод строки
+      case '\e': escape(); break;
+      case '\0': point_x += _font.weight + _interval; break;
+      default: output(ch);
+    }
+  }
+
+  void output(uint8_t ch)
+  {
+    ch -= _font.first_char;
+    if (_font.count_char <= ch) ch = 0;
+
+    uint8_t dx = _font.weight;
+    uint8_t *source = (uint8_t *)_font.data;
+
+    if (_font.offset) {
+      uint16_t *index = (uint16_t *)_font.offset + ch;
+      uint16_t offset = pgm_read_word(index);
+      dx = (pgm_read_word(index + 1) - offset) / _line;
+      source += offset;
+    }
+    else
+      source = (uint8_t *)_font.data + ch * _charSize;
+
+    if (point_x + dx > max_x()) {
+      point_y += _interline;
+      point_x = 0;
+    }
+    if (point_y + _font.height > max_y()) { point_x = point_y = 0; }
+    symbol((uint8_t *)source, point_x, point_y, dx, _font.height);
+    point_x += dx + _interval;
+  }
+
+private:
   // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
@@ -80,11 +175,8 @@ public:
     release();
   }
 
-  // парсинг векторного изображения
-  void draw() {}
-
+public:
   // тестирование дисплея
-
   void demo(uint8_t d)
   {
     static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
