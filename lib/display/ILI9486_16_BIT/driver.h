@@ -1,7 +1,10 @@
 #pragma once
 #include "pins.h"
-#include "const.h"
 #include "type/include.h"
+
+// Разрешение дисплея
+static constexpr uint16_t MAX_X = 319;
+static constexpr uint16_t MAX_Y = 479;
 
 template<typename C>
 class ILI9486_16 {
@@ -18,27 +21,27 @@ public:
     PAD_CONFIG->PORT_0_CFG = 0;           // PORT 0 -> GPIO
     L_PORT(OUT) | 0xFFFF;                 // PORT 0 -> OUT
 
-    select();             // CS Выбор дисплея
-    send_command(SLPOUT);	// Out of sleep mode
+    select();                             // CS Выбор дисплея
+    send_command(SLPOUT);	                // Out of sleep mode
     delay_ms(50);
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
     send_command(MADCTL);
-    send_byte((LCD_FLIP | 0x08));// BGR -> RBG & ~EX_X_Y
+    send_byte((LCD_FLIP | 0x08));         // BGR -> RBG & ~EX_X_Y
 
     set_rgb_format();
 
     delay_ms(50);
-    send_command(NORON);  // Normal Display on
-    send_command(DISPON);	// Main screen turned on
+    send_command(NORON);                  // Normal Display on
+    send_command(DISPON);	                // Main screen turned on
     release();
   }
 
   void scroll(uint16_t sl)
   {
-    select();            // CS Выбор дисплея
+    select();                             // CS Выбор дисплея
     send_command(VSCRSADD);
-    send_word(sl);// < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
+    send_word(sl);                        // < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
     release();
   }
 
@@ -92,7 +95,6 @@ protected:
     L_WR(OUTPUT) = clr;
   }
 
-
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     select();
@@ -111,16 +113,7 @@ protected:
 
 private:
   void set_rgb_format();
-  void send_config(const uint8_t *config, uint8_t size)
-  {
-    while (size) {
-      uint8_t count = pgm_read_byte(config++);
-      uint8_t comand = pgm_read_byte(config++);
-      size -= 2 + count;
-      send_command(comand);
-      while (count--) send_byte(pgm_read_byte(config++));
-    }
-  }
+  virtual void send_config(const uint8_t *config, uint8_t size) = 0;
 };
 
 template<>

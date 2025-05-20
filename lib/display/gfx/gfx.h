@@ -1,5 +1,5 @@
 #pragma once
-#include "type/include.h"
+#include "type/display.h"
 
 class  GFX :public IDisplay {
 protected:

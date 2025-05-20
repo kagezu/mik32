@@ -1,5 +1,5 @@
 #pragma once
-#include "type/include.h"
+#include "type/display.h"
 
 // для mik32 должно быть чётным + 1 байт
 #define PRINT_BUFFER_SIZE   33

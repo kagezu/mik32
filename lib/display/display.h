@@ -7,13 +7,13 @@
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
 private:
-  C _color = 0x00ffffff;    // Цвет
-  C _background = 0;        // Фон
-  Font  _font = {};         // Шрифт
-  uint8_t  _charSize = 0;   // Размер символа в байтах
-  uint8_t  _line = 0;       // Высота символа в байтах
-  uint8_t  _interline = 0;  // Расстояние между строками
-  uint8_t  _interval = 0;   // Расстояние между символами
+  C _color = 0x00ffffff;                    // Цвет
+  C _background = 0;                        // Фон
+  Font  _font = {};                         // Шрифт
+  uint8_t  _charSize = 0;                   // Размер символа в байтах
+  uint8_t  _line = 0;                       // Высота символа в байтах
+  uint8_t  _interline = 0;                  // Расстояние между строками
+  uint8_t  _interval = 0;                   // Расстояние между символами
   uint8_t  _tab_factor = FONT_TAB_FACTOR;
   uint16_t point_x = 0;
   uint16_t point_y = 0;
@@ -21,44 +21,44 @@ private:
   using Driver::set_addr;
   using Driver::send_rgb;
   using Driver::send_command;
-  // using Driver::send_byte;
+  using Driver::send_byte;
   using Driver::select;
   using Driver::release;
 
-  // void send_config(const uint8_t *config, uint8_t size)
-  // {
-  //   while (size) {
-  //     uint8_t count = pgm_read_byte(config++);
-  //     uint8_t comand = pgm_read_byte(config++);
-  //     size -= 2 + count;
-  //     send_command(comand);
-  //     while (count--) send_byte(pgm_read_byte(config++));
-  //   }
-  // }
+  void send_config(const uint8_t *config, uint8_t size)
+  {
+    while (size) {
+      uint8_t count = pgm_read_byte(config++);
+      uint8_t comand = pgm_read_byte(config++);
+      size -= 2 + count;
+      send_command(comand);
+      while (count--) send_byte(pgm_read_byte(config++));
+    }
+  }
+
+  // gfx ================================================================================
 
 public:
   using Driver::area;
   using Driver::max_x;
   using Driver::max_y;
-  // GCC_INLINE const uint16_t max_x() { return Driver::max_x(); }
-  // GCC_INLINE const uint16_t max_y() { return Driver::max_y(); }
 
   GCC_INLINE inline void color(C c) { _color = c; }
   GCC_INLINE inline void background(C b) { _background = b; }
   GCC_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
   GCC_INLINE inline void clear(C color) { area(0, 0, max_x(), max_y(), color); }
 
-  void rect(uint16_t x, uint16_t y, uint16_t x1, uint16_t y1)
+  void rect(int16_t x, int16_t y, int16_t x1, int16_t y1)
   {
     if (x > max_x()) x = max_x();
     if (x1 > max_x()) x1 = max_x();
     if (y > max_y()) y = max_y();
     if (y1 > max_y()) y1 = max_y();
     if (x == x1 && y == y1) pixel(x, y);
-    area(x, y, x1, y1, _color);
+    else area(x, y, x1, y1, _color);
   }
 
-  void pixel(uint16_t x, uint16_t y)
+  void pixel(int16_t x, int16_t y)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -68,7 +68,7 @@ public:
     release();
   }
 
-  void pixel(uint16_t x, uint16_t y, C color)
+  void pixel(int16_t x, int16_t y, C color)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -78,10 +78,8 @@ public:
     release();
   }
 
+  // print
 
-private:
-
-public:
   void font(const Font &font)
   {
   #ifdef MIK32V2
@@ -101,32 +99,52 @@ public:
   GCC_INLINE inline uint8_t get_height() { return _font.height; }
   GCC_INLINE inline uint8_t get_weight() { return _font.weight; }
 
-
-private:
-  void LF() { point_y += _interline; if (point_y + _font.height > max_y()) { point_x = point_y = 0; } }
-  void CR() { point_x = 0; }
-  void TAB() { point_x = ((point_x / ((_font.weight + _interval) << FONT_TAB_FACTOR) + 1) * (_font.weight + _interval)) << FONT_TAB_FACTOR; }
-  void BS() { point_x -= (_font.weight + _interval); if (point_x > max_x()) point_x = 0; }
-  void escape() {}
-  reg get_length(char *);
-
   void putc(char ch)
   {
     switch ((uint8_t)ch) {
-      case 0xd0: break; // Символ в русской кодировке, пропускаем префикс
+      // Символ в русской кодировке, пропускаем префикс
+      case 0xd0: break;
       case 0xd1: break;
-      case '\f': point_x = point_y = 0; break;  // Новая страница
-      case '\n': LF(); CR(); break;             // Перевод строки с возвратом
-      case '\r': CR(); break;                   // Возврат каретки
-      case '\b': BS(); break;                   // Шаг назад
-      case '\t': TAB(); break;                  // Табуляция
-      case '\v': LF(); break;                   // Вертикальная табуляция / Перевод строки
-      case '\e': escape(); break;
-      case '\0': point_x += _font.weight + _interval; break;
+        // Новая страница
+      case '\f':
+        point_x = point_y = 0;
+        break;
+        // Перевод строки с возвратом
+      case '\n':
+        point_x = 0;
+        point_y += _interline;
+        if (point_y + _font.height > max_y()) { point_y = 0; }
+        break;
+        // Возврат каретки
+      case '\r':
+        point_x = 0;
+        break;
+        // Шаг назад
+      case '\b':
+        point_x -= (_font.weight + _interval);
+        if (point_x > max_x()) point_x = 0;
+        break;
+        // Табуляция
+      case '\t':
+        point_x = ((point_x / ((_font.weight + _interval) << FONT_TAB_FACTOR) + 1) * (_font.weight + _interval)) << FONT_TAB_FACTOR;
+        break;
+        // Вертикальная табуляция / Перевод строки
+      case '\v':
+        point_y += _interline;
+        if (point_y + _font.height > max_y()) { point_y = 0; }
+        break;
+
+      case '\e':
+        break;
+      case '\0':
+        point_x += _font.weight + _interval;
+        break;
+
       default: output(ch);
     }
   }
 
+private:
   void output(uint8_t ch)
   {
     ch -= _font.first_char;
@@ -153,7 +171,6 @@ private:
     point_x += dx + _interval;
   }
 
-private:
   // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
@@ -175,8 +192,9 @@ private:
     release();
   }
 
+  // тестирование дисплея ===============================================================
+
 public:
-  // тестирование дисплея
   void demo(uint8_t d)
   {
     static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
@@ -197,7 +215,6 @@ public:
         xy += y;  // Заменяем умножение сложением
         xx += x;
 
-        // send_rgb(r, g, b);
         send_rgb(C(r, g, b));
       }
       yy += y;
@@ -205,4 +222,3 @@ public:
     release();
   }
 };
-
