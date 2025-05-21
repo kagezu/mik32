@@ -24,6 +24,7 @@
 #define __PGMSPACE_H_ 1
 
 #include <inttypes.h>
+#include <string.h>
 
 #define PROGMEM
 #define PGM_P  const char *

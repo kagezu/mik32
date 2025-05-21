@@ -4,10 +4,10 @@
 #include "adc.h"
 #include "timer.h"
 #include "dma.h"
+#include "lagrange.h"
 
 #define Ln        9   // Степень полинома Лагранжа (нечётная)
-#define Lx        5  // Интервал между значениями
-#include "lagrange.h"
+#define Lx        10  // Интервал между значениями
 
 #define ADC0(f)   f(1,5)
 #define ADC1(f)   f(1,7)
@@ -20,7 +20,7 @@
 
 #define BLACK     RGB(0, 0, 0)
 #define RED       RGB(255, 0, 0)
-#define WHITE     RGB(64, 255, 255)
+#define WHITE     RGB(255, 255, 255)
 #define LIGHT     RGB(255, 255, 64)
 #define BLUE      RGB(64, 64, 255)
 
@@ -35,7 +35,7 @@ int16_t point2[POINTES];
 // GCC_RAM
 void sample()
 {
-  adc.init(1, 1);
+  adc.init(1, 63);
   adc.start();
   while (adc.value() >= 1000);
   while (adc.value() < 1000);
@@ -72,6 +72,7 @@ void sample()
   lcd.color(WHITE);
   lcd.at(5, 5);
   lcd.printf(" 1 us X 0.1 V  :  Lagrange n = %u  :  Ampl %u mV  \r", Ln, ((a_max - a_min) * 3300) >> 12);
+  // lcd.printf("AAAAAAAAAAAA   -   111111111111  000000 \n");
 
   //////////////////////////
 
@@ -79,16 +80,16 @@ void sample()
   int16_t last2 = point[k];
   point2[0] = last2;
   for (reg i = 1; i <= lcd.max_x(); i++) {
-    lcd.color(RED);
-    // lcd.area(i, last, i, point2[i], RED);
-    // lcd.h_line(i, last, point2[i]);
-    lcd.pixel(i, last);
+    lcd.color(BLACK);
+    // lcd.area(i, last, i, point2[i], BLACK);
+    lcd.h_line(i, last, point2[i]);
+    // lcd.pixel(i, last);
     last = point2[i];
 
     lcd.color(LIGHT);
     // lcd.area(i, last2, i, point[i + k], LIGHT);
-    // lcd.h_line(i, last2, point[i + k]);
-    lcd.pixel(i, last2);
+    lcd.h_line(i, last2, point[i + k]);
+    // lcd.pixel(i, last2);
     last2 = point[i + k];
     point2[i] = last2;
   }
@@ -99,18 +100,23 @@ int main(void)
   ADC1(ANALOG);
 
   T32_1_PS;
-  T32_1_TOP(32);
+  T32_1_TOP(3200);
+  // T32_1_TOP(96);
   T32_1_E;
 
   lcd.init();
   lcd.font(arial_14);
+  // lcd.font(standard_5x8);
   lcd.clear(BLACK);
 
   dma.setup(buffer, ADC_VALUE, sizeof(buffer));
   dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
   dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
 
-  L_init();
+  L_init(Ln, Lx);
 
-  while (true) sample();
+  // uint8_t x = 0;
+  while (true)
+    // lcd.demo(x++);
+    sample();
 }

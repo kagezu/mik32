@@ -12,9 +12,6 @@ void GFX::w_line(int16_t x, int16_t y, int16_t x1)
   if (x > x1) swap(x, x1);
   if (x < 0) x = 0;
   if (x1 < 0) x1 = 0;
-  // if (x > max_x()) x = max_x();
-  // if (x1 > max_x()) x1 = max_x();
-  // if (x == x1) pixel(x, y);
   rect(x, y, x1, y);
 }
 
@@ -23,9 +20,6 @@ void GFX::h_line(int16_t x, int16_t y, int16_t y1)
   if (y > y1) swap(y, y1);
   if (y < 0) y = 0;
   if (y1 < 0) y1 = 0;
-  // if (y > max_y()) y = max_y();
-  // if (y1 > max_y()) y1 = max_y();
-  // if (y == y1) pixel(x, y);
   rect(x, y, x, y1);
 }
 
@@ -33,8 +27,6 @@ void GFX::w_line_fat(int16_t x, int16_t y, int16_t x1)
 {
   uint16_t y1 = y + ((_fat + 1) >> 1) - 1;
   y -= _fat >> 1;
-  // if (y > max_y()) y = max_y();
-  // if (y1 > max_y()) y1 = max_y();
   rect(x, y, x1, y1);
 }
 
@@ -42,8 +34,6 @@ void GFX::h_line_fat(int16_t x, int16_t y, int16_t y1)
 {
   uint16_t x1 = x + ((_fat + 1) >> 1) - 1;
   x -= _fat >> 1;
-  // if (x > max_x()) x = max_x();
-  // if (x1 > max_x()) x1 = max_x();
   rect(x, y, x1, y1);
 }
 

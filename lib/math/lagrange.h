@@ -3,17 +3,13 @@
 
 // Интерполяция Лагранжа (с равными интервалами)
 
-#ifndef Ln
-#define Ln  9// Степень полинома Лагранжа (нечётная)
-#endif
-
-#ifndef Lx
-#define Lx  10 // Интервал между значениями
-#endif
+static constexpr int max_dx = 10;
+static constexpr int max_pow = 11;
 
 static uint16_t *yn;
-static int32_t l[Ln + 1][Lx];
+static int32_t l[max_pow + 1][max_dx];
 static int32_t factor;
+static int32_t ln;
 
 static int32_t fact(int32_t x)
 {
@@ -21,17 +17,19 @@ static int32_t fact(int32_t x)
   return 1;
 }
 
-void L_init()
+void L_init(uint8_t pow, uint8_t dx)
 {
+  if (pow > max_pow || dx > max_dx) return;
+  ln = pow;
   factor = 1;
-  for (int32_t i = 0; i < Ln / 2; i++) factor *= Lx;
-  for (int32_t n = 0; n <= Ln; n++) {
-    int64_t d = factor * fact(Ln - n) * fact(n) * (((n & 1) << 1) - 1);
-    for (int32_t x = 0; x < Lx; x++) {
+  for (int32_t i = 0; i < ln / 2; i++) factor *= dx;
+  for (int32_t n = 0; n <= ln; n++) {
+    int64_t d = factor * fact(ln - n) * fact(n) * (((n & 1) << 1) - 1);
+    for (int32_t x = 0; x < dx; x++) {
       int64_t ls = 1;
-      for (int32_t i = 0; i <= Ln; i++)
-        if (i != n) ls *= x + Lx * ((Ln >> 1) - i);
-      l[n][x] = ls / d / Lx;
+      for (int32_t i = 0; i <= ln; i++)
+        if (i != n) ls *= x + dx * ((ln >> 1) - i);
+      l[n][x] = ls / d / dx;
     }
   }
 }
@@ -40,7 +38,7 @@ void Ly(uint16_t *y) { yn = y; }
 uint32_t L(int32_t x)
 {
   int32_t res = 0;
-  for (uint32_t i = 0; i <= Ln; i++) res += l[i][x] * yn[i];
+  for (int32_t i = 0; i <= ln; i++) res += l[i][x] * yn[i];
   res /= factor;
   return (uint32_t)res;
 }

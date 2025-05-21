@@ -6,18 +6,10 @@
 
 template<typename Driver, typename C>
 class CDisplay : public Driver, public PrintF, public GFX {
-private:
-  C _color = 0x00ffffff;                    // Цвет
-  C _background = 0;                        // Фон
-  Font  _font = {};                         // Шрифт
-  uint8_t  _charSize = 0;                   // Размер символа в байтах
-  uint8_t  _line = 0;                       // Высота символа в байтах
-  uint8_t  _interline = 0;                  // Расстояние между строками
-  uint8_t  _interval = 0;                   // Расстояние между символами
-  uint8_t  _tab_factor = FONT_TAB_FACTOR;
-  uint16_t point_x = 0;
-  uint16_t point_y = 0;
 
+  // Driver =============================================================================
+
+private:
   using Driver::set_addr;
   using Driver::send_rgb;
   using Driver::send_command;
@@ -37,6 +29,10 @@ private:
   }
 
   // gfx ================================================================================
+
+private:
+  C _color = 0x00ffffff;                    // Цвет
+  C _background = 0;                        // Фон
 
 public:
   using Driver::area;
@@ -58,7 +54,7 @@ public:
     else area(x, y, x1, y1, _color);
   }
 
-  void pixel(int16_t x, int16_t y)
+  void pixel(uint16_t x, uint16_t y)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -68,7 +64,7 @@ public:
     release();
   }
 
-  void pixel(int16_t x, int16_t y, C color)
+  void pixel(uint16_t x, uint16_t y, C color)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -78,15 +74,22 @@ public:
     release();
   }
 
-  // print
+  // print ==============================================================================
 
+private:
+  Font  _font = {};                         // Шрифт
+  uint8_t  _charSize = 0;                   // Размер символа в байтах
+  uint8_t  _line = 0;                       // Высота символа в байтах
+  uint8_t  _interline = 0;                  // Расстояние между строками
+  uint8_t  _interval = 0;                   // Расстояние между символами
+  uint8_t  _tab_factor = FONT_TAB_FACTOR;
+  uint16_t point_x = 0;
+  uint16_t point_y = 0;
+
+public:
   void font(const Font &font)
   {
-  #ifdef MIK32V2
-    _font = font;
-  #else
     memcpy_P(&_font, &font, sizeof(Font));
-  #endif
     _line = (1 + ((_font.height - 1) >> 3));
     _charSize = _font.weight * _line;
     set_interline(2);
@@ -171,28 +174,37 @@ private:
     point_x += dx + _interval;
   }
 
-  // Вывод символа (двух цветного изображения) на экран
+  // #pragma GCC push_options
+  // #pragma GCC optimize "O3"
+
+    // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
-    uint16_t x1 = x + dx - 1;
-    uint16_t y1 = y + dy - 1;
+    // uint16_t x1 = x + dx - 1;
+    // uint16_t y1 = y + dy - 1;
 
-    select();
-    set_addr(x, y, x1, y1);
+    // select();
 
+    // set_addr(x, y, x1, y1);
     for (uint8_t j = 0; j < dy; j++) {
       uint8_t *offset = source + (j >> 3) * dx;
       uint8_t bit = 1 << (j & 7);
+      // set_addr(x, y + j, x1, y + j);
       for (uint8_t i = 0; i < dx; i++) {
         uint8_t data = pgm_read_byte(offset + i);
-        if (data & bit) send_rgb(_color);
-        else send_rgb(_background);
+        // if (data & bit) send_rgb(_color);
+        // else send_rgb(_background);
+        if (data & bit) pixel(x + i, y + j, _color);
+        else pixel(x + i, y + j, _background);
       }
     }
-    release();
+
+    // release();
   }
 
-  // тестирование дисплея ===============================================================
+  // #pragma GCC pop_options
+
+    // тестирование дисплея ===============================================================
 
 public:
   void demo(uint8_t d)

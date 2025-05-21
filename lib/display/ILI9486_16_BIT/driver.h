@@ -88,8 +88,8 @@ protected:
 
   void send_rgb(C color)
   {
-    static reg set = L_WR(OUTPUT) | L_WR(MASK);
     static reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
+    static reg set = clr | L_WR(MASK);
     L_PORT(OUTPUT) = color.rgb;
     L_WR(OUTPUT) = set;
     L_WR(OUTPUT) = clr;
@@ -174,11 +174,11 @@ template<>
 void ILI9486_16<RGB18>::set_rgb_format()
 {
   send_command(COLMOD);
-  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
+  send_byte(0x66); // 6x6x6 bit (24 bit transfer)
 }
 template<>
 void ILI9486_16<RGB16>::set_rgb_format()
 {
   send_command(COLMOD);
-  send_byte(0x05); // 5x6x5 bit
+  send_byte(0x65); // 5x6x5 bit
 }
