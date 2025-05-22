@@ -3,16 +3,16 @@
 #include "type/include.h"
 
 // Разрешение дисплея
-static constexpr uint16_t MAX_X = 319;
-static constexpr uint16_t MAX_Y = 479;
+static constexpr int16_t MAX_X = 319;
+static constexpr int16_t MAX_Y = 479;
 
-template<typename C>
+template<typename C = RGB16>
 class ILI9486_16 {
 public:
-  GCC_INLINE constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
-  GCC_INLINE constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
+  GCC_INLINE constexpr int16_t max_x() { return MAX_X; }
+  GCC_INLINE constexpr int16_t max_y() { return MAX_Y; }
 
-  void init()
+  void init(uint8_t position)
   {
     SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR);  // PORT 0.3 -> D9
     L_WR(GPIO); L_RS(GPIO); L_CS(GPIO);
@@ -27,7 +27,7 @@ public:
 
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
     send_command(MADCTL);
-    send_byte((LCD_FLIP | 0x08));         // BGR -> RBG & ~EX_X_Y
+    send_byte((position | 0x08));         // BGR -> RBG & ~EX_X_Y
 
     set_rgb_format();
 

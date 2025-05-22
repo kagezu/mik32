@@ -14,7 +14,7 @@
 // 270°   |     +     |     -     |     +     |
 
 // #define LCD_FLIP    0                             //   0°
-#define LCD_FLIP              (FLIP_Y | EX_X_Y)   //  90°
+// #define LCD_FLIP              (FLIP_Y | EX_X_Y)   //  90°
 // #define LCD_FLIP    (FLIP_X  | FLIP_Y)            // 180°
 // #define LCD_FLIP    (FLIP_X  |          EX_X_Y)   // 270°
 // #define LCD_FLIP    FLIP_X
@@ -25,11 +25,12 @@
 // #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
 // #include "ST7789/driver.h"           // RGB18
 // #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
-#include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
+// #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
 #include "display.h"
 
 // #define Display   CDisplay<ST7735_SOFT<RGB>, RGB>
 // #define Display   CDisplay<ST7735_SPI<RGB>, RGB>
 // #define Display   CDisplay<ST7789<RGB>, RGB>
 // #define Display   CDisplay<ILI9486_8<RGB>, RGB>
-#define Display   CDisplay<ILI9486_16<RGB>, RGB>
+
+#define Display   CDisplay<ILI9486_16>

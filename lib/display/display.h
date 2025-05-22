@@ -1,13 +1,20 @@
 #pragma once
+#include "ILI9486_16_BIT/driver.h"
 #include "print/printf.h"
 #include "gfx/gfx.h"
 
 #define FONT_TAB_FACTOR     2
 
-template<typename Driver, typename C>
-class CDisplay : public Driver, public PrintF, public GFX {
+template<typename Driver, typename C = RGB16, typename Rotor = ROT_0>
+class Display : public Driver, public PrintF, public GFX, private Rotor {
 
   // Driver =============================================================================
+
+public:
+  void init()
+  {
+    Driver::init(Rotor::state());
+  }
 
 private:
   using Driver::set_addr;
@@ -36,8 +43,9 @@ private:
 
 public:
   using Driver::area;
-  using Driver::max_x;
-  using Driver::max_y;
+
+  GCC_INLINE constexpr int16_t max_x() { return Rotor::state() & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
+  GCC_INLINE constexpr int16_t max_y() { return Rotor::state() & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
 
   GCC_INLINE inline void color(C c) { _color = c; }
   GCC_INLINE inline void background(C b) { _background = b; }

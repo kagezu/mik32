@@ -1,21 +1,5 @@
 #pragma once
-#include "mik32.h"
-
-// Повороты дисплея
-//    \   |   FLIP_X  |   FLIP_Y  |   EX_X_Y  |
-// ============================================
-//   0°   |     -     |     -     |     -     |
-//  90°   |     -     |     +     |     +     |
-// 180°   |     +     |     +     |     -     |
-// 270°   |     +     |     -     |     +     |
-
-#define  EX_X_Y   0x20
-#define  FLIP_X   0x40
-#define  FLIP_Y   0x80
-
-#ifndef LCD_FLIP
-#define LCD_FLIP  0x00
-#endif
+#include "core.h"
 
 // Команды дисплея
 

@@ -6,3 +6,4 @@
 #include "rgb32.h"
 #include "font.h"
 #include "const.h"
+#include "rotor.h"
