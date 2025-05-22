@@ -3,35 +3,35 @@
 
 //===================== Config =============================
 
-// L_CS       Выбор дисплея
-// L_RS       0 = Запись команды / 1 = Запись данных
-// L_RST      0 = Reset
-// L_WR       Тактирование / low -> high
-// L_RD       ?
+// ILI_8_CS       Выбор дисплея
+// ILI_8_RS       0 = Запись команды / 1 = Запись данных
+// ILI_8_RST      0 = Reset
+// ILI_8_WR       Тактирование / low -> high
+// ILI_8_RD       ?
 
 #ifdef __AVR_ATmega328P__
-#define L_RD(x)   x ( C, 0 )
-#define L_WR(x)   x ( C, 1 )
-#define L_RS(x)   x ( C, 2 )
-#define L_CS(x)   x ( C, 3 )
-#define L_RST(x)  x ( C, 4 )
-#define L_PORT(x) x ( D, 8 )
+#define ILI_8_RD(x)   x ( C, 0 )
+#define ILI_8_WR(x)   x ( C, 1 )
+#define ILI_8_RS(x)   x ( C, 2 )
+#define ILI_8_CS(x)   x ( C, 3 )
+#define ILI_8_RST(x)  x ( C, 4 )
+#define ILI_8_PORT(x) x ( D, 8 )
 #endif
 
 #ifdef __AVR_ATmega128__
-#define L_RD(x)   x ( F, 0 )
-#define L_WR(x)   x ( F, 1 )
-#define L_RS(x)   x ( F, 2 )
-#define L_CS(x)   x ( F, 3 )
-#define L_RST(x)  x ( F, 4 )
-#define L_PORT(x) x ( D, 8 )
+#define ILI_8_RD(x)   x ( F, 0 )
+#define ILI_8_WR(x)   x ( F, 1 )
+#define ILI_8_RS(x)   x ( F, 2 )
+#define ILI_8_CS(x)   x ( F, 3 )
+#define ILI_8_RST(x)  x ( F, 4 )
+#define ILI_8_PORT(x) x ( D, 8 )
 #endif
 
 #ifdef MIK32V2
-#define L_RD(x)   x ( 0, 8 )
-#define L_WR(x)   x ( 0, 9 )
-#define L_RS(x)   x ( 0, 10)
-#define L_CS(x)   x ( 1, 15)
-#define L_RST(x)  x ( 0, 0 )
-#define L_PORT(x) x ( 0, 0 )
+#define ILI_8_RD(x)   x ( 0, 8 )
+#define ILI_8_WR(x)   x ( 0, 9 )
+#define ILI_8_RS(x)   x ( 0, 10)
+#define ILI_8_CS(x)   x ( 1, 15)
+#define ILI_8_RST(x)  x ( 0, 0 )
+#define ILI_8_PORT(x) x ( 0, 0 )
 #endif

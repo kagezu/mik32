@@ -1,4 +1,5 @@
 #include "display.h"
+#include "ILI9486_16_BIT/driver.h"
 #include "font/standard_5x8.h"
 #include "font/arial_14.h"
 #include "adc.h"
@@ -26,6 +27,7 @@
 #define BLUE      RGB(64, 64, 255)
 
 Display<ILI9486_16<RGB>, RGB, ROT_0> lcd;
+// Display<ST7735_SOFT<RGB>, RGB, ROT_0> lcd;
 ADC adc;
 DMA dma(0, DMA::VERY);
 

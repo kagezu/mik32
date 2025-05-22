@@ -1,37 +1,34 @@
 #pragma once
 #include "pins.h"
-#include "const.h"
 #include "type/include.h"
 
-#define LCD_DRIVER    ST7789
-#define L_BEGIN       L_CS(CLR);
-#define L_END         L_CS(SET);
+// #define ST_8_WRITE  ST_8_RD(SET); ST_8_PORT(OUT) | 0xFF;
+// #define ST_8_READ   ST_8_PORT(IN) & 0x00; ST_8_RD(CLR);
 
-#define L_WRITE  L_RD(SET); L_PORT(OUT) | 0xFF;
-#define L_READ   L_PORT(IN) & 0x00; L_RD(CLR);
-
-template<typename C>
+template<typename C = RGB18>
 class ST7789 {
 public:
-  inline constexpr uint16_t max_x() { return LCD_FLIP & EX_X_Y ? MAX_Y : MAX_X; }
-  inline constexpr uint16_t max_y() { return LCD_FLIP & EX_X_Y ? MAX_X : MAX_Y; }
+  // Разрешение дисплея
+  GCC_INLINE constexpr int16_t max_x() { return 239; }
+  GCC_INLINE constexpr int16_t max_y() { return 319; }
 
-  void init()
+  void init(uint8_t position)
   {
   #ifdef MIK32V2
-    L_RD(GPIO); L_WR(GPIO); L_RS(GPIO); L_CS(GPIO); L_RST(GPIO);
+    ST_8_RD(GPIO); ST_8_WR(GPIO); ST_8_RS(GPIO); ST_8_CS(GPIO); ST_8_RST(GPIO);
   #endif
-    L_RD(OUT); L_WR(OUT); L_RS(OUT); L_CS(OUT); L_RST(OUT);
-    L_PORT(OUT) | 0xFF;
-    L_RD(SET); L_WR(CLR); L_RS(CLR); L_CS(SET); L_RST(CLR);
-    L_RST(SET);
+    ST_8_RD(OUT); ST_8_WR(OUT); ST_8_RS(OUT); ST_8_CS(OUT); ST_8_RST(OUT);
+    ST_8_PORT(OUT) | 0xFF;
+    ST_8_RD(SET); ST_8_WR(CLR); ST_8_RS(CLR); ST_8_CS(SET); ST_8_RST(CLR);
+    ST_8_RST(SET);
 
     select();             // CS Выбор дисплея
     send_command(SWRESET);
     delay_ms(15);          // Ждать стабилизации напряжений
 
     send_config(ST7789_CONFIG, sizeof(ST7789_CONFIG));
-    send_command(MADCTL); send_byte(LCD_FLIP);
+    send_command(MADCTL);
+    send_byte(position);
 
     send_command(COLMOD);
     send_byte(0x06); // RGB18
@@ -43,42 +40,42 @@ public:
   }
 
 protected:
-  inline void select() { L_CS(CLR); }
-  inline void release() { L_CS(SET); }
+  inline void select() { ST_8_CS(CLR); }
+  inline void release() { ST_8_CS(SET); }
 
   void send_command(uint8_t command)
   {
-    L_RS(CLR);
+    ST_8_RS(CLR);
     send_byte(command);
-    L_RS(SET);
+    ST_8_RS(SET);
   }
 
   void send_byte(uint8_t data)
   {
   #ifdef MIK32V2
-    L_PORT(OUTPUT) = data | (L_PORT(OUTPUT) & ~0xff);
-    L_WR(CLR); L_WR(SET);
+    ST_8_PORT(OUTPUT) = data | (ST_8_PORT(OUTPUT) & ~0xff);
+    ST_8_WR(CLR); ST_8_WR(SET);
   #else
-    L_PORT(OUTPUT) = data;
-    L_WR(SET); L_WR(CLR);
+    ST_8_PORT(OUTPUT) = data;
+    ST_8_WR(SET); ST_8_WR(CLR);
   #endif
   }
 
   void send_word(uint16_t data)
   {
   #ifdef MIK32V2
-    volatile reg tmp = (L_PORT(OUTPUT) & ~0xff);
-    L_PORT(OUTPUT) = (data >> 8) | tmp;
-    L_WR(CLR);
-    L_WR(SET);
-    L_PORT(OUTPUT) = (data & 0xff) | tmp;
-    L_WR(CLR);
-    L_WR(SET);
+    volatile reg tmp = (ST_8_PORT(OUTPUT) & ~0xff);
+    ST_8_PORT(OUTPUT) = (data >> 8) | tmp;
+    ST_8_WR(CLR);
+    ST_8_WR(SET);
+    ST_8_PORT(OUTPUT) = (data & 0xff) | tmp;
+    ST_8_WR(CLR);
+    ST_8_WR(SET);
   #else
-    L_PORT(OUTPUT) = to_byte(data, 1);
-    L_WR(INV); L_WR(INV);
-    L_PORT(OUTPUT) = to_byte(data, 0);
-    L_WR(INV); L_WR(INV);
+    ST_8_PORT(OUTPUT) = to_byte(data, 1);
+    ST_8_WR(INV); ST_8_WR(INV);
+    ST_8_PORT(OUTPUT) = to_byte(data, 0);
+    ST_8_WR(INV); ST_8_WR(INV);
   #endif
   }
 
@@ -98,20 +95,20 @@ protected:
   void send_rgb(C color)
   {
   #ifdef MIK32V2
-    static reg tmp = L_PORT(OUTPUT) & ~0xff;
-    L_PORT(OUTPUT) = color.red | tmp;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(OUTPUT) = color.green | tmp;
-    L_WR(CLR); L_WR(SET);
-    L_PORT(OUTPUT) = color.blue | tmp;
-    L_WR(CLR); L_WR(SET);
+    static reg tmp = ST_8_PORT(OUTPUT) & ~0xff;
+    ST_8_PORT(OUTPUT) = color.red | tmp;
+    ST_8_WR(CLR); ST_8_WR(SET);
+    ST_8_PORT(OUTPUT) = color.green | tmp;
+    ST_8_WR(CLR); ST_8_WR(SET);
+    ST_8_PORT(OUTPUT) = color.blue | tmp;
+    ST_8_WR(CLR); ST_8_WR(SET);
   #else
-    L_PORT(OUTPUT) = color.red;
-    L_WR(INV); L_WR(INV);
-    L_PORT(OUTPUT) = color.green;
-    L_WR(INV); L_WR(INV);
-    L_PORT(OUTPUT) = color.blue;
-    L_WR(INV); L_WR(INV);
+    ST_8_PORT(OUTPUT) = color.red;
+    ST_8_WR(INV); ST_8_WR(INV);
+    ST_8_PORT(OUTPUT) = color.green;
+    ST_8_WR(INV); ST_8_WR(INV);
+    ST_8_PORT(OUTPUT) = color.blue;
+    ST_8_WR(INV); ST_8_WR(INV);
   #endif
   }
 
@@ -121,33 +118,33 @@ protected:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    reg red = (L_PORT(OUTPUT) & ~0xff) | color.red;
-    reg green = (L_PORT(OUTPUT) & ~0xff) | color.green;
-    reg blue = (L_PORT(OUTPUT) & ~0xff) | color.blue;
-    reg red_c = (L_PORT(OUTPUT) & ~(0xff | L_WR(MASK))) | color.red;
-    reg green_c = (L_PORT(OUTPUT) & ~(0xff | L_WR(MASK))) | color.green;
-    reg blue_c = (L_PORT(OUTPUT) & ~(0xff | L_WR(MASK))) | color.blue;
+    reg red = (ST_8_PORT(OUTPUT) & ~0xff) | color.red;
+    reg green = (ST_8_PORT(OUTPUT) & ~0xff) | color.green;
+    reg blue = (ST_8_PORT(OUTPUT) & ~0xff) | color.blue;
+    reg red_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.red;
+    reg green_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.green;
+    reg blue_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.blue;
     reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      L_PORT(OUTPUT) = red;
-      L_PORT(OUTPUT) = red_c;
-      L_WR(SET);
-      L_PORT(OUTPUT) = green;
-      L_PORT(OUTPUT) = green_c;
-      L_WR(SET);
-      L_PORT(OUTPUT) = blue;
-      L_PORT(OUTPUT) = blue_c;
-      L_WR(SET);
+      ST_8_PORT(OUTPUT) = red;
+      ST_8_PORT(OUTPUT) = red_c;
+      ST_8_WR(SET);
+      ST_8_PORT(OUTPUT) = green;
+      ST_8_PORT(OUTPUT) = green_c;
+      ST_8_WR(SET);
+      ST_8_PORT(OUTPUT) = blue;
+      ST_8_PORT(OUTPUT) = blue_c;
+      ST_8_WR(SET);
     #else
     for (uint16_t i = y0; i <= y1; i++)
       for (uint16_t j = x0; j <= x1; j++) {
-        L_PORT(OUTPUT) = color.red;
-        L_WR(INV); L_WR(INV);
-        L_PORT(OUTPUT) = color.green;
-        L_WR(INV); L_WR(INV);
-        L_PORT(OUTPUT) = color.blue;
-        L_WR(INV); L_WR(INV);
+        ST_8_PORT(OUTPUT) = color.red;
+        ST_8_WR(INV); ST_8_WR(INV);
+        ST_8_PORT(OUTPUT) = color.green;
+        ST_8_WR(INV); ST_8_WR(INV);
+        ST_8_PORT(OUTPUT) = color.blue;
+        ST_8_WR(INV); ST_8_WR(INV);
       #endif
     }
     release();

@@ -1,5 +1,5 @@
 #pragma once
-#include "ILI9486_16_BIT/driver.h"
+#include "type/include.h"
 #include "print/printf.h"
 #include "gfx/gfx.h"
 
