@@ -1,4 +1,3 @@
-#pragma once
 #include "avr.h"
 #include "macros/attribute.h"
 

@@ -34,13 +34,13 @@ public:
     release();
   }
 
-  void scroll(uint16_t sl)
-  {
-    select();                             // CS Выбор дисплея
-    send_command(VSCRSADD);
-    send_word(sl);                        // < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
-    release();
-  }
+  // void scroll(uint16_t sl)
+  // {
+  //   select();                             // CS Выбор дисплея
+  //   send_command(VSCRSADD);
+  //   send_word(sl);                        // < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
+  //   release();
+  // }
 
 protected:
   inline void select() { L_CS(CLR); }

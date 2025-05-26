@@ -18,15 +18,15 @@
 class ADC {
 public:
   // Частота в КГц
-  void init(uint8_t ch, uint8_t div = 0)
+  void init(uint8_t ch, uint8_t div = 1)
   {
     DIDR0 |= _BV(ch);         // Отключить цифровой вход
     ADMUX = ch                // Выборать канал
+      | (ADC_ADLAR << ADLAR)  // Выравнивание 8/10 bit
       | (ADC_AVCC << REFS0);  // AREF = AVCC
     ADCSRA = (1 << ADEN)      // Включить
       | (1 << ADSC)           // Выполнить измерение
-      | (div << ADPS0)        // Делитель
-      | (ADC_ADLAR << ADLAR); // Выравнивание 8/10 bit
+      | (div << ADPS0);       // Делитель
     wait();                   // Ждать завершения
   }
 
@@ -43,7 +43,7 @@ public:
     return value();
   }
 
-  GCC_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_AVCC << REFS0); }
+  GCC_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
   GCC_INLINE void single() { ADCSRA |= _BV(ADSC); }
   GCC_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
   GCC_INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }

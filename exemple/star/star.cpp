@@ -23,7 +23,7 @@ int main(void)
 
   uint16_t i = 0;
   while (true) {
-    int16_t h = (lcd.max_y() - 40) >> 1;
+    int16_t h = (lcd.max_y() - 50) >> 1;
 
     lcd.at(0, h);
     lcd.font(arial_14);

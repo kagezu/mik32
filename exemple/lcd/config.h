@@ -1,18 +1,18 @@
 // Цветовая модель
 
 // #define RGB         RGB12   // 4x4x4 bit
-// #define RGB         RGB16   // 5x6x5 bit
-#define RGB         RGB18   // 6x6x6 bit
+#define RGB         RGB16   // 5x6x5 bit
+// #define RGB         RGB18   // 6x6x6 bit
 // #define RGB         RGB32
 
 
 // Поворот дисплея
 
-#define LCD_ROT     ROT_0
+// #define LCD_ROT     ROT_0
 // #define LCD_ROT     ROT_90
 // #define LCD_ROT     ROT_180
 // #define LCD_ROT     ROT_270
-// #define LCD_ROT     ROT_X
+#define LCD_ROT     ROT_X
 // #define LCD_ROT     ROT_Y
 // #define LCD_ROT     ROT_EX
 // #define LCD_ROT     ROT_EX_XY
@@ -37,7 +37,7 @@
 
 // Шрифты
 
-extern Font arial_14;
-extern Font micro_5x6;
-extern Font system_5x7;
-extern Font standard_5x8;
+extern const struct Font arial_14;
+extern const struct Font micro_5x6;
+extern const struct Font system_5x7;
+extern const struct Font standard_5x8;

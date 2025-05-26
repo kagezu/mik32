@@ -200,25 +200,34 @@ private:
     release();
   }
 
-  // тестирование дисплея ===============================================================
+  // тестирование =======================================================================
 
 public:
+  void scroll(uint16_t sl)
+  {
+    select();                             // CS Выбор дисплея
+    send_command(VSCRSADD);
+    send_byte(sl >> 8);
+    send_byte(sl);                        // < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
+    release();
+  }
+
   void demo(uint8_t d)
   {
     static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    uint16_t yy = 0;
-    for (uint16_t y = 0; y < max_y() + 1; y++) {
-      uint16_t xx = 0;
-      uint16_t xy = 0;
-      for (uint16_t x = 0; x < max_x() + 1; x++) {
+    int16_t yy = 0;
+    for (int16_t y = 0; y < max_y() + 1; y++) {
+      int16_t xx = 0;
+      int16_t xy = 0;
+      for (int16_t x = 0; x < max_x() + 1; x++) {
 
-        uint8_t e = d << 2;
-        uint8_t r = ((xx + yy) >> div) + e;
-        uint8_t g = ((yy - xx) >> div) + e;
-        uint8_t b = (xy >> div) - e;
+        int8_t e = d << 2;
+        int8_t r = ((xx + yy) >> div) + e;
+        int8_t g = ((yy - xx) >> div) + e;
+        int8_t b = (xy >> div) - e;
 
         xy += y;  // Заменяем умножение сложением
         xx += x;
