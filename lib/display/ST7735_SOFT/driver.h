@@ -6,7 +6,7 @@ template<typename C = RGB16>
 class ST7735_SOFT {
 public:
   // Разрешение дисплея
-  GCC_INLINE constexpr int16_t max_x() { return 119; }
+  GCC_INLINE constexpr int16_t max_x() { return 127; }
   GCC_INLINE constexpr int16_t max_y() { return 159; }
   
   void init(uint8_t position)
@@ -41,7 +41,7 @@ protected:
     ST_SOFT_RS(SET); // Запись данных
   }
 
-  void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+  GCC_NO_INLINE void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
   {
     send_command(CASET); // Column Address Set
     send_zero();
@@ -58,7 +58,7 @@ protected:
     send_command(RAMWR); // Memory Write
   }
 
-  void send_zero()
+  GCC_NO_INLINE void send_zero()
   {
     reg count = 8;
     ST_SOFT_SDA(CLR);
@@ -68,7 +68,7 @@ protected:
     }
   }
 
-  void send_byte(uint8_t data)
+  GCC_NO_INLINE void send_byte(uint8_t data)
   {
     for( reg mask = 0x80; mask > 0; mask >>=1){
       if (data & mask) ST_SOFT_SDA(SET);
@@ -81,7 +81,8 @@ protected:
   void send_rgb(uint8_t red, uint8_t green, uint8_t blue){
     send_rgb(C(red, green, blue));
   }
-  void send_rgb(C color)
+
+  GCC_NO_INLINE void send_rgb(C color)
   {
     uint8_t r = color.red;
     uint8_t g = color.green;
@@ -146,7 +147,7 @@ protected:
     ST_SOFT_SCK(CLR);
   }
 
-  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
+   GCC_NO_INLINE void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
   {
     uint8_t r = color.red;
     uint8_t g = color.green;
@@ -219,12 +220,12 @@ protected:
   }
 
 private:
-  void set_rgb_format();
+GCC_NO_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t *config, uint8_t size) = 0;
 };
 
 template<>
-  void ST7735_SOFT<RGB16>::send_rgb(RGB16 color)
+GCC_NO_INLINE void ST7735_SOFT<RGB16>::send_rgb(RGB16 color)
   {
     uint16_t rgb = color.rgb;
 
@@ -295,7 +296,7 @@ template<>
   }
 
   template<>
-    void ST7735_SOFT<RGB16>::send_rgb(uint8_t red, uint8_t green, uint8_t blue)
+  GCC_NO_INLINE void ST7735_SOFT<RGB16>::send_rgb(uint8_t red, uint8_t green, uint8_t blue)
     {  
       reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
       reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
@@ -382,7 +383,7 @@ template<>
     }
 
 template<>
-  void ST7735_SOFT<RGB12>::send_rgb(RGB12 color)
+GCC_NO_INLINE void ST7735_SOFT<RGB12>::send_rgb(RGB12 color)
   {
     uint16_t rgb = color.rgb;
 
@@ -422,7 +423,7 @@ template<>
   }
 
 template<>
-  void ST7735_SOFT<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+GCC_NO_INLINE void ST7735_SOFT<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
   {
     uint16_t rgb = color.rgb;
 
@@ -500,7 +501,7 @@ template<>
   }
 
 template<>
-  void ST7735_SOFT<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
+GCC_NO_INLINE void ST7735_SOFT<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
   {
     uint16_t rgb = color.rgb;
 

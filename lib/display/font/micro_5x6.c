@@ -171,7 +171,7 @@ static const uint8_t w[] PROGMEM = {
   4,4,5,4,5,5,5,4,5,5,4,5,3,4,5,4,3,3,3,3,4,3,5,3,4,4,3,3,5,3,3,3,
 };
 
-const struct Font micro_5x6[] PROGMEM = {
+const struct Font micro_5x6 PROGMEM = {
   160,
   32,
   5,

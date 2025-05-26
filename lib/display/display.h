@@ -62,7 +62,7 @@ public:
     else area(x, y, x1, y1, _color);
   }
 
-  void pixel(uint16_t x, uint16_t y)
+  void pixel(int16_t x, int16_t y)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -72,7 +72,7 @@ public:
     release();
   }
 
-  void pixel(uint16_t x, uint16_t y, C color)
+  void pixel(int16_t x, int16_t y, C color)
   {
     if (x > max_x() || y > max_y()) return;
     select();
@@ -86,29 +86,23 @@ public:
 
 private:
   Font  _font = {};                         // Шрифт
-  uint8_t  _charSize = 0;                   // Размер символа в байтах
-  uint8_t  _line = 0;                       // Высота символа в байтах
+  uint8_t  _charSize = 0;                   // Размер символа в словах
   uint8_t  _interline = 0;                  // Расстояние между строками
   uint8_t  _interval = 0;                   // Расстояние между символами
   uint8_t  _tab_factor = FONT_TAB_FACTOR;
-  uint16_t point_x = 0;
-  uint16_t point_y = 0;
+  int16_t point_x = 0;
+  int16_t point_y = 0;
 
 public:
-  // void font(const Font &font)
-    // {
-    //   memcpy_P(&_font, &font, sizeof(Font));
-    //   _line = (1 + ((_font.height - 1) >> 3));
-    //   _charSize = _font.weight * _line;
-    //   set_interline(2);
-    //   set_interval(1);
-    // }
-
-  void font(const Font &font)
+  void font(const Font &f)
   {
-    memcpy_P(&_font, &font, sizeof(Font));
-    // _line = (1 + ((_font.height - 1) >> 3));
-    _charSize = (((_font.weight * _font.height - 1) >> 3) / sizeof(reg) + 1) * sizeof(reg);
+  #ifdef __AVR__
+    memcpy_P(&_font, &f, sizeof(Font));
+    _charSize = ((_font.weight * _font.height - 1) >> 3) + 1;
+  #else
+    _font = f;
+    _charSize = (((_font.weight * _font.height - 1) >> 5) + 1) << 2;
+  #endif
     set_interline(2);
     set_interval(1);
   }
@@ -116,10 +110,10 @@ public:
   GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = x; point_y = y; }
   GCC_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
   GCC_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
-  GCC_INLINE inline uint8_t get_height() { return _font.height; }
-  GCC_INLINE inline uint8_t get_weight() { return _font.weight; }
+  GCC_INLINE inline uint8_t get_height() { return _interline; }
+  GCC_INLINE inline uint8_t get_weight() { return _font.weight + _interval; }
 
-  void putc(char ch)
+  GCC_NO_INLINE void putc(char ch)
   {
     switch ((uint8_t)ch) {
       // Символ в русской кодировке, пропускаем префикс
@@ -133,7 +127,7 @@ public:
       case '\n':
         point_x = 0;
         point_y += _interline;
-        if (point_y + _font.height > max_y()) { point_y = 0; }
+        if (point_y + _font.height > max_y() + 1) { point_y = 0; }
         break;
         // Возврат каретки
       case '\r':
@@ -142,7 +136,7 @@ public:
         // Шаг назад
       case '\b':
         point_x -= (_font.weight + _interval);
-        if (point_x > max_x()) point_x = 0;
+        if (point_x < 0) point_x = 0;
         break;
         // Табуляция
       case '\t':
@@ -151,7 +145,7 @@ public:
         // Вертикальная табуляция / Перевод строки
       case '\v':
         point_y += _interline;
-        if (point_y + _font.height > max_y()) { point_y = 0; }
+        if (point_y + _font.height > max_y() + 1) { point_y = 0; }
         break;
 
       case '\e':
@@ -160,106 +154,51 @@ public:
         point_x += _font.weight + _interval;
         break;
 
-      default: output(ch);
+      default:
+        {
+          ch -= _font.first_char;
+          if (_font.count_char <= (uint8_t)ch) ch = 0;
+
+          uint8_t dx;
+          uint8_t *source;
+
+          if (_font.w) dx = pgm_read_byte(&_font.w[(uint8_t)ch]);
+          else dx = _font.weight;
+
+          if (_font.offset) { source = (uint8_t *)_font.data + pgm_read_word(&_font.offset[(uint8_t)ch]); }
+          else { source = (uint8_t *)_font.data + ch * _charSize; }
+
+          if (point_x + dx > max_x() + 1) {
+            point_y += _interline;
+            point_x = 0;
+          }
+          if (point_y + _font.height > max_y() + 1) { point_x = point_y = 0; }
+          symbol((reg *)source, point_x, point_y, dx, _font.height);
+          point_x += dx + _interval;
+        }
     }
   }
 
 private:
-
-  // void output(uint8_t ch)
-  // {
-  //   ch -= _font.first_char;
-  //   if (_font.count_char <= ch) ch = 0;
-
-  //   uint8_t dx = _font.weight;
-  //   uint8_t *source = (uint8_t *)_font.data;
-
-  //   if (_font.offset) {
-  //     uint16_t *index = (uint16_t *)_font.offset + ch;
-  //     uint16_t offset = pgm_read_word(index);
-  //     dx = (pgm_read_word(index + 1) - offset) / _line;
-  //     source += offset;
-  //   }
-  //   else
-  //     source = (uint8_t *)_font.data + ch * _charSize;
-
-  //   if (point_x + dx > max_x()) {
-  //     point_y += _interline;
-  //     point_x = 0;
-  //   }
-  //   if (point_y + _font.height > max_y()) { point_x = point_y = 0; }
-  //   symbol((uint8_t *)source, point_x, point_y, dx, _font.height);
-  //   point_x += dx + _interval;
-  // }
-
-
-  void output(uint8_t ch)
+  void symbol(reg *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
-    ch -= _font.first_char;
-    if (_font.count_char <= ch) ch = 0;
+    reg count = dx * dy;
+    reg bit = 0;
+    reg data = 0;
 
-    uint8_t dx;
-    uint8_t *source;
-
-    if (_font.w) dx = _font.w[ch];
-    else dx = _font.weight;
-
-    if (_font.offset) { source = (uint8_t *)_font.data + _font.offset[ch]; }
-    else { source = (uint8_t *)_font.data + ch * _charSize; }
-
-    if (point_x + dx > max_x() + 1) {
-      point_y += _interline;
-      point_x = 0;
+    select();
+    set_addr(x, y, x + dx - 1, y + dy - 1);
+    while (count--) {
+    #ifdef __AVR__
+      if (bit == 0) { bit = 1; data = pgm_read_byte(source++); }
+    #else
+      if (bit == 0) { bit = 1; data = *source++; }
+    #endif
+      if (data & bit) send_rgb(_color); else send_rgb(_background);
+      bit <<= 1;
     }
-    if (point_y + _font.height > max_y() + 1) { point_x = point_y = 0; }
-    symbol(source, point_x, point_y, dx, _font.height);
-    point_x += dx + _interval;
+    release();
   }
-
-
-
-  // Вывод символа (двух цветного изображения) на экран
-  void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
-  {
-
-    for (uint8_t j = 0; j < dy; j++) {
-      uint8_t *offset = source + (j >> 3) * dx;
-      uint8_t bit = 1;
-      uint8_t data = pgm_read_byte(offset + i);
-      for (uint8_t i = 0; i < dx; i++) {
-        if (data & bit) pixel(x + i, y + j, _color);
-        else pixel(x + i, y + j, _background);
-        bit <<= 1;
-      }
-    }
-
-    // release();
-  }
-
-  // Вывод символа (двух цветного изображения) на экран
-  // void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
-  // {
-  //   // uint16_t x1 = x + dx - 1;
-  //   // uint16_t y1 = y + dy - 1;
-
-  //   // select();
-
-  //   // set_addr(x, y, x1, y1);
-  //   for (uint8_t j = 0; j < dy; j++) {
-  //     uint8_t *offset = source + (j >> 3) * dx;
-  //     uint8_t bit = 1 << (j & 7);
-  //     // set_addr(x, y + j, x1, y + j);
-  //     for (uint8_t i = 0; i < dx; i++) {
-  //       uint8_t data = pgm_read_byte(offset + i);
-  //       // if (data & bit) send_rgb(_color);
-  //       // else send_rgb(_background);
-  //       if (data & bit) pixel(x + i, y + j, _color);
-  //       else pixel(x + i, y + j, _background);
-  //     }
-  //   }
-
-  //   // release();
-  // }
 
   // тестирование дисплея ===============================================================
 

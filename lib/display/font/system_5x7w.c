@@ -101,7 +101,7 @@ static const uint32_t data[] PROGMEM = {
   0x082f8880, 0x00000000, // <-
 };
 
-const struct Font system_5x7[] PROGMEM = {
+const struct Font system_5x7 PROGMEM = {
   96,
   32,
   5,

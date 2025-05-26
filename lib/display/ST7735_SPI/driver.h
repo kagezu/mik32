@@ -12,7 +12,7 @@ template<typename C = RGB16>
 class ST7735_SPI {
 public:
   // Разрешение дисплея
-  GCC_INLINE constexpr int16_t max_x() { return 119; }
+  GCC_INLINE constexpr int16_t max_x() { return 127; }
   GCC_INLINE constexpr int16_t max_y() { return 159; }
 
   void init(uint8_t position)
