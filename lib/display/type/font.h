@@ -9,6 +9,7 @@ struct Font {
   const uint16_t *offset;
   const uint8_t *w;
   const uint8_t *data;
+  // uint8_t byte_per_char;
 };
 
 // struct Font {

@@ -1,7 +1,5 @@
 #include "display.h"
 #include "ILI9486_16_BIT/driver.h"
-#include "font/standard_5x8.h"
-#include "font/arial_14.h"
 #include "adc.h"
 #include "timer.h"
 #include "dma.h"
@@ -112,6 +110,9 @@ int main(void)
   T32_1_TOP(320);
   // T32_1_TOP(96);
   T32_1_E;
+
+  extern Font arial_14;
+  // extern Font standard_5x8;
 
   lcd.init();
   lcd.font(arial_14);

@@ -116,7 +116,7 @@ static const uint8_t w[] PROGMEM = {
   2,6,6,5,6,6,4,6,6,1,2,6,1,9,6,6,6,6,4,5,4,6,7,9,6,7,6,3,1,3,7,7,
 };
 
-const struct Font font_13x14[] PROGMEM = {
+const struct Font arial_14[] PROGMEM = {
   96,
   32,
   13,

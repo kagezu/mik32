@@ -95,11 +95,20 @@ private:
   uint16_t point_y = 0;
 
 public:
+  // void font(const Font &font)
+    // {
+    //   memcpy_P(&_font, &font, sizeof(Font));
+    //   _line = (1 + ((_font.height - 1) >> 3));
+    //   _charSize = _font.weight * _line;
+    //   set_interline(2);
+    //   set_interval(1);
+    // }
+
   void font(const Font &font)
   {
     memcpy_P(&_font, &font, sizeof(Font));
-    _line = (1 + ((_font.height - 1) >> 3));
-    _charSize = _font.weight * _line;
+    // _line = (1 + ((_font.height - 1) >> 3));
+    _charSize = (((_font.weight * _font.height - 1) >> 3) / sizeof(reg) + 1) * sizeof(reg);
     set_interline(2);
     set_interval(1);
   }
@@ -156,63 +165,103 @@ public:
   }
 
 private:
+
+  // void output(uint8_t ch)
+  // {
+  //   ch -= _font.first_char;
+  //   if (_font.count_char <= ch) ch = 0;
+
+  //   uint8_t dx = _font.weight;
+  //   uint8_t *source = (uint8_t *)_font.data;
+
+  //   if (_font.offset) {
+  //     uint16_t *index = (uint16_t *)_font.offset + ch;
+  //     uint16_t offset = pgm_read_word(index);
+  //     dx = (pgm_read_word(index + 1) - offset) / _line;
+  //     source += offset;
+  //   }
+  //   else
+  //     source = (uint8_t *)_font.data + ch * _charSize;
+
+  //   if (point_x + dx > max_x()) {
+  //     point_y += _interline;
+  //     point_x = 0;
+  //   }
+  //   if (point_y + _font.height > max_y()) { point_x = point_y = 0; }
+  //   symbol((uint8_t *)source, point_x, point_y, dx, _font.height);
+  //   point_x += dx + _interval;
+  // }
+
+
   void output(uint8_t ch)
   {
     ch -= _font.first_char;
     if (_font.count_char <= ch) ch = 0;
 
-    uint8_t dx = _font.weight;
-    uint8_t *source = (uint8_t *)_font.data;
+    uint8_t dx;
+    uint8_t *source;
 
-    if (_font.offset) {
-      uint16_t *index = (uint16_t *)_font.offset + ch;
-      uint16_t offset = pgm_read_word(index);
-      dx = (pgm_read_word(index + 1) - offset) / _line;
-      source += offset;
-    }
-    else
-      source = (uint8_t *)_font.data + ch * _charSize;
+    if (_font.w) dx = _font.w[ch];
+    else dx = _font.weight;
 
-    if (point_x + dx > max_x()) {
+    if (_font.offset) { source = (uint8_t *)_font.data + _font.offset[ch]; }
+    else { source = (uint8_t *)_font.data + ch * _charSize; }
+
+    if (point_x + dx > max_x() + 1) {
       point_y += _interline;
       point_x = 0;
     }
-    if (point_y + _font.height > max_y()) { point_x = point_y = 0; }
-    symbol((uint8_t *)source, point_x, point_y, dx, _font.height);
+    if (point_y + _font.height > max_y() + 1) { point_x = point_y = 0; }
+    symbol(source, point_x, point_y, dx, _font.height);
     point_x += dx + _interval;
   }
 
-  // #pragma GCC push_options
-  // #pragma GCC optimize "O3"
 
-    // Вывод символа (двух цветного изображения) на экран
+
+  // Вывод символа (двух цветного изображения) на экран
   void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
-    // uint16_t x1 = x + dx - 1;
-    // uint16_t y1 = y + dy - 1;
 
-    // select();
-
-    // set_addr(x, y, x1, y1);
     for (uint8_t j = 0; j < dy; j++) {
       uint8_t *offset = source + (j >> 3) * dx;
-      uint8_t bit = 1 << (j & 7);
-      // set_addr(x, y + j, x1, y + j);
+      uint8_t bit = 1;
+      uint8_t data = pgm_read_byte(offset + i);
       for (uint8_t i = 0; i < dx; i++) {
-        uint8_t data = pgm_read_byte(offset + i);
-        // if (data & bit) send_rgb(_color);
-        // else send_rgb(_background);
         if (data & bit) pixel(x + i, y + j, _color);
         else pixel(x + i, y + j, _background);
+        bit <<= 1;
       }
     }
 
     // release();
   }
 
-  // #pragma GCC pop_options
+  // Вывод символа (двух цветного изображения) на экран
+  // void symbol(uint8_t *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
+  // {
+  //   // uint16_t x1 = x + dx - 1;
+  //   // uint16_t y1 = y + dy - 1;
 
-    // тестирование дисплея ===============================================================
+  //   // select();
+
+  //   // set_addr(x, y, x1, y1);
+  //   for (uint8_t j = 0; j < dy; j++) {
+  //     uint8_t *offset = source + (j >> 3) * dx;
+  //     uint8_t bit = 1 << (j & 7);
+  //     // set_addr(x, y + j, x1, y + j);
+  //     for (uint8_t i = 0; i < dx; i++) {
+  //       uint8_t data = pgm_read_byte(offset + i);
+  //       // if (data & bit) send_rgb(_color);
+  //       // else send_rgb(_background);
+  //       if (data & bit) pixel(x + i, y + j, _color);
+  //       else pixel(x + i, y + j, _background);
+  //     }
+  //   }
+
+  //   // release();
+  // }
+
+  // тестирование дисплея ===============================================================
 
 public:
   void demo(uint8_t d)
