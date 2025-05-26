@@ -259,6 +259,8 @@ static const uint8_t data_standard_5x8[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 static const Font standard_5x8 PROGMEM = {
 255,                        // count_char
 1,                          // first_char

@@ -46,9 +46,6 @@
 // делает это определение "слабым", которое можно переопределить.
 #define GCC_WEAK __attribute__((weak))
 
-// Все переменные, помещенные в эту секцию, не будут инициализированы "по умолчанию".
-#define GCC_NO_INIT   __attribute__ ((section (".noinit")))
-
 // Принудительно сделать inline
 #define GCC_INLINE    __attribute__ ((always_inline))
 
