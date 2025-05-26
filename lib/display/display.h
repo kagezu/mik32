@@ -157,7 +157,7 @@ public:
       default:
         {
           ch -= _font.first_char;
-          if (_font.count_char <= (uint8_t)ch) ch = 0;
+          // if (_font.count_char <= (uint8_t)ch) ch = 0;
 
           uint8_t dx;
           uint8_t *source;

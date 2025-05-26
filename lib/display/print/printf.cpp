@@ -70,7 +70,8 @@ void PrintF::print(char *string, reg algin)
 
 void PrintF::print(const char *string)
 {
-  while (char ch = pgm_read_byte(string++)) if ((uint8_t)ch < 0xd0) putc(ch);
+  // while (char ch = pgm_read_byte(string++)) if ((uint8_t)ch < 0xd0) putc(ch);
+  while (char ch = pgm_read_byte(string++)) putc(ch);
 }
 
 // char *PrintF::print(int64_t number)

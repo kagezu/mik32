@@ -102,9 +102,10 @@ int main(void)
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
-  lcd.font(arial_14);
+  // lcd.font(arial_14);
+  lcd.font(standard_5x8);
 
-  mic_view();
+  // mic_view();
 
   reg x = 1;
 
@@ -115,7 +116,7 @@ int main(void)
     else
       lcd.demo(x);
     lcd.at(10, lcd.max_y() - 20);
-    lcd.printf(P("%u"), x++);
+    lcd.printf(P("фывапролФЫВАПРОЛД %u"), x++);
   }
 
 }
