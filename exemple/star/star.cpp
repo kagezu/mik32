@@ -1,7 +1,6 @@
 #include "config.h"
 
 #define COUNT_STAR  250
-
 LCD lcd;
 
 uint32_t rnd()
@@ -21,24 +20,25 @@ int main(void)
   lcd.background(black);
   lcd.color(white);
   lcd.clear();
-  // lcd.font(arial_14);
-  // lcd.font(micro_5x6);
-  // lcd.font(system_5x7);
-  lcd.font(standard_5x8);
 
   uint16_t i = 0;
   while (true) {
-    // lcd.at((lcd.max_x() - 80) >> 1, (lcd.max_y() - 40) >> 1);
+    int16_t h = (lcd.max_y() - 40) >> 1;
+
+    lcd.at(0, h);
     lcd.font(arial_14);
-    lcd.printf(P("\fHello  World\n"));
+    lcd.printf(P("     Hello  World\n"));
     lcd.font(standard_5x8);
-    lcd.printf(P("Hello  World\n"));
+    lcd.printf(P("     Hello  World\n"));
     lcd.font(system_5x7);
-    lcd.printf(P("Hello  World\n"));
+    lcd.printf(P("     Hello  World\n"));
     lcd.font(micro_5x6);
-    lcd.printf(P("Hello  World\n"));
+    lcd.printf(P("           Hello  World\n"));
+
     for (char j = 0; j < 5; j++) {
-      int16_t x = rnd() % (lcd.max_y() + 1), y = rnd() % (lcd.max_y() + 1);
+      int16_t
+        x = rnd() % (lcd.max_y() + 1),
+        y = rnd() % (lcd.max_y() + 1);
       lcd.pixel(cycle[i][0], cycle[i][1], black);
       lcd.pixel(x, y, RGB(rnd()));
       cycle[i][0] = x;

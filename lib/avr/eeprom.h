@@ -2,7 +2,7 @@
 // Перезагрузка функций с поддержкой буферизации записи
 
 #pragma once
-#include <avr.h>
+#include "avr.h"
 
 #define EEP_BUFFER_SIZE 32
 
