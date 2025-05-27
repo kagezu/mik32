@@ -11,7 +11,7 @@ public:
 
   void init(uint8_t position)
   {
-    SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR);  // PORT 0.3 -> D9
+    // SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR);  // PORT 0.3 -> D9
     L_WR(GPIO); L_RS(GPIO); L_CS(GPIO);
     L_WR(OUT); L_RS(OUT); L_CS(OUT);
     L_WR(CLR); L_RS(CLR); L_CS(SET);

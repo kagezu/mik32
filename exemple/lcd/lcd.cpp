@@ -117,7 +117,6 @@ int main(void)
       lcd.demo(x);
     lcd.at(10, lcd.max_y() - 20);
     lcd.printf(P("фывапролФЫВАПРОЛД %u"), x++);
-    delay_us(1000000);
   }
 
 }
