@@ -1,6 +1,6 @@
 # Песочница для ATmega и MIK32 AMUR
 
-## ![alt text](./castom/img/ace-uno.jpg)
+## ![alt text](./custom/img/ace-uno.jpg)
 
 ### MK / Платы
 
@@ -21,7 +21,7 @@
 ### Используемые библиотеки
 
 + **arduino-avr** "Arduino.h"
-+ **mik32v2-sdk** только заголовки
++ **mik32v2-sdk** только заголовки "framework-mik32v2-sdk/shared"
 
 ### Используемые инструменты
 
