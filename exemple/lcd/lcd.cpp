@@ -2,6 +2,7 @@
 #include "SPI.h"
 #include "adc.h"
 #include "pinout.h"
+#include "timer.h"
 
 RGB color[] = {
   RGB(0,0,0),
@@ -94,6 +95,10 @@ void mic_view()
 
 int main(void)
 {
+  T32_0_PS;
+  T32_0_E;
+  T32_0_C;
+
   USER_B(GPIO);
   USER_B(IN);
 
@@ -103,20 +108,35 @@ int main(void)
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
   // lcd.font(arial_14);
-  lcd.font(standard_5x8);
+  // lcd.font(system_5x7);
+  // lcd.font(standard_5x8);
+  // lcd.font(micro_5x6);
+  lcd.font(serif_18i, 0, 0);
 
   // mic_view();
 
   reg x = 1;
 
   while (true) {
+    T32_0_C;
     if (USER_B(GET)) {
-      lcd.clear(color[x & 7]);
+      lcd.color(~color[x & 7]);
+      lcd.background(color[x++ & 7]);
+      lcd.clear();
+      // lcd.clear();
+      // lcd.at(0, 0);
+      // for (uint8_t i = serif_18i.first_char; i <= serif_18i.first_char + serif_18i.count_char; i++) {
+      //   if (((i - serif_18i.first_char + 1) % 50) == 0) { while (USER_B(GET)); while (!USER_B(GET)); lcd.clear(); lcd.at(0, 0); }
+      //   lcd.putc(i);
+      // }
+      // while (USER_B(GET));
     }
     else
-      lcd.demo(x);
-    lcd.at(10, lcd.max_y() - 20);
-    lcd.printf(P("фывапролФЫВАПРОЛД %u"), x++);
+      lcd.demo(x++);
+
+    lcd.at(10, lcd.max_y() - lcd.get_height());
+    uint32_t fps = (F_CPU * 10) / T32_0;
+    lcd.printf(P("FPS: %u.%u"), fps / 10, fps % 10);
   }
 
 }

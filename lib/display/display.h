@@ -94,7 +94,7 @@ private:
   int16_t point_y = 0;
 
 public:
-  void font(const Font &f)
+  void font(const Font &f, uint8_t w = 1, uint8_t h = 2)
   {
   #ifdef __AVR__
     memcpy_P(&_font, &f, sizeof(Font));
@@ -103,8 +103,8 @@ public:
     _font = f;
     _charSize = (((_font.weight * _font.height - 1) >> 5) + 1) << 2;
   #endif
-    set_interline(2);
-    set_interval(1);
+    set_interline(h);
+    set_interval(w);
   }
 
   GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = x; point_y = y; }
@@ -113,7 +113,7 @@ public:
   GCC_INLINE inline uint8_t get_height() { return _interline; }
   GCC_INLINE inline uint8_t get_weight() { return _font.weight + _interval; }
 
-  GCC_NO_INLINE void putc(char ch)
+  GCC_NO_INLINE void putc(uint8_t ch)
   {
     switch ((uint8_t)ch) {
       // Символ в русской кодировке, пропускаем префикс
@@ -157,15 +157,15 @@ public:
       default:
         {
           ch -= _font.first_char;
-          // if (_font.count_char <= (uint8_t)ch) ch = 0;
+          if (_font.count_char <= ch) ch = 0;
 
           uint8_t dx;
           uint8_t *source;
 
-          if (_font.w) dx = pgm_read_byte(&_font.w[(uint8_t)ch]);
+          if (_font.w) dx = pgm_read_byte(&_font.w[ch]);
           else dx = _font.weight;
 
-          if (_font.offset) { source = (uint8_t *)_font.data + pgm_read_word(&_font.offset[(uint8_t)ch]); }
+          if (_font.offset) { source = (uint8_t *)_font.data + pgm_read_word(&_font.offset[ch]); }
           else { source = (uint8_t *)_font.data + ch * _charSize; }
 
           if (point_x + dx > max_x() + 1) {

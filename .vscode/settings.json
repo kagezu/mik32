@@ -16,6 +16,7 @@
     "*.tcc": "cpp",
     "cinttypes": "cpp",
     "cstdint": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "pins.h": "c"
   }
 }
