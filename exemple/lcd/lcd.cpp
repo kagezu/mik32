@@ -110,8 +110,9 @@ int main(void)
   // lcd.font(arial_14);
   // lcd.font(system_5x7);
   // lcd.font(standard_5x8);
-  // lcd.font(micro_5x6);
-  lcd.font(serif_18i, 0, 0);
+  // // lcd.font(micro_5x6);
+  // lcd.font(serif_18i, 0, 0);
+  lcd.font(sans_24, 0, 0);
 
   // mic_view();
 
@@ -135,8 +136,8 @@ int main(void)
       lcd.demo(x++);
 
     lcd.at(10, lcd.max_y() - lcd.get_height());
-    uint32_t fps = (F_CPU * 10) / T32_0;
-    lcd.printf(P("FPS: %u.%u"), fps / 10, fps % 10);
+    uint16_t fps = (F_CPU * 10) / T32_0;
+    lcd.printf(P("FPS: %u.%u"), fps / 10, fps - (fps / 10) * 10);
   }
 
 }

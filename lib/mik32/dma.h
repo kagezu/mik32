@@ -120,6 +120,14 @@ public:
     DMA_CH->CFG = config;
   }
 
+  // adc -> mem
+  void adc(DMA_REQUEST line, void *dst, uint32_t len)
+  {
+    setup(dst, (uint32_t)&ANALOG_REG->ADC_VALUE, (len >> 2) << 2);
+    read(line, HALF, HALF, IMM, ACK);
+    write(MEM, WORD, WORD, INC);
+  }
+
 protected:
   DMA_CHANNEL_TypeDef *DMA_CH;
   uint32_t config;

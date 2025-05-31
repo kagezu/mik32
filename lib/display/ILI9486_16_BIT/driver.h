@@ -114,7 +114,7 @@ private:
 };
 
 template<>
-void ILI9486_16<RGB18>::send_rgb(RGB18 color)
+void ILI9486_16<RGB32>::send_rgb(RGB32 color)
 {
   static uint16_t half, flag = 0;
 
@@ -134,7 +134,7 @@ void ILI9486_16<RGB18>::send_rgb(RGB18 color)
 }
 
 template<>
-void ILI9486_16<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
+void ILI9486_16<RGB32>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB32 color)
 {
   select();
   set_addr(x0, y0, x1, y1);
@@ -163,12 +163,6 @@ void ILI9486_16<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 
 template<>
 void ILI9486_16<RGB32>::set_rgb_format()
-{
-  send_command(COLMOD);
-  send_byte(0x66); // 6x6x6 bit (24 bit transfer)
-}
-template<>
-void ILI9486_16<RGB18>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x66); // 6x6x6 bit (24 bit transfer)

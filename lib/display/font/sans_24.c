@@ -1,7 +1,5 @@
 #include "type/font.h"
 
-#ifdef  MIK32V2
-
 static const uint32_t data[] PROGMEM = {
   0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
   0x18181818, 0x18181818, 0x18181818, 0x00001818, 0x00001818, 0x00000000,
@@ -123,5 +121,3 @@ const struct Font sans_24 PROGMEM = {
   width,
   (uint8_t *)data
 };
-
-#endif

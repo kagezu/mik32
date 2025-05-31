@@ -1,9 +1,9 @@
 #pragma once
 #include "display.h"
+#include "colors.h"
 #include "rgb12.h"
 #include "rgb16.h"
-#include "rgb18.h"
 #include "rgb32.h"
 #include "font.h"
 #include "const.h"
-#include "rotor.h"
+#include "rect.h"

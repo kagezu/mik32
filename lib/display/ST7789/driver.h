@@ -5,7 +5,7 @@
 // #define ST_8_WRITE  ST_8_RD(SET); ST_8_PORT(OUT) | 0xFF;
 // #define ST_8_READ   ST_8_PORT(IN) & 0x00; ST_8_RD(CLR);
 
-template<typename C = RGB18>
+template<typename C = RGB32>
 class ST7789 {
 public:
   // Разрешение дисплея

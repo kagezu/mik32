@@ -583,11 +583,6 @@ template<>
     send_command(COLMOD);
     send_byte(0x06); // 6x6x6 bit (24 bit transfer)
  }
- template<>
- void ST7735_SOFT<RGB18>::set_rgb_format(){
-    send_command(COLMOD);
-    send_byte(0x06); // 6x6x6 bit (24 bit transfer)
- }
 template<>
  void ST7735_SOFT<RGB16>::set_rgb_format(){
     send_command(COLMOD);

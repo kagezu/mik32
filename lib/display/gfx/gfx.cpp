@@ -12,7 +12,7 @@ void GFX::w_line(int16_t x, int16_t y, int16_t x1)
   if (x > x1) swap(x, x1);
   if (x < 0) x = 0;
   if (x1 < 0) x1 = 0;
-  rect(x, y, x1, y);
+  fill(x, y, x1, y);
 }
 
 void GFX::h_line(int16_t x, int16_t y, int16_t y1)
@@ -20,21 +20,21 @@ void GFX::h_line(int16_t x, int16_t y, int16_t y1)
   if (y > y1) swap(y, y1);
   if (y < 0) y = 0;
   if (y1 < 0) y1 = 0;
-  rect(x, y, x, y1);
+  fill(x, y, x, y1);
 }
 
 void GFX::w_line_fat(int16_t x, int16_t y, int16_t x1)
 {
   uint16_t y1 = y + ((_fat + 1) >> 1) - 1;
   y -= _fat >> 1;
-  rect(x, y, x1, y1);
+  fill(x, y, x1, y1);
 }
 
 void GFX::h_line_fat(int16_t x, int16_t y, int16_t y1)
 {
   uint16_t x1 = x + ((_fat + 1) >> 1) - 1;
   x -= _fat >> 1;
-  rect(x, y, x1, y1);
+  fill(x, y, x1, y1);
 }
 
 void GFX::line(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
@@ -188,7 +188,7 @@ void GFX::round_rect_fill(int16_t x, int16_t y, int16_t width, int16_t height, i
   uint16_t x2 = x + width - radius - 1;
   uint16_t y2 = y + height - radius - 1;
 
-  rect(x, y1, x + width, y2);
+  fill(x, y1, x + width, y2);
 
   while (dx < dy) {
     if (f >= 0) {
@@ -284,7 +284,7 @@ void GFX::line_fat(int16_t x0, int16_t y0, int16_t x1, int16_t y1)
   }
 }
 
-void GFX::rect_line(int16_t x, int16_t y, int16_t width, int16_t height)
+void GFX::rect(int16_t x, int16_t y, int16_t width, int16_t height)
 {
   w_line(x, y, x + width - 1);
   w_line(x, y + height - 1, x + width - 1);

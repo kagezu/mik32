@@ -5,6 +5,10 @@
 #include "lagrange.h"
 #include "pinout.h"
 
+// #define RGB   RGB12   // 4x4x4 bit
+#define RGB   RGB16   // 5x6x5 bit
+// #define RGB   RGB18   // 6x6x6 bit
+
 #define Ln        9   // Степень полинома Лагранжа (нечётная)
 #define Lx        1  // Интервал между значениями
 
@@ -12,6 +16,12 @@
 
 #define POINTES   1000
 #define SAMPLES   (POINTES / Lx + 10)
+
+#define BLACK     RGB(0, 0, 0)
+#define RED       RGB(255, 0, 0)
+#define WHITE     RGB(255, 255, 255)
+#define LIGHT     RGB(255, 255, 64)
+#define BLUE      RGB(64, 64, 255)
 
 LCD lcd;
 ADC adc;
@@ -59,14 +69,14 @@ void sample()
 
   //////////////////////////
 
-  // lcd.color(Blue);
+  // lcd.color(BLUE);
   // for (reg i = 1; i <= lcd.max_x() / Lx; i++)
   //   for (reg j = 1; j <= lcd.max_y() / Lx; j++)
   //     lcd.pixel(i * Lx, j * Lx);
 
-  lcd.color(Aqua);
+  lcd.color(WHITE);
   lcd.at(5, 5);
-  // lcd.printf(" 1 us X 0.1 V  :  Lagrange n = %u  :  Amply %u mV  \r", Ln, ((a_max - a_min) * 3300) >> 12);
+  // lcd.printf(" 1 us X 0.1 V  :  Lagrange n = %u  :  Ampl %u mV  \r", Ln, ((a_max - a_min) * 3300) >> 12);
   // lcd.printf("AAAAAAAAAAAA   -   111111111111  000000 \n");
 
   //////////////////////////
@@ -75,12 +85,14 @@ void sample()
   int16_t last2 = point[k];
   point2[0] = last2;
   for (reg i = 1; i <= lcd.max_x(); i++) {
-    lcd.color(Black);
+    lcd.color(BLACK);
+    // lcd.area(i, last, i, point2[i], BLACK);
     lcd.h_line(i, last, point2[i]);
     // lcd.pixel(i, last);
     last = point2[i];
 
-    lcd.color(Yellow);
+    lcd.color(LIGHT);
+    // lcd.area(i, last2, i, point[i + k], LIGHT);
     lcd.h_line(i, last2, point[i + k]);
     // lcd.pixel(i, last2);
     last2 = point[i + k];
@@ -94,19 +106,28 @@ void init()
 
   T32_1_PS;
   T32_1_TOP(320);
+  // T32_1_TOP(96);
   T32_1_E;
 }
 
+
 int main(void)
 {
-  init();
-  lcd.init();
-  lcd.font(micro_5x6);
+  ADC1(ANALOG);
 
-  // dma.setup(buffer, ADC_VALUE, sizeof(buffer));
-  // dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
-  // dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
-  dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
+  T32_1_PS;
+  T32_1_TOP(320);
+  // T32_1_TOP(96);
+  T32_1_E;
+
+  lcd.init();
+  lcd.font(arial_14);
+  // lcd.font(standard_5x8);
+  lcd.clear(BLACK);
+
+  dma.setup(buffer, ADC_VALUE, sizeof(buffer));
+  dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
+  dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
 
   L_init(Ln, Lx);
 

@@ -2,7 +2,8 @@
 
 // #define RGB         RGB12   // 4x4x4 bit
 #define RGB         RGB16   // 5x6x5 bit
-// #define RGB         RGB32  // 6x6x6 bit
+// #define RGB         RGB18   // 6x6x6 bit
+// #define RGB         RGB32
 
 
 // Поворот дисплея
@@ -27,8 +28,7 @@
 
 #include "display.h"
 
-#define LCD Display<ST7735_SOFT<>>
-// #define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
+#define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ST7735_SPI<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ST7789<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ILI9486_8<RGB>, RGB, LCD_ROT>

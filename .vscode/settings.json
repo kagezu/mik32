@@ -17,6 +17,9 @@
     "cinttypes": "cpp",
     "cstdint": "cpp",
     "typeinfo": "cpp",
-    "pins.h": "c"
+    "pins.h": "c",
+    "include.h": "c",
+    "inttypes.h": "c",
+    "rect.h": "c"
   }
 }

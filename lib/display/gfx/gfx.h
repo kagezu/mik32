@@ -18,7 +18,7 @@ public:
 
   void line(int16_t, int16_t, int16_t, int16_t);
   void round_rect(int16_t, int16_t, int16_t, int16_t, int16_t);
-  void rect_line(int16_t, int16_t, int16_t, int16_t);
+  void rect(int16_t, int16_t, int16_t, int16_t);
   void circle(int16_t, int16_t, int16_t);
 
   // Утолщённые линии и фигуры

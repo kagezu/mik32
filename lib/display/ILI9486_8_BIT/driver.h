@@ -8,7 +8,7 @@
 // #define ILI_8_WRITE  ILI_8_RD(SET); ILI_8_PORT(OUT) | 0xFF;
 // #define ILI_8_READ   ILI_8_PORT(IN) & 0x00; ILI_8_RD(CLR);
 
-template<typename C = RGB18>
+template<typename C = RGB32>
 class ILI9486_8 {
 public:
   // Разрешение дисплея
@@ -205,12 +205,6 @@ void ILI9486_8<RGB32>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x66); // 6x6x6 bit (24 bit transfer)
-}
-template<>
-void ILI9486_8<RGB18>::set_rgb_format()
-{
-  send_command(COLMOD);
-  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
 }
 template<>
 void ILI9486_8<RGB16>::set_rgb_format()

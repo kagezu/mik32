@@ -1,6 +1,28 @@
 #pragma once
 #include "core.h"
 
+// Повороты дисплея
+//    \   |   FLIP_X  |   FLIP_Y  |   EX_X_Y  |
+// ============================================
+//   0°   |     -     |     -     |     -     |
+//  90°   |     -     |     +     |     +     |
+// 180°   |     +     |     +     |     -     |
+// 270°   |     +     |     -     |     +     |
+
+#define  EX_X_Y   0x20
+#define  FLIP_X   0x40
+#define  FLIP_Y   0x80
+
+#define  ROT_0      0
+#define  ROT_90     FLIP_Y | EX_X_Y
+#define  ROT_180    FLIP_X | FLIP_Y
+#define  ROT_270    FLIP_X | EX_X_Y
+#define  ROT_X      FLIP_X
+#define  ROT_Y      FLIP_X
+#define  ROT_EX     EX_X_Y
+#define  ROT_EX_XY  EX_X_Y | FLIP_X | FLIP_Y
+
+
 // Команды дисплея
 
 #define SWRESET 0x01   // Software reset

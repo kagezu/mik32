@@ -164,12 +164,6 @@ template<>
   send_byte(0x06); // 6x6x6 bit (24 bit transfer)
   _spi.thr(SPI_THR_3);
  }
- template<>
- void ST7735_SPI<RGB18>::set_rgb_format(){
-  send_command(COLMOD);
-  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
-  _spi.thr(SPI_THR_3);
- }
 template<>
  void ST7735_SPI<RGB16>::set_rgb_format(){
   send_command(COLMOD);
