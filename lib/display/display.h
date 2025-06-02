@@ -5,7 +5,7 @@
 
 #define FONT_TAB_FACTOR     2
 
-template<typename Driver, typename C = RGB16, const char R = ROT_0>
+template<typename Driver, typename C = RGB16, const int R = ROT_0>
 class Display : public Driver, public PrintF, public GFX {
 
   // Driver =============================================================================

@@ -7,8 +7,8 @@
 
 // Поворот дисплея
 
-#define LCD_ROT     ROT_0
-// #define LCD_ROT     ROT_90
+// #define LCD_ROT     ROT_0
+#define LCD_ROT     ROT_90
 // #define LCD_ROT     ROT_180
 // #define LCD_ROT     ROT_270
 // #define LCD_ROT     ROT_X
@@ -27,8 +27,8 @@
 
 #include "display.h"
 
-#define LCD Display<ST7735_SOFT<>>
-// #define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
+// #define LCD Display<ST7735_SOFT<>>
+#define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ST7735_SPI<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ST7789<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ILI9486_8<RGB>, RGB, LCD_ROT>

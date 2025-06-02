@@ -3,115 +3,158 @@
 #include "timer.h"
 #include "dma.h"
 #include "lagrange.h"
-#include "pinout.h"
+#include "pin.h"
+#include "osc.h"
 
-#define Ln        9   // Степень полинома Лагранжа (нечётная)
-#define Lx        1  // Интервал между значениями
+#define Ln        3   // Степень полинома Лагранжа (нечётная)
+#define Lx        1   // Интервал между значениями
+#define BORDER_Y  20
+#define BORDER_X  1
 
-#define ADC_VALUE (uint32_t)&ANALOG_REG->ADC_VALUE  // 0x0008504C
-
-#define POINTES   1000
-#define SAMPLES   (POINTES / Lx + 10)
+#define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
+#define SAMPLES   ((POINTES << 2) + 10)
 
 LCD lcd;
 ADC adc;
 DMA dma(0, DMA::VERY);
+Rect view = Rect(BORDER_X, BORDER_Y, lcd.max_x() - BORDER_X, lcd.max_y() - 1);
 
 uint16_t buffer[SAMPLES];
 int16_t point[POINTES];
-int16_t point2[POINTES];
+int16_t point2[POINTES] = {};
 
-// GCC_RAM
-void sample()
+////////////////////////////////////////////////////
+
+uint8_t mode = Normal;
+int16_t count[CountMode] = {
+  0,    // Normal
+  0,    // ViewMode
+  320,  // Freq
+  0,    // VoltagScale
+  0,    // VoltagDiv
+  0,    // ZeroLevel
+  0     // Threshold
+};
+
+void encode()
 {
-  adc.init(1, 63);
+  static bool a0, b0;
+  bool a = (bool)ENCODER_A(GET);
+  bool b = (bool)ENCODER_B(GET);
+  if (a != a0) count[mode] += a ^ b ? -1 : 1;
+  if (b != b0) count[mode] += a ^ b ? 1 : -1;
+  a0 = a;
+  b0 = b;
+}
+
+////////////////////////////////////////////////////
+
+void sample(uint16_t tick)
+{
+  T32_1_TOP(tick);
+  T32_1_C;
+  adc.init(2, tick < 96 ? tick - 31 : 63);
   adc.start();
-  // while (adc.value() >= 1000);
-  // while (adc.value() < 1000);
   dma.start();
   dma.wait();
   adc.stop();
+}
 
-  //////////////////////////
+//////////////////////////
 
-  int16_t a_max = 0;
-  int16_t a_min = 4096;
-
+void draw()
+{
+  lcd.viewport(view);
   // for (reg i = 0; i < POINTES / Lx; i++) {
   //   Ly(&buffer[i]);
   //   for (reg j = 0; j < Lx; j++) {
   //     int16_t l = L(j);
-  //     if (a_max < l)a_max = l;
-  //     if (a_min > l)a_min = l;
   //     point[i * Lx + j] = ((4096 - l) * lcd.max_y()) >> 12;
   //   }
   // }
 
+  uint32_t sum = 0;
   for (reg i = 0; i < POINTES; i++) {
-    if (a_max < buffer[i])a_max = buffer[i];
-    if (a_min > buffer[i])a_min = buffer[i];
-    point[i] = ((4096 - buffer[i]) * lcd.max_y()) >> 12;
+    sum += buffer[i];
+    point[i] = lcd.max_y() - ((buffer[i] * (int32_t)view.height) >> 12);
+    encode();
   }
 
   int16_t k = 0;
-  while (k++ < POINTES - lcd.max_x() - 3) if (point[k + lcd.max_x() / 2] > lcd.max_y() >> 1) break;
-  while (k++ < POINTES - lcd.max_x() - 3) if (point[k + lcd.max_x() / 2] < lcd.max_y() >> 1) break;
+  while (k++ < POINTES - view.width - 3) if (point[k + view.width / 3] > (view.height >> 1)) break;
+  while (k++ < POINTES - view.width - 3) if (point[k + view.width / 3] < (view.height >> 1)) break;
 
   //////////////////////////
 
-  // lcd.color(Blue);
-  // for (reg i = 1; i <= lcd.max_x() / Lx; i++)
-  //   for (reg j = 1; j <= lcd.max_y() / Lx; j++)
-  //     lcd.pixel(i * Lx, j * Lx);
-
-  lcd.color(Aqua);
-  lcd.at(5, 5);
-  // lcd.printf(" 1 us X 0.1 V  :  Lagrange n = %u  :  Amply %u mV  \r", Ln, ((a_max - a_min) * 3300) >> 12);
-  // lcd.printf("AAAAAAAAAAAA   -   111111111111  000000 \n");
+  lcd.color(Blue);
+  for (reg i = 1; i <= lcd.max_x() >> 3; i++)
+    for (reg j = 1; j <= lcd.max_y() >> 3; j++)
+      lcd.pixel(i << 3, j << 3);
 
   //////////////////////////
 
   int16_t last = point2[0];
   int16_t last2 = point[k];
   point2[0] = last2;
-  for (reg i = 1; i <= lcd.max_x(); i++) {
+  for (int16_t i = 1; i < view.width; i++) {
     lcd.color(Black);
-    lcd.h_line(i, last, point2[i]);
-    // lcd.pixel(i, last);
-    last = point2[i];
-
+    lcd.h_line(i + view.min_x, last, point2[i]);
     lcd.color(Yellow);
-    lcd.h_line(i, last2, point[i + k]);
-    // lcd.pixel(i, last2);
-    last2 = point[i + k];
-    point2[i] = last2;
+    lcd.h_line(i + view.min_x, last2, point[i + k]);
+    last = point2[i];
+    last2 = point2[i] = point[i + k];
+    encode();
   }
+}
+
+void info()
+{
+  lcd.viewport();
+  lcd.color(Aqua);
+
+  lcd.printf(P("\f%uus %umV D:%u lvl:%u Thr:%u  "),
+    count[Freq],
+    count[VoltagScale],
+    count[VoltagDiv],
+    count[ZeroLevel],
+    count[Threshold]);
+  lcd.printf(P("Mode: %s     "), mode_text[mode]);
 }
 
 void init()
 {
-  ADC1(ANALOG);
+  ENCODER_A(GPIO); ENCODER_A(IN); ENCODER_A(P_VCC);
+  ENCODER_B(GPIO); ENCODER_B(IN); ENCODER_B(P_VCC);
+  ENCODER_C(GPIO); ENCODER_C(OUT); ENCODER_C(CLR);
+  USER_B(GPIO); USER_B(IN); USER_B(P_GND);
+  ADC2(ANALOG);
 
   T32_1_PS;
-  T32_1_TOP(320);
   T32_1_E;
 }
 
+
 int main(void)
 {
+  L_init(Ln, Lx);
   init();
-  lcd.init();
-  lcd.font(micro_5x6);
 
-  // dma.setup(buffer, ADC_VALUE, sizeof(buffer));
-  // dma.read(DMA::TIMER1, DMA::HALF, DMA::HALF, DMA::IMM, DMA::ACK);
-  // dma.write(DMA::MEM, DMA::WORD, DMA::WORD, DMA::INC);
+  lcd.init();
+  lcd.font(system_5x7);
   dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
 
-  L_init(Ln, Lx);
+  lcd.color(Blue);
+  lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
 
-  // uint8_t x = 0;
-  while (true)
-    // lcd.demo(x++);
-    sample();
+  while (true) {
+    if (USER_B(GET)) {
+      mode++;
+      if (mode == CountMode) mode = Normal;
+      while (USER_B(GET));
+    }
+
+    sample(3200);
+    draw();
+    info();
+  }
 }
