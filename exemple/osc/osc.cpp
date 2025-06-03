@@ -27,15 +27,14 @@ int16_t point2[POINTES + 1] = {};
 ////////////////////////////////////////////////////
 
 uint8_t mode = Freq;
-// Discrete param[CountMode];
 
 void encode()
 {
   static bool a0, b0;
   bool a = (bool)ENCODER_A(GET);
   bool b = (bool)ENCODER_B(GET);
-  if (a != a0) param[mode].counter += a ^ b ? -1 : 1;
-  if (b != b0) param[mode].counter += a ^ b ? 1 : -1;
+  if (a != a0) param[mode]->counter += a ^ b ? -1 : 1;
+  if (b != b0) param[mode]->counter += a ^ b ? 1 : -1;
   a0 = a;
   b0 = b;
 }
@@ -44,15 +43,22 @@ void encode()
 
 void info()
 {
+  static int16_t old;
+  if (old == param[mode]->counter) return;
+  old = param[mode]->counter;
+
   lcd.viewport();
+  lcd.color(Black);
+  lcd.fill(0, 0, lcd.max_x(), BORDER_Y - 2);
   lcd.color(Aqua);
 
-  lcd.printf(P("\f%uus / %umV / %uHz    "),
-    param[Freq].get_value(),
-    param[VoltageScale].get_value(),
-    (F_CPU >> 2) / (param[Freq].get_value() * (uint32_t)view.width)
+  lcd.printf(P("\f%u us  %u mV  %u Hz  %cC "),
+    param[Freq]->get_value(),
+    param[VoltageScale]->get_value(),
+    (F_CPU >> 2) / (param[Freq]->get_value() * (uint32_t)view.width),
+    param[VoltageType]->get_value()
   );
-  lcd.printf(P("\nMode:  %s           "), mode_text[mode]);
+  lcd.printf(P("\nВЫБОР:  %s             "), mode_text[mode]);
 }
 
 ////////////////////////////////////////////////////
@@ -64,7 +70,8 @@ void sample(uint32_t tick)
   adc.init(2, tick < 96 ? tick - 31 : 63);
   adc.start();
   dma.start();
-  dma.wait();
+  while (dma.is_active()) encode();
+  // dma.wait();
   adc.stop();
 }
 
@@ -81,9 +88,13 @@ void draw()
   while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] < med) break;
   while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] > med) break;
 
-  med = ((med * 1300) >> 9) / param[VoltageScale].get_value() - (view.height >> 1);
+  if (param[VoltageType]->get_value() == 'A')
+    med = ((med * 1300) >> 9) / param[VoltageScale]->get_value() - (view.height >> 1) - param[ZeroLevel]->counter;
+  else med = -param[ZeroLevel]->counter;
+
   for (uint16_t i = 0; i <= POINTES; i++)
-    point[i] = view.max_y + med - (((int32_t)buffer[i + k] * 1300) >> 9) / param[VoltageScale].get_value();
+    point[i] = view.max_y + med - (((int32_t)buffer[i + k] * 1300) >> 9) / param[VoltageScale]->get_value();
+
 
   // for (reg i = 0; i < POINTES / Lx; i++) {
   //   Ly(&buffer[i]);
@@ -93,17 +104,10 @@ void draw()
   //   }
   // }
 
+
   //////////////////////////
 
   lcd.viewport(view);
-  lcd.color(DarkCyan);
-  lcd.w_line(view.min_x, view.max_y - (view.height >> 1), view.max_x);
-  lcd.color(Blue);
-  for (reg i = 1; i <= lcd.max_x() >> 3; i++)
-    for (reg j = 1; j <= lcd.max_y() >> 3; j++)
-      lcd.pixel(i << 3, j << 3);
-
-  //////////////////////////
 
   uint16_t last = point2[0];
   uint16_t last2 = point[0];
@@ -117,6 +121,23 @@ void draw()
     last2 = point2[i] = point[i];
     encode();
   }
+  //////////////////////////
+
+  lcd.color(Blue);
+  for (reg i = 1; i <= lcd.max_x() >> 3; i++)
+    for (reg j = 1; j <= lcd.max_y() >> 3; j++)
+      lcd.pixel(i << 3, j << 3);
+
+  static uint16_t old;
+  lcd.color(Black);
+  lcd.w_line(view.min_x, old, view.max_x);
+
+  if (param[VoltageType]->get_value() == 'A')
+    old = view.max_y - (view.height >> 1) - param[ZeroLevel]->counter;
+  else old = view.max_y + med;
+
+  lcd.color(DarkCyan);
+  lcd.w_line(view.min_x, old, view.max_x);
 }
 
 ////////////////////////////////////////////////////
@@ -135,14 +156,12 @@ void init()
 
 int main(void)
 {
-  // param[Freq] = { 0, 6 * 4, {1000, 500, 200, 100, 50, 20, 10, 5, 2, 1} };
-  // param[VoltageScale] = { 0, 6 * 4, {100, 50, 20, 10, 5, 2, 1} };
-
   L_init(Ln, Lx);
   init();
 
   lcd.init();
-  lcd.font(system_5x7);
+  // lcd.font(system_5x7);
+  lcd.font(micro_5x6);
   dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
 
   lcd.color(Blue);
@@ -155,7 +174,7 @@ int main(void)
       while (USER_B(GET));
     }
 
-    sample((uint32_t)param[Freq].get_value() << 2);
+    sample((uint32_t)param[Freq]->get_value() << 2);
     draw();
     info();
   }
