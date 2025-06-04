@@ -65,15 +65,17 @@ public:
       | (btwn << SPI_DELAY_BTWN_S);
   }
 
-private:
+  // private:
   uint32_t config;
   uint32_t delay_clk;
   uint32_t tx_thr;
 
-  friend class SPI;
+  // friend class SPI<>;
 };
 
+// typedef SPI_TypeDef *SPI_Type;
 
+// template<SPI_TypeDef *SPI_N = SPI_1>
 class SPI {
 public:
   void init(uint8_t spi_n = 1);

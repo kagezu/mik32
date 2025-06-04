@@ -1,26 +1,24 @@
 #include "core.h"
 
 typedef enum : uint8_t {
-  // Normal,
+  Normal,
   // ViewMode,
   Freq,
   VoltageScale,
   VoltageType,
   ZeroLevel,
-  // Threshold,
   CountMode
 } OSC_Mode;
 
 
 const char mode_text[][24] =
 {
-  // "Normal",
+  "Normal",
   // "ViewMode",
   "ЧАСТОТА",
   "НАПРЯЖЕНИЕ",
   "AC / DC",
   "Zero Level",
-  // "Threshold",
   "CountMode"
 };
 
@@ -38,10 +36,11 @@ public:
   }
 };
 
+Discrete Dumpty = { 0, 0, {} };
 Discrete Fq = { 36, 12, {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000} };
 Discrete VScale = { 0, 6, {100, 50, 20, 10, 5, 2, 1} };
 Discrete VType = { 0, 1, {'D', 'A'} };
 Discrete ZLevel = { 0, (uint16_t)-1, {} };
 
-Discrete *param[] = { &Fq, &VScale, &VType, &ZLevel };
+Discrete *param[] = { &Dumpty, &Fq, &VScale, &VType, &ZLevel };
 

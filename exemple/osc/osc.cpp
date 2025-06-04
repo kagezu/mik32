@@ -6,10 +6,12 @@
 #include "pin.h"
 #include "osc.h"
 
-#define Ln        3   // Степень полинома Лагранжа (нечётная)
-#define Lx        1   // Интервал между значениями
-#define BORDER_Y  20
-#define BORDER_X  1
+#define Ln        9   // Степень полинома Лагранжа (нечётная)
+#define BORDER_Y  20  // Отступ от верха экрана
+#define BORDER_X  1   // Бордюр по краям
+#define AXIS_X    10  // Шаг сетки по X
+#define AXIS_Y    10  // Шаг сетки по Y
+#define AREF_MV   1300  // Опорное напряжение в милливольтах
 
 #define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
 #define SAMPLES   ((POINTES << 2) + 10)
@@ -43,10 +45,6 @@ void encode()
 
 void info()
 {
-  static int16_t old;
-  if (old == param[mode]->counter) return;
-  old = param[mode]->counter;
-
   lcd.viewport();
   lcd.color(Black);
   lcd.fill(0, 0, lcd.max_x(), BORDER_Y - 2);
@@ -65,6 +63,7 @@ void info()
 
 void sample(uint32_t tick)
 {
+  if (tick < 32) tick = 32;
   T32_1_TOP(tick);
   T32_1_C;
   adc.init(2, tick < 96 ? tick - 31 : 63);
@@ -82,25 +81,27 @@ void draw()
   int32_t med = 0;
   uint16_t k = 0;
 
-  for (reg i = 0; i < SAMPLES; i++) med += buffer[i];
-  med /= SAMPLES;
-
-  while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] < med) break;
-  while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] > med) break;
+  uint16_t min = 1 << 12, max = 0;
+  for (reg i = 0; i < END_POINT; i++) {
+    reg j = i + (POINTES >> 1);
+    if (min > buffer[j]) min = buffer[j];
+    if (max < buffer[j]) { max = buffer[j]; k = i; }
+  }
+  med = (min + max) >> 1;
 
   if (param[VoltageType]->get_value() == 'A')
-    med = ((med * 1300) >> 9) / param[VoltageScale]->get_value() - (view.height >> 1) - param[ZeroLevel]->counter;
+    med = ((med * AREF_MV * AXIS_Y) >> 12) / param[VoltageScale]->get_value() - (view.height >> 1) - param[ZeroLevel]->counter;
   else med = -param[ZeroLevel]->counter;
 
   for (uint16_t i = 0; i <= POINTES; i++)
-    point[i] = view.max_y + med - (((int32_t)buffer[i + k] * 1300) >> 9) / param[VoltageScale]->get_value();
+    point[i] = view.max_y + med - (((int32_t)buffer[i + k] * AREF_MV * AXIS_Y) >> 12) / param[VoltageScale]->get_value();
 
 
-  // for (reg i = 0; i < POINTES / Lx; i++) {
+  // for (reg i = 0; i < POINTES / AXIS_X; i++) {
   //   Ly(&buffer[i]);
-  //   for (reg j = 0; j < Lx; j++) {
+  //   for (reg j = 0; j < AXIS_X; j++) {
   //     int16_t l = L(j);
-  //     point[i * Lx + j] = ((4096 - l) * lcd.max_y()) >> 12;
+  //     point[i * AXIS_X + j] = ((4096 - l) * lcd.max_y()) >> 12;
   //   }
   // }
 
@@ -124,9 +125,9 @@ void draw()
   //////////////////////////
 
   lcd.color(Blue);
-  for (reg i = 1; i <= lcd.max_x() >> 3; i++)
-    for (reg j = 1; j <= lcd.max_y() >> 3; j++)
-      lcd.pixel(i << 3, j << 3);
+  for (reg i = 1; i <= lcd.max_x() / AXIS_X; i++)
+    for (reg j = 1; j <= lcd.max_y() / AXIS_Y; j++)
+      lcd.pixel(i * AXIS_X, j * AXIS_Y);
 
   static uint16_t old;
   lcd.color(Black);
@@ -156,7 +157,7 @@ void init()
 
 int main(void)
 {
-  L_init(Ln, Lx);
+  L_init(Ln, AXIS_X);
   init();
 
   lcd.init();
@@ -167,15 +168,20 @@ int main(void)
   lcd.color(Blue);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
 
+  int16_t old = 0;
+
   while (true) {
     if (USER_B(GET)) {
       mode++;
       if (mode == CountMode) mode = Freq;
       while (USER_B(GET));
+      info();
     }
 
-    sample((uint32_t)param[Freq]->get_value() << 2);
+    sample(((uint32_t)param[Freq]->get_value() << 5) / AXIS_X);
     draw();
-    info();
+    if (old != param[mode]->counter) info();
+    old = param[mode]->counter;
+
   }
 }
