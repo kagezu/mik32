@@ -5,7 +5,7 @@
 
 extern "C" {
 
-#ifdef __CUSTOM__
+#ifdef CUSTOM_LD
   __attribute__((noinline, used, section(".init"))) void _init()
   #else
   __attribute__((noinline, used, section(".ram_text"))) void _init()

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Внесены изменения, влияющие на поведение в случае
+# добавления опции "board_custom" в platformio.ini
 
 from os.path import join, isdir, exists, dirname
 
@@ -36,15 +38,21 @@ board = env.BoardConfig()
 framework_name = env.GetProjectOption("framework")[0]
 FRAMEWORK_DIR = platform.get_package_dir(framework_name)
 
+CUSTOM = board.get("custom", "")
 BUILD_DIR = env.subst("$BUILD_DIR")
 PROJECT_DIR = env.subst("$PROJECT_DIR")
 PROJECT_SRC_DIR = env.subst("$PROJECT_SRC_DIR")
 
 SHARED_DIR = join(FRAMEWORK_DIR, "shared")
-LDSCRIPTS_DIR = join(PROJECT_DIR, "custom/ldscripts")
-RUNTIME_DIR = join(PROJECT_DIR, "custom/runtime")
-HAL_DIR = join(FRAMEWORK_DIR, "hal")
 
+if CUSTOM:
+    LDSCRIPTS_DIR = join(PROJECT_DIR, CUSTOM, "ldscripts")
+    RUNTIME_DIR = join(PROJECT_DIR, CUSTOM, "runtime")
+else:
+    LDSCRIPTS_DIR = join(SHARED_DIR, "ldscripts")
+    RUNTIME_DIR = join(SHARED_DIR, "runtime")
+
+HAL_DIR = join(FRAMEWORK_DIR, "hal")
 
 # Add header file search directories
 
@@ -53,7 +61,7 @@ env.AppendUnique(
         "$PROJECT_SRC_DIR",
         join(SHARED_DIR, "include"),
         join(SHARED_DIR, "periphery"),
-        join(PROJECT_DIR, "custom/runtime"),
+        join(PROJECT_DIR, CUSTOM, "runtime") if CUSTOM else join(SHARED_DIR, "runtime"),
         join(SHARED_DIR, "libs"),
         join(HAL_DIR, "core", "Include"),
         join(HAL_DIR, "peripherals", "Include"),
@@ -70,7 +78,7 @@ env.AppendUnique(
 libs = [
     env.BuildLibrary(
         join("$BUILD_DIR", "runtime"),
-        join(PROJECT_DIR, "custom/runtime"),
+        join(PROJECT_DIR, CUSTOM, "runtime") if CUSTOM else join(SHARED_DIR, "runtime"),
     ),
     env.BuildLibrary(
         join("$BUILD_DIR", "libs"),
@@ -129,3 +137,8 @@ else:
     print(f"{Fore.RED}Specify correct linker script name or path in platformio.ini"
         f" parameter: board_build.ldscript{Style.RESET_ALL}")
     env.Exit(1)
+
+if CUSTOM:
+    print(f"CUSTOM (Изменены следующие пути):")
+    print(f" - \033[36m{LDSCRIPTS_DIR}")
+    print(f" - \033[36m{RUNTIME_DIR}")

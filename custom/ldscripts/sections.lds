@@ -3,8 +3,7 @@ SECTIONS {
     .text ORIGIN(REGION_TEXT) : {
         PROVIDE(__TEXT_START__ = .);
         *crt0.o(.text .text.*)
-        *(.text.smallsysteminit)
-        *(.text.SmallSystemInit)
+        *(.text.SystemInit)
         . = ORIGIN(REGION_TEXT) + 0xC0;
         KEEP(*crt0.o(.trap_text))
 
