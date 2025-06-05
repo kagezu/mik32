@@ -46,10 +46,7 @@ void encode()
 void info()
 {
   lcd.viewport();
-  lcd.color(Black);
-  lcd.fill(0, 0, lcd.max_x(), BORDER_Y - 2);
   lcd.color(Aqua);
-
   lcd.printf(P("\f%u us  %u mV  %u Hz  %cC "),
     param[Freq]->get_value(),
     param[VoltageScale]->get_value(),
@@ -168,20 +165,16 @@ int main(void)
   lcd.color(Blue);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
 
-  int16_t old = 0;
-
   while (true) {
     if (USER_B(GET)) {
       mode++;
       if (mode == CountMode) mode = Freq;
       while (USER_B(GET));
-      info();
+      // info();
     }
 
     sample(((uint32_t)param[Freq]->get_value() << 5) / AXIS_X);
     draw();
-    if (old != param[mode]->counter) info();
-    old = param[mode]->counter;
-
+    info();
   }
 }

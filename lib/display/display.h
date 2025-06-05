@@ -197,20 +197,25 @@ public:
 private:
   void symbol(reg *source, uint16_t x, uint16_t y, uint8_t dx, uint8_t dy)
   {
-    uint16_t count = dx * dy;
     reg bit = 0;
     reg data = 0;
 
     select();
-    set_addr(x, y, x + dx - 1, y + dy - 1);
-    while (count--) {
-    #ifdef __AVR__
-      if (bit == 0) { bit = 1; data = pgm_read_byte(source++); }
-    #else
-      if (bit == 0) { bit = 1; data = *source++; }
-    #endif
-      if (data & bit) send_rgb(_color); else send_rgb(_background);
-      bit <<= 1;
+    set_addr(x, y, x + dx + _interval - 1, y + dy - 1);
+    for (reg j = 0; j < dy; j++) {
+      for (reg i = 0; i < dx + _interval; i++) {
+      #ifdef __AVR__
+        if (bit == 0) { bit = 1; data = pgm_read_byte(source++); }
+      #else
+        if (bit == 0) { bit = 1; data = *source++; }
+      #endif
+        if (i < dx) {
+          if (data & bit) send_rgb(_color);
+          else send_rgb(_background);
+          bit <<= 1;
+        }
+        else send_rgb(_background);
+      }
     }
     release();
   }
