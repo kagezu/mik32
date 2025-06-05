@@ -3,15 +3,19 @@ SECTIONS {
     .text ORIGIN(REGION_TEXT) : {
         PROVIDE(__TEXT_START__ = .);
         *crt0.o(.text .text.*)
-        *(.text.SystemInit)
         . = ORIGIN(REGION_TEXT) + 0xC0;
         KEEP(*crt0.o(.trap_text))
 
+        *(.small_ram_text)
+        *(.ram_text)
+        *(.text.SystemInit)
         *(.text)
         *(.text.*)
         *(.rodata)
         *(.rodata.*)
 
+        # секции для вызова конструкторов, если код на плюсах и есть глобальные объекты,
+        # которые требуют вызов конструкторов
         PROVIDE_HIDDEN ( __preinit_array_start = . );
         KEEP (*(.preinit_array))
         PROVIDE_HIDDEN ( __preinit_array_end = . );
@@ -67,21 +71,6 @@ SECTIONS {
         . = ALIGN(CL_SIZE);
         PROVIDE(__BSS_END__ = .);
     } >REGION_RAM
-
-    /* Code intended to be copied to REGION_RAM before execution */
-    .ram_text : 
-    AT( ALIGN(__DATA_IMAGE_END__, CL_SIZE) ) {
-        PROVIDE(__RAM_TEXT_START__ = .);
-        *(.ram_text)
-        . = ALIGN(CL_SIZE);
-        PROVIDE(__RAM_TEXT_END__ = .);
-    } > REGION_RAM
-    
-    __RAM_TEXT_IMAGE_START__ = LOADADDR(.ram_text);
-    __RAM_TEXT_IMAGE_END__ = LOADADDR(.ram_text) + SIZEOF(.ram_text);
-    ASSERT(__RAM_TEXT_IMAGE_END__ < ORIGIN(REGION_TEXT) + LENGTH(REGION_TEXT), "REGION_TEXT segment overflows")
-
-    ASSERT(__RAM_TEXT_END__ < ORIGIN(REGION_RAM) + LENGTH(REGION_RAM) - STACK_SIZE, "REGION_RAM section overflows")
 
     _end = .;
     PROVIDE(__end = .);

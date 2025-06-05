@@ -5,11 +5,7 @@
 
 extern "C" {
 
-#ifdef CUSTOM_LD
-  __attribute__((noinline, used, section(".init"))) void _init()
-  #else
-  __attribute__((noinline, used, section(".ram_text"))) void _init()
-  #endif
+  __attribute__((noinline, used, section(".small_ram_text"))) static void _init()
   {
     // Модуль WakeUp ====================================================================
 
@@ -202,7 +198,7 @@ extern "C" {
 
   int __cxa_atexit(void (*fn) (void *), void *arg, void *d) { return 0; }
 
-  GCC_USED void SystemInit()
+  __attribute__((used)) void SystemInit()
   {
     uint32_t count;
     uint32_t i;
