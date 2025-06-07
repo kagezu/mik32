@@ -1,3 +1,10 @@
+/*
+https://projecthub.arduino.cc/abhilashpatel121/easyfft-fast-fourier-transform-fft-for-arduino-03724d
+https://microkontroller.ru/arduino-projects/bystroe-preobrazovanie-fure-fft-na-arduino-s-vysokoj-skorostyu/
+*/
+
+// Предполагается модификация с целью ускорения
+
 // #include "fft.h"
 #include <inttypes.h>
 

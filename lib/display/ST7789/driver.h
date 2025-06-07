@@ -151,6 +151,5 @@ protected:
   }
 
 private:
-  void send_config(const uint8_t * config, uint8_t size)
-    virtual void send_config(const uint8_t * config, uint8_t size) = 0;
+  virtual void send_config(const uint8_t * config, uint8_t size) = 0;
 };

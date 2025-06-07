@@ -20,12 +20,20 @@
 
 ### Используемые библиотеки
 
-+ **arduino-avr** "Arduino.h"
-+ **mik32v2-sdk** только заголовки "framework-mik32v2-sdk/shared"
++ **mik32v2-sdk** <https://gitflic.ru/project/mikron-mik32/mik32v2-shared>
++ **libfixmath** <https://github.com/PetteriAimonen/libfixmath>
++ **arduino** <https://gitflic.ru/project/elron-tech/elbear_arduino_bsp>
 
 ### Используемые инструменты
 
 + PlatformIO - <https://platformio.org>
 + VSCode - <https://code.visualstudio.com>
-+ Arduino IDE [Скрипт для установки платы Elbear](https://elron.tech/files/package_elbear_beta_index.json)
 + Загрузчик [elbear uploader](https://gitflic.ru/project/elron-tech/elbear_uploader)
+
+### PlatformIO
+
+Репозитории для развёртывание <https://gitflic.ru/company/mikron-mik32>
+
+### Предупреждение
+
+Репозиторий служит исключительно для экскрементов, не имеет стабильной структуры и содержимого.
