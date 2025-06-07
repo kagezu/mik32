@@ -83,16 +83,11 @@ static void butterfly(fix16_t *real, fix16_t *imag, unsigned blocksize, unsigned
 // Перевернуть биты в 32-битном числе
 static uint32_t rbit_32(uint32_t x)
 {
-#if defined(__GNUC__) && defined(__ARM_ARCH_7M__)
-  __asm__("rbit %0,%0" : "=r"(x) : "0"(x));
-  return x;
-#else
   x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
   x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
   x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
   x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
   return((x >> 16) | (x << 16));
-#endif
 }
 
 // Переворачиваем биты в n-битном числе.
@@ -104,11 +99,12 @@ static uint32_t rbit_n(uint32_t x, unsigned n)
 // Целочисленный логарифм по основанию 2
 static int ilog2(unsigned x)
 {
-  int result = -1;
-  while (x) {
-    x >>= 1;
-    result++;
-  }
+  if (x == 0) return -1;
+  uint32_t result = 0;
+  if (x >= (1 << 8)) { x >>= 8; result += 8; }
+  if (x >= (1 << 4)) { x >>= 4; result += 4; }
+  if (x >= (1 << 2)) { x >>= 2; result += 2; }
+  if (x >= (1 << 1)) { result += 1; }
   return result;
 }
 
@@ -138,7 +134,7 @@ void fix16_fft(INPUT_TYPE *input, fix16_t *real, fix16_t *imag, unsigned transfo
 #endif
 }
 
-/* Just some test code
+/* Тестовый код
 #include <stdio.h>
 int main()
 {

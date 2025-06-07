@@ -28,10 +28,10 @@ memset_2:
 .endm
 
 
-# la uses PC relative addressing (auipc instruction)
-# Explicit absolut addressing with lui instruction is used 
-# to allow startup code to be executed from any PC address
-# (la instruction equivalents are left in comments)
+# la использует относительную адресацию ПК (инструкция auipc)
+# Явная абсолютная адресация с инструкцией lui используется
+# для того, чтобы разрешить запуск кода с любого адреса ПК
+# (эквиваленты инструкции la оставлены в комментариях)
     
 .macro la_abs reg, address
     .option push
@@ -51,24 +51,24 @@ memset_2:
 .endm
 
 
-
 .text
-
 _start:
-    # Init stack and global pointer
-    #
+    # Инициализация стека и глобального указателя
     la_abs  sp, __C_STACK_TOP__
     la_abs  gp, _gp
     
-    # Init data
-    #
+    # Установка вектора прерывания
+    # в зависимости от результата сборки
+    lui t0, %hi(2f)
+    csrrw zero, mtvec, t0
+
+    # Перенос кода и переменных в RAM
     la_abs  a1, __DATA_IMAGE_START__
     la_abs  a2, __DATA_IMAGE_END__
     la_abs  a3, __DATA_START__
     memcpy  a1, a2, a3, t0
 
-    # Clear bss
-    #
+    # Инициализация обнулением
     la_abs  a1, __BSS_START__
     la_abs  a2, __BSS_END__
     memset a1, a2, zero
@@ -79,14 +79,12 @@ _start:
     j 1b
 
     
-// Actions before main: none by default
-// (weak symbol here - may be redefined)
+// Действия перед main: по умолчанию отсутствуют
+// (SystemInit - может быть переопределена)
 SystemInit:
     ret
 
 .section .trap_text, "ax"
-// .org should be consistent with
-// default mtvec value (set in scr1_arch_description.svh)
 //.org 0xC0
 trap_handler:
-1:  j 1b
+2:  j 2b

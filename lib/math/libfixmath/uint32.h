@@ -6,15 +6,11 @@ extern "C"
 {
 #endif
 
-#ifdef __KERNEL__
-#include <linux/types.h>
-#else
 #include <stdint.h>
-#endif
 
-/*! Performs an unsigned log-base2 on the specified unsigned integer and returns the result.
-*/
-extern uint32_t uint32_log2(uint32_t inVal);
+  /*! Выполняет беззнаковый лог-base2 для указанного беззнаковое целого числа и возвращает результат.
+  */
+  extern uint32_t uint32_log2(uint32_t inVal);
 
 #ifdef __cplusplus
 }
