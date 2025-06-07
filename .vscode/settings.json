@@ -20,6 +20,8 @@
     "pins.h": "c",
     "include.h": "c",
     "inttypes.h": "c",
-    "rect.h": "c"
+    "rect.h": "c",
+    "stdbool.h": "c",
+    "ctype.h": "c"
   }
 }

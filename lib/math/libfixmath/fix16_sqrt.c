@@ -1,85 +1,76 @@
 #include "fix16.h"
-
-/* The square root algorithm is quite directly from
- * http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
- * An important difference is that it is split to two parts
- * in order to use only 32-bit operations.
- *
- * Note that for negative numbers we return -sqrt(-inValue).
- * Not sure if someone relies on this behaviour, but not going
- * to break it for now. It doesn't slow the code much overall.
- */
+/* Алгоритм квадратного корня взят прямо из
+* http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
+* Важное отличие в том, что он разделен на две части
+* чтобы использовать только 32-битные операции.
+*
+* Обратите внимание, что для отрицательных чисел мы возвращаем -sqrt(-inValue).
+*/
 fix16_t fix16_sqrt(fix16_t inValue)
 {
-    uint8_t neg     = (inValue < 0);
-    uint32_t num    = fix_abs(inValue);
-    uint32_t result = 0;
-    uint32_t bit;
-    uint8_t n;
+  uint8_t neg = (inValue < 0);
+  uint32_t num = fix_abs(inValue);
+  uint32_t result = 0;
+  uint32_t bit;
+  uint8_t n;
 
-    // Many numbers will be less than 15, so
-    // this gives a good balance between time spent
-    // in if vs. time spent in the while loop
-    // when searching for the starting value.
-    if (num & 0xFFF00000)
-        bit = (uint32_t)1 << 30;
-    else
-        bit = (uint32_t)1 << 18;
+  // Многие числа будут меньше 15, поэтому
+  // это дает хороший баланс между временем, затраченным
+  // в if, и временем, затраченным в цикле while
+  // при поиске начального значения.
 
-    while (bit > num)
-        bit >>= 2;
+  if (num & 0xFFF00000)
+    bit = (uint32_t)1 << 30;
+  else
+    bit = (uint32_t)1 << 18;
 
-    // The main part is executed twice, in order to avoid
-    // using 64 bit values in computations.
-    for (n = 0; n < 2; n++)
-    {
-        // First we get the top 24 bits of the answer.
-        while (bit)
-        {
-            if (num >= result + bit)
-            {
-                num -= result + bit;
-                result = (result >> 1) + bit;
-            }
-            else
-            {
-                result = (result >> 1);
-            }
-            bit >>= 2;
-        }
+  while (bit > num)
+    bit >>= 2;
 
-        if (n == 0)
-        {
-            // Then process it again to get the lowest 8 bits.
-            if (num > 65535)
-            {
-                // The remainder 'num' is too large to be shifted left
-                // by 16, so we have to add 1 to result manually and
-                // adjust 'num' accordingly.
-                // num = a - (result + 0.5)^2
-                //	 = num + result^2 - (result + 0.5)^2
-                //	 = num - result - 0.5
-                num -= result;
-                num    = (num << 16) - 0x8000;
-                result = (result << 16) + 0x8000;
-            }
-            else
-            {
-                num <<= 16;
-                result <<= 16;
-            }
+  // Основная часть выполняется дважды, чтобы избежать
+  // использования 64-битных значений в вычислениях.
 
-            bit = 1 << 14;
-        }
+  for (n = 0; n < 2; n++) {
+    // Сначала получаем верхние 24 бита ответа.
+    while (bit) {
+      if (num >= result + bit) {
+        num -= result + bit;
+        result = (result >> 1) + bit;
+      }
+      else {
+        result = (result >> 1);
+      }
+      bit >>= 2;
     }
+
+    if (n == 0) {
+      // Затем обрабатываем его снова, чтобы получить младшие 8 бит.
+      if (num > 65535) {
+        // Остаток 'num' слишком велик для сдвига влево
+        // на 16, поэтому нам придется вручную добавить 1 к результату и
+        // соответствующим образом скорректировать 'num'.
+        // num = a - (result + 0.5)^2
+        //	 = num + result^2 - (result + 0.5)^2
+        //	 = num - result - 0.5
+        num -= result;
+        num = (num << 16) - 0x8000;
+        result = (result << 16) + 0x8000;
+      }
+      else {
+        num <<= 16;
+        result <<= 16;
+      }
+
+      bit = 1 << 14;
+    }
+  }
 
 #ifndef FIXMATH_NO_ROUNDING
-    // Finally, if next bit would have been 1, round the result upwards.
-    if (num > result)
-    {
-        result++;
-    }
+  // Наконец, если бы следующий бит был 1, округлить результат в большую сторону.
+  if (num > result) {
+    result++;
+  }
 #endif
 
-    return (neg ? -(fix16_t)result : (fix16_t)result);
+  return (neg ? -(fix16_t)result : (fix16_t)result);
 }
