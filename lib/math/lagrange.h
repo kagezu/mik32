@@ -1,48 +1,81 @@
 /* https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%BF%D0%BE%D0%BB%D1%8F%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B9_%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE%D1%87%D0%BB%D0%B5%D0%BD_%D0%9B%D0%B0%D0%B3%D1%80%D0%B0%D0%BD%D0%B6%D0%B0#%D0%A1%D0%BB%D1%83%D1%87%D0%B0%D0%B9_%D1%80%D0%B0%D0%B2%D0%BD%D0%BE%D0%BE%D1%82%D1%81%D1%82%D0%BE%D1%8F%D1%89%D0%B8%D1%85_%D1%83%D0%B7%D0%BB%D0%BE%D0%B2_%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%BF%D0%BE%D0%BB%D1%8F%D1%86%D0%B8%D0%B8
 */
 
-// #include "lagrange.h"
-#include <inttypes.h>
-
 // Интерполяция Лагранжа (с равными интервалами)
+// #include "lagrange.h"
 
-static constexpr int max_dx = 10;
-static constexpr int max_pow = 11;
+#include "int8.h"
 
-static uint16_t *yn;
-static int32_t l[max_pow + 1][max_dx]; // Коэффициенты Лагранжа
-static int32_t factor;
-static int32_t ln;
+#define USE_INT128
+#ifdef USE_INT128
+#include "int128.h"
+#define TYPE_INT  int128_t
+#else
+#define TYPE_INT  int64_t
+#endif
 
-static int32_t fact(int32_t x)
+static const int32_t fact(int8_t x)
 {
-  if (x) return x * fact(x - 1);
-  return 1;
+  int32_t result = 1;
+  for (int8_t i = 1; i <= x; i++) result *= i;
+  return result;
 }
 
-// Вычисление коэффициентов Лагранжа
-void L_init(uint8_t pow, uint8_t dx)
-{
-  if (pow > max_pow || dx > max_dx) return;
-  ln = pow;
-  factor = 1;
-  for (int32_t i = 0; i < ln / 2; i++) factor *= dx;
-  for (int32_t n = 0; n <= ln; n++) {
-    int64_t d = factor * fact(ln - n) * fact(n) * (((n & 1) << 1) - 1);
-    for (int32_t x = 0; x < dx; x++) {
-      int64_t ls = 1;
-      for (int32_t i = 0; i <= ln; i++)
-        if (i != n) ls *= x + dx * ((ln >> 1) - i);
-      l[n][x] = ls / d / dx;
+/**
+ * @brief Интерполяция Лагранжа (с равными интервалами)
+ * @details Интерполяция выполняется между узлами k и (k + 1), при числе узлов n = 2(k + 1) и (n - 1) степень полинома
+ * @tparam H Шаг узлов интерполяции
+ * @tparam NODE Количество узлов интерполяции
+ */
+template<typename L, const uint8_t H, const uint8_t NODE>
+class Lagrange {
+private:
+  L l[H][NODE];
+
+  int32_t factor;
+  L *y;
+
+public:
+  Lagrange()
+  {
+    // Проверки, чтобы избежать переполнения
+    uint8_t h_pow = uint8_log2_pow(H, NODE - 1);// h^pow
+    uint8_t n2f2 = uint8_log2_l(NODE);          // ((n/2)!)^2/(n/2)
+    // uint8_t powf = uint8_log2_fact(NODE - 1);   // n!
+    uint8_t max = h_pow + n2f2;
+
+    if (max >= sizeof(TYPE_INT) << 3) return; // Overflow
+    if (n2f2 >= sizeof(L) << 3) return;       // Overflow Lagrange coefficients
+  }
+
+  void init(uint8_t pow, uint8_t h)
+  {
+    // Узловая точка с которой начинается аппроксимация
+    const int8_t k = pow >> 1;
+
+    int32_t factor = 1;
+    for (int8_t i = 0; i < k; i++) factor *= h; // f = h^k
+
+    // Вычисление коэффициентов Лагранжа
+    for (int8_t j = 0; j < NODE; j++) {
+      int64_t d = factor * fact(pow - j) * fact(j);
+      if ((j & 1) == 0) d = -d;
+      for (int8_t x = 1; x < h; x++) {
+        int64_t ls = 1;
+        for (int8_t i = 0; i < NODE; i++)
+          if (i != j) ls *= x + h * (k - i);
+        l[j][x] = ls / d / h;
+      }
     }
   }
-}
 
-void Ly(uint16_t *y) { yn = y; }
-uint32_t L(int32_t x)
-{
-  int32_t res = 0;
-  for (int32_t i = 0; i <= ln; i++) res += l[i][x] * yn[i];
-  res /= factor;
-  return (uint32_t)res;
-}
+  void Ly(uint16_t *in) { y = in; }
+  uint32_t f(int8_t x)
+  {
+    int32_t res = 0;
+    for (int8_t i = 0; i < NODE; i++) res += l[x][i] * y[i];
+    res /= factor;
+    return (uint32_t)res;
+  }
+
+};

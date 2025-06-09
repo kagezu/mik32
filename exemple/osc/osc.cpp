@@ -6,7 +6,7 @@
 #include "pin.h"
 #include "osc.h"
 
-#define Ln        9   // Степень полинома Лагранжа (нечётная)
+#define Ln        12  // Узловых точек для интерполяции Лагранжа (чётная)
 #define BORDER_Y  20  // Отступ от верха экрана
 #define BORDER_X  1   // Бордюр по краям
 #define AXIS_X    10  // Шаг сетки по X
@@ -21,6 +21,7 @@ LCD lcd;
 ADC adc;
 DMA dma(0, DMA::VERY);
 Rect view = Rect(BORDER_X, BORDER_Y, lcd.max_x() - BORDER_X, lcd.max_y() - 1);
+Lagrange<int16_t, AXIS_X, Ln> L;
 
 uint16_t buffer[SAMPLES];
 int16_t point[POINTES + 1];
@@ -97,7 +98,7 @@ void draw()
   // for (reg i = 0; i < POINTES / AXIS_X; i++) {
   //   Ly(&buffer[i]);
   //   for (reg j = 0; j < AXIS_X; j++) {
-  //     int16_t l = L(j);
+  // int16_t l = L.L(0);
   //     point[i * AXIS_X + j] = ((4096 - l) * lcd.max_y()) >> 12;
   //   }
   // }
@@ -154,7 +155,6 @@ void init()
 
 int main(void)
 {
-  L_init(Ln, AXIS_X);
   init();
 
   lcd.init();
@@ -177,4 +177,7 @@ int main(void)
     draw();
     info();
   }
+
+  (void)sizeof(L);
+
 }
