@@ -23,5 +23,6 @@
     "rect.h": "c",
     "stdbool.h": "c",
     "ctype.h": "c"
-  }
+  },
+  "platformio-ide.autoOpenPlatformIOIniFile": false
 }

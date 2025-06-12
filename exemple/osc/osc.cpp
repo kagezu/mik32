@@ -6,26 +6,36 @@
 #include "pin.h"
 #include "osc.h"
 
-#define Ln        12  // Узловых точек для интерполяции Лагранжа (чётная)
+#define Lp        12  // Узловых точек для интерполяции Лагранжа (чётная)
+#define Lh        10  // Шаг интерполяции
 #define BORDER_Y  20  // Отступ от верха экрана
 #define BORDER_X  1   // Бордюр по краям
 #define AXIS_X    10  // Шаг сетки по X
 #define AXIS_Y    10  // Шаг сетки по Y
 #define AREF_MV   1300  // Опорное напряжение в милливольтах
 
-#define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
-#define SAMPLES   ((POINTES << 2) + 10)
-#define END_POINT SAMPLES - POINTES - 3
-
 LCD lcd;
 ADC adc;
 DMA dma(0, DMA::VERY);
-Rect view = Rect(BORDER_X, BORDER_Y, lcd.max_x() - BORDER_X, lcd.max_y() - 1);
-Lagrange<int16_t, AXIS_X, Ln> L;
 
-uint16_t buffer[SAMPLES];
+#define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
+#define SAMPLES   ((POINTES << 2) + Lp)
+#define END_POINT SAMPLES - POINTES - 3
+
+Rect view = Rect(
+  BORDER_X,
+  BORDER_Y,
+  lcd.max_x() - BORDER_X,
+  lcd.max_y() - 1
+);
+int16_t buffer[SAMPLES];
 int16_t point[POINTES + 1];
 int16_t point2[POINTES + 1] = {};
+
+// Коэффициенты Лагранжа
+int16_t li[Lh][Lp];
+int32_t io_bits = 12;
+Lagrange L(li, io_bits);
 
 ////////////////////////////////////////////////////
 
@@ -77,9 +87,9 @@ void sample(uint32_t tick)
 void draw()
 {
   int32_t med = 0;
-  uint16_t k = 0;
+  int16_t k = 0;
 
-  uint16_t min = 1 << 12, max = 0;
+  int16_t min = 1 << 12, max = 0;
   for (reg i = 0; i < END_POINT; i++) {
     reg j = i + (POINTES >> 1);
     if (min > buffer[j]) min = buffer[j];
@@ -87,12 +97,14 @@ void draw()
   }
   med = (min + max) >> 1;
 
+  int32_t s = AREF_MV * AXIS_Y / param[VoltageScale]->get_value(); // Q32.12
+
   if (param[VoltageType]->get_value() == 'A')
-    med = ((med * AREF_MV * AXIS_Y) >> 12) / param[VoltageScale]->get_value() - (view.height >> 1) - param[ZeroLevel]->counter;
+    med = ((med * s) >> 12) - (view.height >> 1) - param[ZeroLevel]->counter;
   else med = -param[ZeroLevel]->counter;
 
-  for (uint16_t i = 0; i <= POINTES; i++)
-    point[i] = view.max_y + med - (((int32_t)buffer[i + k] * AREF_MV * AXIS_Y) >> 12) / param[VoltageScale]->get_value();
+  for (int16_t i = 0; i <= POINTES; i++)
+    point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
 
 
   // for (reg i = 0; i < POINTES / AXIS_X; i++) {

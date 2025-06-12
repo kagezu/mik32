@@ -4,78 +4,95 @@
 // Интерполяция Лагранжа (с равными интервалами)
 // #include "lagrange.h"
 
+#pragma once
 #include "int8.h"
 
-#define USE_INT128
+// #define USE_INT128
 #ifdef USE_INT128
 #include "int128.h"
-#define TYPE_INT  int128_t
+#define LONG_INT  int128_t
 #else
-#define TYPE_INT  int64_t
+#define LONG_INT  int64_t
 #endif
 
-static const int32_t fact(int8_t x)
-{
-  int32_t result = 1;
-  for (int8_t i = 1; i <= x; i++) result *= i;
-  return result;
-}
+
+#define LAGRANGE_OVERFLOW   0x01
+#define LAGRANGE_OVERFLOW_N 0x02
+#define LAGRANGE_OVERFLOW_H 0x04
+
 
 /**
  * @brief Интерполяция Лагранжа (с равными интервалами)
- * @details Интерполяция выполняется между узлами k и (k + 1), при числе узлов n = 2(k + 1) и (n - 1) степень полинома
+ * @details Интерполяция выполняется между узлами k и (k + 1), при числе узлов n = 2(k + 1), и (n - 1) степень полинома
+ * Используется математика с фиксированной точкой, но положение точки выбирается при инициализации
+ * @tparam T Тип для промежуточных операций преобразования
+ * @tparam L Тип коэффициентов Лагранжа
  * @tparam H Шаг узлов интерполяции
- * @tparam NODE Количество узлов интерполяции
+ * @tparam N Количество узлов интерполяции
  */
-template<typename L, const uint8_t H, const uint8_t NODE>
+template<typename D, typename L, const uint8_t H, const uint8_t N>
 class Lagrange {
 private:
-  L l[H][NODE];
-
-  int32_t factor;
-  L *y;
+  // массив коэффициентов объявляется вне класса
+  L(&li)[H][N];
 
 public:
-  Lagrange()
+  uint8_t dig;
+  Lagrange(L(&X)[H][N], D &max_data) :li(X)
   {
-    // Проверки, чтобы избежать переполнения
-    uint8_t h_pow = uint8_log2_pow(H, NODE - 1);// h^pow
-    uint8_t n2f2 = uint8_log2_l(NODE);          // ((n/2)!)^2/(n/2)
-    // uint8_t powf = uint8_log2_fact(NODE - 1);   // n!
-    uint8_t max = h_pow + n2f2;
+    // Максимальная разрядность числителя
+    constexpr uint8_t max_num = (sizeof(LONG_INT) << 3) - 1;
+    // Максимальная разрядность коэффициентов Лагранжа, 1 бит оставлен под знак
+    constexpr uint8_t max_dig = (sizeof(L) << 3) - 1;
+    // Максимальная разрядность целочисленного типа
+    constexpr uint8_t max_trans = (sizeof(D) << 3) - 1;
+    // Узловая точка с которой начинается интерполяция
+    constexpr uint8_t k = (N - 1) >> 1;
+    // Разрядность числителя log2((h^(n-1))*((n/2)!)^2/(n/2))
+    const uint8_t l_num = ((fix16_log2_fact(N >> 1) << 1) + fix16_log2(H) * (N - 1) - fix16_log2(N >> 1)) >> 16;
 
-    if (max >= sizeof(TYPE_INT) << 3) return; // Overflow
-    if (n2f2 >= sizeof(L) << 3) return;       // Overflow Lagrange coefficients
-  }
+    // Overflow
+    if (l_num > max_num)  return;
 
-  void init(uint8_t pow, uint8_t h)
-  {
-    // Узловая точка с которой начинается аппроксимация
-    const int8_t k = pow >> 1;
+    // Фиксированная точка в коэффициентах Лагранжа
+    dig = max_dig > l_num ? l_num : max_dig;
+    // Нужно умножить числитель и разделить делитель, так чтобы не потерять точность
+    // Увеличить числитель, избежав переполнение
+    const uint8_t s_num = (max_num - l_num) > dig ? dig : max_num - l_num;
 
-    int32_t factor = 1;
-    for (int8_t i = 0; i < k; i++) factor *= h; // f = h^k
+    D pow = 1;
+    // h^(n-1)
+    for (int8_t i = 0; i < N; i++) pow *= H;
+    // Уменьшить знаменатель, если уже нельзя увеличивать числитель
+    // dig != s_num только если числитель уже полный, эти биты в любом случае будут отброшены при делении
+    pow >>= dig - s_num;
 
     // Вычисление коэффициентов Лагранжа
-    for (int8_t j = 0; j < NODE; j++) {
-      int64_t d = factor * fact(pow - j) * fact(j);
-      if ((j & 1) == 0) d = -d;
-      for (int8_t x = 1; x < h; x++) {
-        int64_t ls = 1;
-        for (int8_t i = 0; i < NODE; i++)
-          if (i != j) ls *= x + h * (k - i);
-        l[j][x] = ls / d / h;
+    for (int8_t j = 0; j < N; j++) {
+      LONG_INT div = pow * fact(N - j - 1) * fact(j);
+      if ((j & 1) == 0) div = -div;
+      for (int8_t x = 0; x < H; x++) {
+        LONG_INT num = 1;
+        for (int8_t i = 0; i < N; i++)
+          if (i != j) num *= x + H * (k - i);
+        li[x][j] = (num << s_num) / div; // Q L.dig
       }
     }
   }
 
-  void Ly(uint16_t *in) { y = in; }
-  uint32_t f(int8_t x)
+  L f(L *y, int8_t x)
   {
-    int32_t res = 0;
-    for (int8_t i = 0; i < NODE; i++) res += l[x][i] * y[i];
-    res /= factor;
-    return (uint32_t)res;
+    D res = 0;
+    for (int8_t i = 0; i < N; i++) res += (D)li[x][i] * y[i];
+    res >>= dig;
+    return res >> dig;
   }
 
+private:
+  static const uint64_t fact(int8_t x)
+  {
+    uint64_t result = 1;
+    for (int8_t i = 1; i <= x; i++) result *= i;
+    return result;
+  }
 };

@@ -5,15 +5,6 @@
 #include <timer32.h>
 #include <epic.h>
 
-/*
-  #### Доступные таймеры:
-
-  + T16
-  + T32
-*/
-#define T
-
-
 #define T16_0_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M
 #define T16_1_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M
 #define T16_2_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_2_M

@@ -139,6 +139,6 @@ else:
     env.Exit(1)
 
 if CUSTOM:
-    print(f"\033[36mCUSTOM\033[0m (Выброны следующие пути):")
+    print(f"\033[36mCUSTOM\033[0m (Выбраны следующие пути):")
     print(f" - \033[36m{LDSCRIPTS_DIR}")
     print(f" - \033[36m{RUNTIME_DIR}")

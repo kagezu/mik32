@@ -45,8 +45,8 @@
 
 // Типы
 
-typedef uint32_t reg;
-typedef uint32_t adr;
+typedef int32_t reg;
+typedef uint32_t addr;
 
 #include "macros/pgmspace.h"
 #include "macros/attribute.h"
