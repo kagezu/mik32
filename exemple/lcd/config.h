@@ -2,8 +2,7 @@
 
 // #define RGB         RGB12   // 4x4x4 bit
 #define RGB         RGB16   // 5x6x5 bit
-// #define RGB         RGB18   // 6x6x6 bit
-// #define RGB         RGB32
+// #define RGB         RGB32   // 6x6x6 bit
 
 
 // Поворот дисплея
@@ -20,11 +19,11 @@
 
 // Драйвер дисплея
 
-#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
-// #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
-// #include "ST7789/driver.h"           // RGB18
-// #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
-// #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
+#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB32
+#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB32
+#include "ST7789/driver.h"           // RGB32
+#include "ILI9486_8_BIT/driver.h"    // RGB16, RGB32
+#include "ILI9486_16_BIT/driver.h"   // RGB16, RGB32
 
 #include "display.h"
 

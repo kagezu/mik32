@@ -107,11 +107,6 @@ int main(void)
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
   lcd.clear();
-  // lcd.font(arial_14);
-  // lcd.font(system_5x7);
-  // lcd.font(standard_5x8);
-  // // lcd.font(micro_5x6);
-  // lcd.font(serif_18i, 0, 0);
   lcd.font(sans_24, 0, 0);
 
   // mic_view();
@@ -124,13 +119,6 @@ int main(void)
       lcd.color(~color[x & 7]);
       lcd.background(color[x++ & 7]);
       lcd.clear();
-      // lcd.clear();
-      // lcd.at(0, 0);
-      // for (uint8_t i = serif_18i.first_char; i <= serif_18i.first_char + serif_18i.count_char; i++) {
-      //   if (((i - serif_18i.first_char + 1) % 50) == 0) { while (USER_B(GET)); while (!USER_B(GET)); lcd.clear(); lcd.at(0, 0); }
-      //   lcd.putc(i);
-      // }
-      // while (USER_B(GET));
     }
     else
       lcd.demo(x++);

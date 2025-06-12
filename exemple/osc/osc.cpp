@@ -64,7 +64,7 @@ void info()
     (F_CPU >> 2) / (param[Freq]->get_value() * (uint32_t)view.width),
     param[VoltageType]->get_value()
   );
-  lcd.printf(P("\nВЫБОР:  %s             "), mode_text[mode]);
+  lcd.printf(P("\f\nВЫБОР:  %s           "), mode_text[mode]);
 }
 
 ////////////////////////////////////////////////////
