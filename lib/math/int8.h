@@ -31,9 +31,9 @@ const static inline int32_t fix16_log2_fact(uint8_t x)
 }
 
 template<typename U>
-uint8_t int8_log2(U x)
+const static inline uint8_t int8_log2(U x)
 {
-  uint8_t res = 0;
+  uint8_t res = -1;
   while (x) { x >>= 1; res++; }
   return res;
 }

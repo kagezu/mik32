@@ -33,9 +33,9 @@ int16_t point[POINTES + 1];
 int16_t point2[POINTES + 1] = {};
 
 // Коэффициенты Лагранжа
-int16_t li[Lh][Lp];
-int32_t io_bits = 12;
-Lagrange L(li, io_bits);
+// int16_t li[Lh][Lp];
+// int32_t io_bits = 12;
+// Lagrange L(li, io_bits);
 
 ////////////////////////////////////////////////////
 
@@ -105,16 +105,6 @@ void draw()
 
   for (int16_t i = 0; i <= POINTES; i++)
     point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
-
-
-  // for (reg i = 0; i < POINTES / AXIS_X; i++) {
-  //   Ly(&buffer[i]);
-  //   for (reg j = 0; j < AXIS_X; j++) {
-  // int16_t l = L.L(0);
-  //     point[i * AXIS_X + j] = ((4096 - l) * lcd.max_y()) >> 12;
-  //   }
-  // }
-
 
   //////////////////////////
 
@@ -189,7 +179,4 @@ int main(void)
     draw();
     info();
   }
-
-  (void)sizeof(L);
-
 }

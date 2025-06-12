@@ -8,7 +8,6 @@ extern "C"
 
 #include <stdint.h>
 
-
   typedef struct {
     int64_t hi;
     uint64_t lo;
@@ -41,8 +40,7 @@ extern "C"
     _int128_t ret;
     ret.hi = ~x.hi;
     ret.lo = ~x.lo + 1;
-    if (ret.lo == 0)
-      ret.hi++;
+    if (ret.lo == 0) ret.hi++;
     return ret;
   }
 
@@ -55,15 +53,13 @@ extern "C"
   {
     _int128_t ret;
     if (y > 0) {
-      if (y >= 64)
-        return (_int128_t) { 0, 0 };
+      if (y >= 64) return (_int128_t) { (int64_t)x.lo << (y - 64), 0 };
       ret.hi = (x.hi << y) | (x.lo >> (64 - y));
       ret.lo = (x.lo << y);
     }
     else {
       y = -y;
-      if (y >= 64)
-        return (_int128_t) { 0, 0 };
+      if (y >= 64) return (_int128_t) { (x.hi < 0 ? -1 : 0), (uint64_t)(x.hi >> (y - 64)) };
       ret.lo = (x.lo >> y) | (x.hi << (64 - y));
       ret.hi = (x.hi >> y);
     }

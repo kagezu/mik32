@@ -15,12 +15,6 @@
 #define LONG_INT  int64_t
 #endif
 
-
-#define LAGRANGE_OVERFLOW   0x01
-#define LAGRANGE_OVERFLOW_N 0x02
-#define LAGRANGE_OVERFLOW_H 0x04
-
-
 /**
  * @brief Интерполяция Лагранжа (с равными интервалами)
  * @details Интерполяция выполняется между узлами k и (k + 1), при числе узлов n = 2(k + 1), и (n - 1) степень полинома
@@ -35,57 +29,123 @@ class Lagrange {
 private:
   // массив коэффициентов объявляется вне класса
   L(&li)[H][N];
+  // Дробная точка Q L.dig
+  uint8_t dig;
 
 public:
-  uint8_t dig;
-  Lagrange(L(&X)[H][N], D &max_data) :li(X)
+  Lagrange(L(&X)[H][N], D &max_input) :li(X)
   {
+    // Определим возможность вычислений с заданными параметрами
     // Максимальная разрядность числителя
-    constexpr uint8_t max_num = (sizeof(LONG_INT) << 3) - 1;
-    // Максимальная разрядность коэффициентов Лагранжа, 1 бит оставлен под знак
-    constexpr uint8_t max_dig = (sizeof(L) << 3) - 1;
-    // Максимальная разрядность целочисленного типа
-    constexpr uint8_t max_trans = (sizeof(D) << 3) - 1;
-    // Узловая точка с которой начинается интерполяция
-    constexpr uint8_t k = (N - 1) >> 1;
+    constexpr uint8_t max_num = sizeof(LONG_INT) << 3;
     // Разрядность числителя log2((h^(n-1))*((n/2)!)^2/(n/2))
     const uint8_t l_num = ((fix16_log2_fact(N >> 1) << 1) + fix16_log2(H) * (N - 1) - fix16_log2(N >> 1)) >> 16;
+    if (l_num > max_num)
+      return; // Overflow 
 
-    // Overflow
-    if (l_num > max_num)  return;
-
-    // Фиксированная точка в коэффициентах Лагранжа
-    dig = max_dig > l_num ? l_num : max_dig;
-    // Нужно умножить числитель и разделить делитель, так чтобы не потерять точность
+    // Установим фиксированную точку в коэффициентах Лагранжа
+    // Максимальная разрядность коэффициентов Лагранжа, 1 бит оставлен под знак
+    constexpr uint8_t max_dig = (sizeof(L) << 3) - 1;
+    // Максимальная разрядность целочисленного типа минус знак
+    constexpr uint8_t max_int = (sizeof(D) << 3) - 1;
+    // Сдвигаем точку вправо, чтобы не вызвать переполнения
+    dig = max_int - max_input > max_dig ? max_dig : max_int - max_input;
+    // Теперь нужно умножить числитель и разделить делитель, так чтобы не потерять точность
     // Увеличить числитель, избежав переполнение
-    const uint8_t s_num = (max_num - l_num) > dig ? dig : max_num - l_num;
-
-    D pow = 1;
-    // h^(n-1)
-    for (int8_t i = 0; i < N; i++) pow *= H;
+    const uint8_t dig_num = (max_num - l_num) > dig ? dig : max_num - l_num;
     // Уменьшить знаменатель, если уже нельзя увеличивать числитель
-    // dig != s_num только если числитель уже полный, эти биты в любом случае будут отброшены при делении
-    pow >>= dig - s_num;
+    // dig_denum != 0 только если числитель уже полный, эти биты в любом случае будут отброшены при делении
+    const uint8_t dig_denum = dig - dig_num;
 
     // Вычисление коэффициентов Лагранжа
+    // N - количество узловых точек точек (степень полинома :p = n-1) 
+    // H - Шаг узлов интерполяции
+
+    // Узловая точка с которой начинается интерполяция
+    constexpr uint8_t k = (N - 1) >> 1;
+
+  #ifdef USE_INT128  // Вариант с числами 128 bit
+
+    int128_t pow = int128_const(0, 1); // 1
+    for (int8_t i = 0; i < N; i++) pow = int128_mul_i128_i64(pow, i); // pow = h^p
+    pow = int128_shift(pow, -dig_denum); // Q128.-denum
+
+    // Переберем все узловые точки
     for (int8_t j = 0; j < N; j++) {
-      LONG_INT div = pow * fact(N - j - 1) * fact(j);
-      if ((j & 1) == 0) div = -div;
+      int128_t d = int128_mul_i128_i64(pow, fact(N - j - 1));
+      d = int128_mul_i128_i64(d, fact(j)); // h^p * (p-j)! * j!
+      int8_t reduce = 1 + int8_log2(int128_hi(d)); // если reduce > 0, нужно сдвинуть до int64
+      int64_t div = int128_lo(int128_shift(d, -reduce)); // Q64.-(denum + reduce)
+      if (div < 0) { reduce++; div = ((uint64_t)div >> 1); }  // ещё 1 бит под знак
+      if ((j & 1) == 0) div = -div; // (-1)^(p-j)
+
+      // Переберем все промежуточные значения, необходимые интерполировать
       for (int8_t x = 0; x < H; x++) {
+
+        // Перемножаем все отклонения от искомой точки
+        int128_t num = int128_const(0, 1);
+        for (int8_t i = 0; i < N; i++)
+          if (i != j) num = int128_mul_i128_i64(num, (int64_t)H * (k - i)); // П(x - x0 - ih), i = 0...p
+
+        // Q128.( dig_num - reduce)
+        num = int128_shift(num, dig_num - reduce);
+
+        // Заполним таблицу коэффициентов 
+        int128_t l = int128_div_i128_i64(num, div);
+        li[x][j] = (L)(int128_hi(l) > 0 ? int128_lo(l) : -int128_lo(l)); // Q L.dig
+      }
+    }
+
+  #else
+
+    LONG_INT pow = 1;
+    for (int8_t i = 0; i < N; i++) // pow = h^p
+      pow *= H;
+    pow >>= dig_denum; // Q X.-denum
+
+    // Переберем все узловые точки
+    for (int8_t j = 0; j < N; j++) {
+      LONG_INT div = pow * fact(N - j - 1) * fact(j); // h^p * (p-j)! * j!
+      if ((j & 1) == 0) div = -div; // (-1)^(p-j)
+
+      // Переберем все промежуточные значения, необходимые интерполировать
+      for (int8_t x = 0; x < H; x++) {
+
+        // Перемножаем все отклонения от искомой точки П(x - x0 - ih), i = 0...p
         LONG_INT num = 1;
         for (int8_t i = 0; i < N; i++)
           if (i != j) num *= x + H * (k - i);
-        li[x][j] = (num << s_num) / div; // Q L.dig
+
+        // Заполним таблицу коэффициентов Q L.dig
+        li[x][j] = (num << dig_num) / div;
       }
     }
+
+  #endif
   }
 
   L f(L *y, int8_t x)
   {
     D res = 0;
     for (int8_t i = 0; i < N; i++) res += (D)li[x][i] * y[i];
-    res >>= dig;
     return res >> dig;
+  }
+
+  /**
+   * @brief Интерполяция массива данных
+   *
+   * @param out выходной массив
+   * @param in массив узловых точек
+   * @param size количество промежутков интерполяции
+   */
+  void interpolate(L *out, L *in, int16_t size)
+  {
+    for (int16_t i = 0; i < size; i++) {
+      D sum = 0;
+      for (int8_t x = 0; x < N; x++)
+        sum += (D)li[x][i] * in[i]; // Q D.dig
+      *out = sum >> dig; // Q L.0
+    }
   }
 
 private:
