@@ -3,7 +3,7 @@
 #include "pins.h"
 #include "midi/midi.h"
 #include "const.h"
-#include "spi/SPI.h"
+#include "SPI.h"
 
 class VS1053 : public MIDI {
 public:

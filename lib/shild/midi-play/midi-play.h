@@ -81,7 +81,7 @@ private:
     do {
       tmp = read();
       timer <<= 7;
-      timer |= (byte)(tmp & (0x7F));
+      timer |= (uint8_t)(tmp & (0x7F));
     } while ((tmp & (1 << 7)) != 0);
   }
 

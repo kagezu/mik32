@@ -21,7 +21,7 @@
 
 class SPI_Settings {
 public:
-  void init()
+  void init(uint16_t f = 0xffff)
   {
     config =
       SPI_CONFIG_MANUAL_CS_M                          // Ручной режим
@@ -30,6 +30,8 @@ public:
 
     delay_clk = SPI_DELAY_DIV;
     tx_thr = SPI_TX_THR;
+
+    fq(f);
   }
   void thr(uint8_t t) { tx_thr = t; }
   void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
@@ -42,13 +44,13 @@ public:
       | (SPI_CONFIG_CS_NONE_M ^ (1 << (SPI_CONFIG_CS_S + ss_n)));
   }
 
-  void fq(uint16_t fq = 0xffff)
+  void fq(uint16_t f)
   {
     uint8_t baud_rate_div = 0;
     uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
 
     while (baud_rate_div < 0x07) {
-      if (fq >= max_fq) break;
+      if (f >= max_fq) break;
       max_fq >>= 1;
       baud_rate_div++;
     }

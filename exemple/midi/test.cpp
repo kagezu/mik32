@@ -1,18 +1,14 @@
 #include "config.h"
-#include "VS1053/VS1053.h"
-#include "font/arial_14.h"
-#include "font/standard_5x8.h"
 #include "ernani.mid.h"
 #include "midi-play/midi-play.h"
 
-Display lcd;
+LCD lcd;
 VS1053 midi;
-SPI SPI;
+SPI spi;
 
 int main(void)
 {
-  init_system();
-  SPI.begin();
+  spi.init();
   lcd.init();
   midi.init();
   lcd.background(RGB(0, 16, 32));
