@@ -22,6 +22,10 @@ SECTIONS {
         *(.text.SystemInit)
         *(.text)
         *(.text.*)
+
+        # начало данных
+        #PROVIDE_HIDDEN (RODATA = .);
+
         *(.rodata)
         *(.rodata.*)
         

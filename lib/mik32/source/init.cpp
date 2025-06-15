@@ -1,9 +1,8 @@
 #include "mik32.h"
 
-#define SPIFI_FLASH_SIZE    (32*1024*1024)
-
-
 extern "C" {
+
+  // extern const uint32_t  RODATA;
 
   __attribute__((noinline, used, section(".small_ram_text"))) static void _init()
   {
@@ -181,7 +180,7 @@ extern "C" {
       ;
     SPIFI_CONFIG->ADDR = 0;
     SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh) (продолжаем использовать режим чтения без кода команды)
-    SPIFI_CONFIG->CLIMIT = SPIFI_BASE_ADDRESS + SPIFI_FLASH_SIZE; // граница кэширования
+    SPIFI_CONFIG->CLIMIT = SPIFI_BASE_ADDRESS + 65536; //RODATA - 1; // граница кэширования
     SPIFI_CONFIG->MCMD =
       (1 << SPIFI_CONFIG_MCMD_INTLEN_S)         // один dummy байт 0x00 для режима QPI и только адреса
       | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
@@ -218,8 +217,8 @@ extern "C" {
 
 }
 
-/* Поддерживаемые частоты: 32 MHz F_CPU */
-GCC_RAM void delay_us(uint32_t us)
+/* Для частоты: 32 MHz F_CPU */
+__attribute__((noinline, section(".ram_text"))) void delay_us(uint32_t us)
 {
   if (!us) return;
   int l = 6;
@@ -242,21 +241,7 @@ GCC_RAM void delay_us(uint32_t us)
     );
 }
 
-GCC_RAM void delay_ms(uint32_t ms)
+__attribute__((noinline, section(".ram_text"))) void delay_ms(uint32_t ms)
 {
   while (ms--) delay_us(1000);
-}
-
-void sei()
-{
-  set_csr(mstatus, MSTATUS_MIE);
-  // set_csr(mie, MIE_MEIE);
-  // set_csr(mie, MIE_MTIE);
-}
-
-void cli()
-{
-  clear_csr(mstatus, MSTATUS_MIE);
-  // clear_csr(mie, MIE_MEIE);
-  // clear_csr(mie, MIE_MTIE);
 }

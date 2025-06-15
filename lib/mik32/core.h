@@ -1,11 +1,6 @@
 #pragma once
 #include "mik32.h"
 
-// init
-
-// void _init();
-// extern "C" GCC_WEAK void SmallSystemInit() { _init(); }
-
 // ISR
 
 void sei();
