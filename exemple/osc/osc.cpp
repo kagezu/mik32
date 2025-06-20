@@ -43,13 +43,19 @@ uint8_t mode = Freq;
 
 void encode()
 {
+  static reg count = 0, c1 = 0, c2 = 0;
+
   static bool a0, b0;
   bool a = (bool)ENCODER_A(GET);
   bool b = (bool)ENCODER_B(GET);
-  if (a != a0) param[mode]->counter += a ^ b ? -1 : 1;
-  if (b != b0) param[mode]->counter += a ^ b ? 1 : -1;
+  if (a != a0) count += a ^ b ? -1 : 1;
+  if (b != b0) count += a ^ b ? 1 : -1;
   a0 = a;
   b0 = b;
+
+  c1 = count >> 2;
+  if (c1 != c2) menu.next(c1 - c2);
+  c2 = c1;
 }
 
 ////////////////////////////////////////////////////
@@ -59,12 +65,17 @@ void info()
   lcd.viewport();
   lcd.color(Aqua);
   lcd.printf(P("\f%u us  %u mV  %u Hz  %cC "),
-    param[Freq]->get_value(),
-    param[VoltageScale]->get_value(),
-    (F_CPU >> 2) / (param[Freq]->get_value() * (uint32_t)view.width),
-    param[VoltageType]->get_value()
+    menu.get(Freq)->get_value(),
+    // param[Freq]->get_value(),
+    menu.get(VoltageScale)->get_value(),
+    // param[VoltageScale]->get_value(),
+    (F_CPU >> 2) / menu.get(Freq)->get_item<int>() * (uint32_t)view.width,
+    // (F_CPU >> 2) / (param[Freq]->get_value() * (uint32_t)view.width),
+    menu.get(VoltageScale)->get_value()
+    // param[VoltageType]->get_value()
   );
-  lcd.printf(P("\f\nВЫБОР:  %s           "), mode_text[mode]);
+  lcd.printf(P("\f\nВЫБОР:  %s           "), menu.get_name());
+  // lcd.printf(P("\f\nВЫБОР:  %s           "), mode_text[mode]);
 }
 
 ////////////////////////////////////////////////////
@@ -97,11 +108,13 @@ void draw()
   }
   med = (min + max) >> 1;
 
-  int32_t s = AREF_MV * AXIS_Y / param[VoltageScale]->get_value(); // Q32.12
+  int32_t s = AREF_MV * AXIS_Y / menu.get(VoltageScale)->get_item<int>(); // Q32.12
+  // int32_t s = AREF_MV * AXIS_Y / param[VoltageScale]->get_value(); // Q32.12
 
-  if (param[VoltageType]->get_value() == 'A')
-    med = ((med * s) >> 12) - (view.height >> 1) - param[ZeroLevel]->counter;
-  else med = -param[ZeroLevel]->counter;
+  if (menu.get(VoltageType)->get_value() == 0)
+    // if (param[VoltageType]->get_value() == 'A')
+    med = ((med * s) >> 12) - (view.height >> 1) - menu.get(ZeroLevel)->get_value();
+  else med = -menu.get(ZeroLevel)->get_value();
 
   for (int16_t i = 0; i <= POINTES; i++)
     point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
@@ -133,8 +146,8 @@ void draw()
   lcd.color(Black);
   lcd.w_line(view.min_x, old, view.max_x);
 
-  if (param[VoltageType]->get_value() == 'A')
-    old = view.max_y - (view.height >> 1) - param[ZeroLevel]->counter;
+  if (menu.get(VoltageType)->get_value() == 'A')
+    old = view.max_y - (view.height >> 1) - menu.get(ZeroLevel)->get_value();
   else old = view.max_y + med;
 
   lcd.color(DarkCyan);
@@ -169,13 +182,14 @@ int main(void)
 
   while (true) {
     if (USER_B(GET)) {
-      mode++;
-      if (mode == CountMode) mode = Freq;
+      // mode++;
+      // if (mode == CountMode) mode = Freq;
+      menu.select();
       while (USER_B(GET));
       // info();
     }
 
-    sample(((uint32_t)param[Freq]->get_value() << 5) / AXIS_X);
+    sample(((uint32_t)menu.get(Freq)->get_item<int>() << 5) / AXIS_X);
     draw();
     info();
   }

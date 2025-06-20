@@ -22,8 +22,8 @@ public:
   void print(char);
 
 private:
-  char buffer[PRINT_BUFFER_SIZE] = {};
+  char buffer[PRINT_BUFFER_SIZE];
 
 private:
-  reg get_length(char *);
+  static reg strlen(char *);
 };

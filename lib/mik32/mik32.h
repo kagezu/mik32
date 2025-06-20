@@ -48,8 +48,12 @@
 typedef int32_t reg;
 typedef uint32_t addr;
 
-#include "macros/pgmspace.h"
+// #include "macros/pgmspace.h"
 #include "macros/attribute.h"
 #include "macros/gpio.h"
 
 #define P(x)  x
+#define PROGMEM
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
+#define pgm_read_word(addr) (*(const unsigned short *)(addr))
+#define pgm_read_dword(addr) (*(const unsigned long *)(addr))

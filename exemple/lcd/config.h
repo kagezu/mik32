@@ -20,10 +20,10 @@
 // Драйвер дисплея
 
 #include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB32
-#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB32
-#include "ST7789/driver.h"           // RGB32
-#include "ILI9486_8_BIT/driver.h"    // RGB16, RGB32
-#include "ILI9486_16_BIT/driver.h"   // RGB16, RGB32
+// #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB32
+// #include "ST7789/driver.h"           // RGB32
+// #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB32
+// #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB32
 
 #include "display.h"
 

@@ -1,5 +1,6 @@
 #include "printf.h"
 #include "accel.h"
+// #include "string.h"
 
 #define LEFT_ALGIN   0x80
 
@@ -61,7 +62,7 @@ void PrintF::printf(const char *string, ...)
 void PrintF::print(char *string, reg algin)
 {
   reg flag = algin & LEFT_ALGIN;
-  reg count = algin - flag - get_length(string);
+  reg count = algin - flag - (reg)strlen(string);
   // count = count > LEFT_ALGIN ? 0 : count;
   count = count < 0 ? 0 : count;
   if (!flag) while (count--)putc(' ');
@@ -182,7 +183,7 @@ uint16_t PrintF::print_h(uint8_t number)
   return high + (low << 8);
 }
 
-reg PrintF::get_length(char *string)
+reg PrintF::strlen(char *string)
 {
   reg count = 0;
   while (*string++) count++;

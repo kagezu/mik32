@@ -99,10 +99,10 @@ public:
   // print ==============================================================================
 
 private:
-  Font  _font = {};                        // Шрифт
-  uint8_t _charSize = 0;                   // Размер символа в словах
-  uint8_t _interline = 0;                  // Расстояние между строками
-  uint8_t _interval = 0;                   // Расстояние между символами
+  Font  _font;                            // Шрифт
+  uint8_t _charSize = 0;                  // Размер символа в словах
+  uint8_t _interline = 0;                 // Расстояние между строками
+  uint8_t _interval = 0;                  // Расстояние между символами
   uint8_t _tab_factor = FONT_TAB_FACTOR;
   int16_t point_x = 0;
   int16_t point_y = 0;
@@ -114,7 +114,11 @@ public:
     memcpy_P(&_font, &f, sizeof(Font));
     _charSize = ((_font.weight * _font.height - 1) >> 3) + 1;
   #else
-    _font = f;
+    *(reg *)&_font = *(reg *)&f;
+    _font.offset = f.offset;
+    _font.w = f.w;
+    _font.data = f.data;
+
     _charSize = (((_font.weight * _font.height - 1) >> 5) + 1) << 2;
   #endif
     set_interline(h);

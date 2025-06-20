@@ -16,8 +16,8 @@ RGB color[] = {
 };
 
 LCD lcd;
-SPI spi;
-ADC mic;
+// SPI spi;
+// ADC mic;
 
 #define FAT           4
 #define MED_FACTOR    2
@@ -30,6 +30,9 @@ ADC mic;
 
 
 #define ADC_DIV       ((ADC_MAX<<1) / lcd.max_x())
+
+
+/*
 
 void mic_view()
 {
@@ -93,8 +96,12 @@ void mic_view()
   }
 }
 
+*/
+
 int main(void)
 {
+  // _init();
+
   T32_0_PS;
   T32_0_E;
   T32_0_C;
@@ -102,7 +109,8 @@ int main(void)
   USER_B(GPIO);
   USER_B(IN);
 
-  spi.init();
+
+  // spi.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));
@@ -125,6 +133,13 @@ int main(void)
 
     lcd.at(10, lcd.max_y() - lcd.get_height());
     uint16_t fps = (F_CPU * 10) / T32_0;
+    // char *ptr;
+    // lcd.print(P("FPS: "));
+    // ptr = lcd.print((uint16_t)(fps / 10));
+    // lcd.print(ptr);
+    // lcd.print(P("."));
+    // ptr = lcd.print((uint16_t)(fps - (fps / 10) * 10));
+    // lcd.print(ptr);
     lcd.printf(P("FPS: %u.%u"), fps / 10, fps - (fps / 10) * 10);
   }
 

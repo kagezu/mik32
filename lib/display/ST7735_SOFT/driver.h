@@ -18,14 +18,14 @@ public:
   ST_SOFT_RST(CLR);               // Аппаратный сброс
   delay_us(2000);
   ST_SOFT_RST(SET);
-  delay_us(15000);          // Ждать стабилизации напряжений
+  delay_us(15000);                // Ждать стабилизации напряжений
   ST_SOFT_CS(CLR);                // CS Выбор дисплея
 
   send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
   send_command(MADCTL);
   send_byte(position);
   set_rgb_format();
-  send_command(DISPON); // Display On
+  send_command(DISPON);           // Display On
 
   ST_SOFT_CS(SET);
   }
