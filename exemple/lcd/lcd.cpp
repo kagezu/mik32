@@ -133,14 +133,14 @@ int main(void)
 
     lcd.at(10, lcd.max_y() - lcd.get_height());
     uint16_t fps = (F_CPU * 10) / T32_0;
-    // char *ptr;
-    // lcd.print(P("FPS: "));
-    // ptr = lcd.print((uint16_t)(fps / 10));
-    // lcd.print(ptr);
-    // lcd.print(P("."));
-    // ptr = lcd.print((uint16_t)(fps - (fps / 10) * 10));
-    // lcd.print(ptr);
-    lcd.printf(P("FPS: %u.%u"), fps / 10, fps - (fps / 10) * 10);
+    char *ptr;
+    lcd.print(P("FPS: "));
+    ptr = lcd.print((uint16_t)(fps / 10));
+    lcd.print(ptr);
+    lcd.print(P("."));
+    ptr = lcd.print((uint16_t)(fps - (fps / 10) * 10));
+    lcd.print(ptr);
+    // lcd.printf(P("FPS: %u.%u"), fps / 10, fps - (fps / 10) * 10);
   }
 
 }

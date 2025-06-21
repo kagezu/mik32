@@ -8,15 +8,12 @@ MEMORY {
 }
 
 STACK_SIZE = 1024;
-CL_SIZE = 16;
-
-REGION_ALIAS("REGION_TEXT", spifi);
-REGION_ALIAS("REGION_RAM", ram);
+CL_SIZE = 4;
 
 SECTIONS {
-    .text ORIGIN(REGION_TEXT) : {
+    .text ORIGIN(spifi) : {
         PROVIDE(__TEXT_START__ = .);
-        # код из crt0.S помещаем в начало сегмента REGION_TEXT, здесь точка входа из сброса
+        # код из crt0.S помещаем в начало сегмента spifi, здесь точка входа из сброса
         *crt0.o(.text .text.*)
 
         *(.text.SystemInit)
@@ -38,7 +35,7 @@ SECTIONS {
 
         . = ALIGN(CL_SIZE);
         PROVIDE(__TEXT_END__ = .);
-    } >REGION_TEXT
+    } >spifi
 
     .data :
     AT( __TEXT_END__ ) {
@@ -48,8 +45,8 @@ SECTIONS {
         KEEP (*(.small_ram_text))
         # в самом начале ОЗУ по смещению 0xC0 (абсолютный адрес 0x20000C0)
         # складываем секцию с обработчиком прерываний, секция объявлена через KEEP()
-        # линкер не отбросил её по флагу -gc-sections
-        . = ORIGIN(REGION_RAM) + 0xC0;
+        # чтобы линкер не отбросил её по флагу -gc-sections
+        . = ORIGIN(ram) + 0xC0;
         KEEP (*(.trap_text))
         . = ALIGN(CL_SIZE);
         *(.ram_text)
@@ -59,7 +56,7 @@ SECTIONS {
         *(.data .data.*)
         . = ALIGN(CL_SIZE);
         PROVIDE(__DATA_END__ = .);
-    } >REGION_RAM
+    } >ram
     
     __DATA_IMAGE_START__ = LOADADDR(.data);
     __DATA_IMAGE_END__ = LOADADDR(.data) + SIZEOF(.data);
@@ -71,40 +68,40 @@ SECTIONS {
         *(.tdata .tdata.*)
         PROVIDE(_tdata_end = .);
         . = ALIGN(CL_SIZE);
-    } >REGION_RAM
+    } >ram
 
     .tbss : {
         PROVIDE(__BSS_START__ = .);
         *(.tbss .tbss.*)
         . = ALIGN(CL_SIZE);
         PROVIDE(_tbss_end = .);
-    } >REGION_RAM
+    } >ram
 
     /* bss segment */
     .sbss : {
         *(.sbss .sbss.* .gnu.linkonce.sb.*)
         *(.scommon)
-    } >REGION_RAM
+    } >ram
 
     .bss : {
         *(.bss .bss.*)
         *(COMMON)
         . = ALIGN(CL_SIZE);
         PROVIDE(__BSS_END__ = .);
-    } >REGION_RAM
+    } >ram
 
     _end = .;
     PROVIDE(__end = .);
 
     /* End of uninitalized data segement */
     
-    .stack ORIGIN(REGION_RAM) + LENGTH(REGION_RAM) - STACK_SIZE : {
+    .stack ORIGIN(ram) + LENGTH(ram) - STACK_SIZE : {
         FILL(0);
         PROVIDE(__STACK_START__ = .);
         . += STACK_SIZE;
         PROVIDE(__C_STACK_TOP__ = .);
         PROVIDE(__STACK_END__ = .);
-    } >REGION_RAM
+    } >ram
 
     /DISCARD/ : {
         *(.eh_frame .eh_frame.*)
