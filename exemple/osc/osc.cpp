@@ -64,11 +64,11 @@ void info()
   lcd.color(Aqua);
   lcd.printf(
     P("\f%u us  %u mV  %u Hz  %cC %d  "),
-    menu.get(Freq)->get_item<int>(),
-    menu.get(VoltageScale)->get_item<int>(),
-    (F_CPU >> 2) / (menu.get(Freq)->get_item<int>() * (uint32_t)view.width),
-    menu.get(VoltageType)->get_item<char>(),
-    menu.get(ZeroLevel)->value
+    Fq.get_item<int>(),
+    VScale.get_item<int>(),
+    (F_CPU >> 2) / (Fq.get_item<int>() * (uint32_t)view.width),
+    VType.get_item<char>(),
+    ZLevel.value
   );
   lcd.printf(P("\f\n%s             "), menu.get_path());
 }
@@ -104,10 +104,10 @@ void draw()
   }
   med = (min + max) >> 1;
 
-  int32_t s = AREF_MV * AXIS_Y / menu.get(VoltageScale)->get_item<int>(); // Q32.12
-  if (menu.get(VoltageType)->value == 0)
-    med = ((med * s) >> 12) - (view.height >> 1) - menu.get(ZeroLevel)->value;
-  else med = -menu.get(ZeroLevel)->value;
+  int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
+  if (VType.value == 0)
+    med = ((med * s) >> 12) - (view.height >> 1) - ZLevel.value;
+  else med = -ZLevel.value;
 
   for (int16_t i = 0; i <= POINTES; i++) {
     point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
@@ -116,7 +116,7 @@ void draw()
 
   //////////////////////////
 
-  lcd.viewport(view);
+  lcd.viewport(&view);
 
   uint16_t last = point2[0];
   uint16_t last2 = point[0];
@@ -141,8 +141,8 @@ void draw()
   lcd.color(Black);
   lcd.w_line(view.min_x, old, view.max_x);
 
-  if (menu.get(VoltageType)->value == 0)
-    old = view.max_y - (view.height >> 1) - menu.get(ZeroLevel)->value;
+  if (VType.value == 0)
+    old = view.max_y - (view.height >> 1) - ZLevel.value;
   else old = view.max_y + med;
 
   lcd.color(DarkCyan);
@@ -182,7 +182,7 @@ int main(void)
       // info();
     }
 
-    sample(((uint32_t)menu.get(Freq)->get_item<int>() << 5) / AXIS_X);
+    sample(((uint32_t)Fq.get_item<int>() << 5) / AXIS_X);
     draw();
     info();
   }

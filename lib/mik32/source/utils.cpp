@@ -42,3 +42,9 @@ void cli()
   // clear_csr(mie, MIE_MEIE);
   // clear_csr(mie, MIE_MTIE);
 }
+
+char *sjoin(char *dst, const char *src)
+{
+  while ((*dst = *src)) { dst++; src++; }
+  return dst;
+}

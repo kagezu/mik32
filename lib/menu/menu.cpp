@@ -15,15 +15,12 @@ MItem *MItem::get(reg _value)
 char *MItem::get_path(bool f)
 {
   if (f) ptr = buffer;
-  const char *str = name;
-  while (*str) *ptr++ = *str++;
+  ptr = sjoin(ptr, name);
   if (type == ListType) {
     if (active) return MLIST(value)->get_path(false);
-    str = MLIST(value)->name;
-    while (*str) *ptr++ = *str++;
+    ptr = sjoin(ptr, MLIST(value)->name);
   }
-  if (type != ListType) *ptr++ = '*';
-  *ptr = '\0';
+  if (type != ListType) sjoin(ptr, "*");
   return buffer;
 }
 

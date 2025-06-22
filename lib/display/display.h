@@ -30,9 +30,10 @@ public:
   }
 
 private:
-  C _color;       // Цвет
-  C _background;  // Фон
-  Rect _viewport; // Область вывода
+  C _color;         // Цвет
+  C _background;    // Фон
+  Rect *_viewport;  // Область вывода
+  Rect _didplay = Rect(0, 0, max_x(), max_y());
 
   using Driver::set_addr;
   using Driver::send_rgb;
@@ -63,22 +64,22 @@ public:
   GCC_INLINE inline void color(C c) { _color = c; }
   GCC_INLINE inline void background(C b) { _background = b; }
   GCC_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
-  GCC_INLINE inline void fill(C color) { area(_viewport.min_x, _viewport.min_y, _viewport.max_x, _viewport.max_y, color); }
+  GCC_INLINE inline void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
   GCC_INLINE inline void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
   GCC_INLINE inline void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
-  GCC_INLINE inline void viewport(Rect &view) { _viewport = view; }
-  GCC_INLINE inline void viewport() { _viewport = Rect(0, 0, max_x(), max_y()); }
+  GCC_INLINE inline void viewport(Rect *view) { _viewport = view; }
+  GCC_INLINE inline void viewport() { _viewport = &_didplay; }
 
   void fill(int16_t x, int16_t y, int16_t x1, int16_t y1)
   {
-    if (!_viewport.cut(x, y, x1, y1)) return;
+    if (!_viewport->cut(x, y, x1, y1)) return;
     if (x == x1 && y == y1) pixel(x, y);
     else area(x, y, x1, y1, _color);
   }
 
   void pixel(int16_t x, int16_t y)
   {
-    if (!_viewport.is(x, y)) return;
+    if (!_viewport->is(x, y)) return;
     select();
     set_addr(x, y, x, y);
     send_rgb(_color);
@@ -88,7 +89,7 @@ public:
 
   void pixel(int16_t x, int16_t y, C color)
   {
-    if (!_viewport.is(x, y)) return;
+    if (!_viewport->is(x, y)) return;
     select();
     set_addr(x, y, x, y);
     send_rgb(color);
@@ -114,7 +115,7 @@ public:
     memcpy_P(&_font, &f, sizeof(Font));
     _charSize = ((_font.weight * _font.height - 1) >> 3) + 1;
   #else
-    *(reg *)&_font = *(reg *)&f;
+    *(int32_t *)&_font = *(int32_t *)&f;
     _font.offset = f.offset;
     _font.w = f.w;
     _font.data = f.data;
@@ -125,7 +126,7 @@ public:
     set_interval(w);
   }
 
-  GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = _viewport.min_x + x; point_y = _viewport.min_y + y; }
+  GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = _viewport->min_x + x; point_y = _viewport->min_y + y; }
   GCC_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
   GCC_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
   GCC_INLINE inline uint8_t get_height() { return _interline; }
@@ -139,23 +140,23 @@ public:
       case 0xd1: break;
         // Новая страница
       case '\f':
-        point_x = _viewport.min_x;
-        point_y = _viewport.min_y;
+        point_x = _viewport->min_x;
+        point_y = _viewport->min_y;
         break;
         // Перевод строки с возвратом
       case '\n':
-        point_x = _viewport.min_x;
+        point_x = _viewport->min_x;
         point_y += _interline;
-        if (point_y + _font.height > _viewport.max_y + 1) { point_y = _viewport.min_y; }
+        if (point_y + _font.height > _viewport->max_y + 1) { point_y = _viewport->min_y; }
         break;
         // Возврат каретки
       case '\r':
-        point_x = _viewport.min_x;
+        point_x = _viewport->min_x;
         break;
         // Шаг назад
       case '\b':
         point_x -= (_font.weight + _interval);
-        if (point_x < _viewport.min_x) point_x = _viewport.min_x;
+        if (point_x < _viewport->min_x) point_x = _viewport->min_x;
         break;
         // Табуляция
       case '\t':
@@ -164,7 +165,7 @@ public:
         // Вертикальная табуляция / Перевод строки
       case '\v':
         point_y += _interline;
-        if (point_y + _font.height > _viewport.max_y + 1) { point_y = _viewport.min_y; }
+        if (point_y + _font.height > _viewport->max_y + 1) { point_y = _viewport->min_y; }
         break;
 
       case '\e':
@@ -187,11 +188,11 @@ public:
           if (_font.offset) { source = (uint8_t *)_font.data + pgm_read_word(&_font.offset[ch]); }
           else { source = (uint8_t *)_font.data + ch * _charSize; }
 
-          if (point_x + dx > _viewport.max_x + 1) {
+          if (point_x + dx > _viewport->max_x + 1) {
             point_y += _interline;
-            point_x = _viewport.min_x;
+            point_x = _viewport->min_x;
           }
-          if (point_y + _font.height > _viewport.max_y + 1) { point_x = _viewport.min_x; point_y = _viewport.min_y; }
+          if (point_y + _font.height > _viewport->max_y + 1) { point_x = _viewport->min_x; point_y = _viewport->min_y; }
           symbol((reg *)source, point_x, point_y, dx, _font.height);
           point_x += dx + _interval;
         }
@@ -207,19 +208,17 @@ private:
     select();
     set_addr(x, y, x + dx + _interval - 1, y + dy - 1);
     for (reg j = 0; j < dy; j++) {
-      for (reg i = 0; i < dx + _interval; i++) {
+      for (reg i = 0; i < dx; i++) {
       #ifdef __AVR__
         if (bit == 0) { bit = 1; data = pgm_read_byte(source++); }
       #else
         if (bit == 0) { bit = 1; data = *source++; }
       #endif
-        if (i < dx) {
-          if (data & bit) send_rgb(_color);
-          else send_rgb(_background);
-          bit <<= 1;
-        }
+        if (data & bit) send_rgb(_color);
         else send_rgb(_background);
+        bit <<= 1;
       }
+      for (reg i = 0; i < _interval; i++) send_rgb(_background);
     }
     release();
   }
