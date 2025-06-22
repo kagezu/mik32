@@ -29,10 +29,6 @@ void MItem::next(reg step)
   switch (type) {
     case ListType:
       if (active) return MLIST(value)->next(step);
-      value += step;
-      if (value > max) value = min;
-      if (value < min) value = max;
-      break;
 
     case ValueType:
     case OptionType:
