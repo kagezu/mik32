@@ -140,6 +140,7 @@ void init()
   ADC2(ANALOG);
 
   T32_1_PS;
+
   T32_1_E;
 
   T32_0_PS;
