@@ -76,7 +76,13 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
   #ifndef FIXMATH_NO_OVERFLOW
     if (~upper)
       return fix16_overflow;
+  #endif  
+
+  #ifndef FIXMATH_NO_ROUNDING
+    // Эта корректировка необходима для правильного округления -1/2
+    product--;
   #endif
+
   }
   else {
   #ifndef FIXMATH_NO_OVERFLOW
@@ -84,7 +90,15 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
       return fix16_overflow;
   #endif
   }
+
+#ifdef FIXMATH_NO_ROUNDING
   return product >> 16;
+#else
+  fix16_t result = product >> 16;
+  result += (product & 0x8000) >> 15;
+  return result;
+#endif
+
 }
 
 /* Обертка вокруг fix16_mul для добавления насыщающей арифметики. */
@@ -165,6 +179,11 @@ fix16_t fix16_div(fix16_t a, fix16_t b)
     bit_pos--;
   }
 
+#ifndef FIXMATH_NO_ROUNDING
+  // Частное всегда положительно, поэтому округление выполняется легко
+  quotient++;
+#endif
+
   fix16_t result = quotient >> 1;
 
   // Figure out the sign of the result
@@ -206,27 +225,27 @@ fix16_t fix16_mod(fix16_t x, fix16_t y)
 
 fix16_t fix16_lerp8(fix16_t inArg0, fix16_t inArg1, uint8_t inFract)
 {
-  int64_t tempOut = int64_mul_i32_i32(inArg0, (((int32_t)1 << 8) - inFract));
-  tempOut = int64_add(tempOut, int64_mul_i32_i32(inArg1, inFract));
-  tempOut = int64_shift(tempOut, -8);
-  return (fix16_t)int64_lo(tempOut);
+  int64_t tempOut = (int64_t)inArg0 * (((int32_t)1 << 8) - inFract);
+  tempOut = tempOut + (int64_t)inArg1 * inFract;
+  tempOut = tempOut >> 8;
+  return (fix16_t)tempOut;
 }
 
 fix16_t fix16_lerp16(fix16_t inArg0, fix16_t inArg1, uint16_t inFract)
 {
-  int64_t tempOut = int64_mul_i32_i32(inArg0, (((int32_t)1 << 16) - inFract));
-  tempOut = int64_add(tempOut, int64_mul_i32_i32(inArg1, inFract));
-  tempOut = int64_shift(tempOut, -16);
-  return (fix16_t)int64_lo(tempOut);
+  int64_t tempOut = (int64_t)inArg0 * (((int32_t)1 << 16) - inFract);
+  tempOut = tempOut + (int64_t)inArg1 * inFract;
+  tempOut = tempOut >> 16;
+  return (fix16_t)tempOut;
 }
 
 fix16_t fix16_lerp32(fix16_t inArg0, fix16_t inArg1, uint32_t inFract)
 {
   if (inFract == 0)
     return inArg0;
-  int64_t inFract64 = int64_const(0, inFract);
-  int64_t subbed = int64_sub(int64_const(1, 0), inFract64);
-  int64_t tempOut = int64_mul_i64_i32(subbed, inArg0);
-  tempOut = int64_add(tempOut, int64_mul_i64_i32(inFract64, inArg1));
-  return int64_hi(tempOut);
+  int64_t inFract64 = inFract;
+  int64_t subbed = ((int64_t)1 << 32) - inFract64;
+  int64_t tempOut = subbed * inArg0;
+  tempOut = tempOut + inFract64 * inArg1;
+  return (fix16_t)(tempOut >> 32);
 }

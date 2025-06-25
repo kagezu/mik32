@@ -82,7 +82,12 @@ fix16_t fix16_log(fix16_t inValue)
 
 static inline fix16_t fix16_rs(fix16_t x)
 {
+#ifdef FIXMATH_NO_ROUNDING
   return (x >> 1);
+#else
+  fix16_t y = (x >> 1) + (x & 1);
+  return y;
+#endif
 }
 
 /**
@@ -111,6 +116,11 @@ static fix16_t fix16__log2_inner(fix16_t x)
       x = fix16_rs(x);
     }
   }
+
+#ifndef FIXMATH_NO_ROUNDING
+  x = fix16_mul(x, x);
+  if (x >= fix16_from_int(2)) result++;
+#endif
 
   return result;
 }
