@@ -65,12 +65,5 @@ fix16_t fix16_sqrt(fix16_t inValue)
     }
   }
 
-#ifndef FIXMATH_NO_ROUNDING
-  // Наконец, если бы следующий бит был 1, округлить результат в большую сторону.
-  if (num > result) {
-    result++;
-  }
-#endif
-
   return (neg ? -(fix16_t)result : (fix16_t)result);
 }

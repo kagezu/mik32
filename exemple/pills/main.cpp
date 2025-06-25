@@ -12,7 +12,7 @@ uint32_t rnd()
 }
 
 #define RADIUS  5
-#define COUNT   25
+#define COUNT   8
 #define X       0
 #define Y       1
 #define VX      2

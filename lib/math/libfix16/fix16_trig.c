@@ -3,14 +3,6 @@
 
 #if defined(FIXMATH_SIN_LUT)
 #include "fix16_trig_sin_lut.h"
-#elif !defined(FIXMATH_NO_CACHE)
-static fix16_t _fix16_sin_cache_index[4096] = { 0 };
-static fix16_t _fix16_sin_cache_value[4096] = { 0 };
-#endif
-
-#ifndef FIXMATH_NO_CACHE
-static fix16_t _fix16_atan_cache_index[2][4096] = { { 0 }, { 0 } };
-static fix16_t _fix16_atan_cache_value[4096] = { 0 };
 #endif
 
 
@@ -73,38 +65,14 @@ fix16_t fix16_sin(fix16_t inAngle)
   else if (tempAngle < -fix16_pi)
     tempAngle += (fix16_pi << 1);
 
-#ifndef FIXMATH_NO_CACHE
-  fix16_t tempIndex = ((inAngle >> 5) & 0x00000FFF);
-  if (_fix16_sin_cache_index[tempIndex] == inAngle)
-    return _fix16_sin_cache_value[tempIndex];
-#endif
-
   fix16_t tempAngleSq = fix16_mul(tempAngle, tempAngle);
 
-#ifndef FIXMATH_FAST_SIN // Самая точная версия, точность ~2,1%
-  fix16_t tempOut = tempAngle;
-  tempAngle = fix16_mul(tempAngle, tempAngleSq);
-  tempOut -= (tempAngle / 6);
-  tempAngle = fix16_mul(tempAngle, tempAngleSq);
-  tempOut += (tempAngle / 120);
-  tempAngle = fix16_mul(tempAngle, tempAngleSq);
-  tempOut -= (tempAngle / 5040);
-  tempAngle = fix16_mul(tempAngle, tempAngleSq);
-  tempOut += (tempAngle / 362880);
-  tempAngle = fix16_mul(tempAngle, tempAngleSq);
-  tempOut -= (tempAngle / 39916800);
-#else // Быстрая реализация, работает на 159% быстрее, чем указанная выше «точная» версия, с немного меньшей точностью ~2,3%
   fix16_t tempOut;
   tempOut = fix16_mul(-13, tempAngleSq) + 546;
   tempOut = fix16_mul(tempOut, tempAngleSq) - 10923;
   tempOut = fix16_mul(tempOut, tempAngleSq) + 65536;
   tempOut = fix16_mul(tempOut, tempAngle);
-#endif
 
-#ifndef FIXMATH_NO_CACHE
-  _fix16_sin_cache_index[tempIndex] = inAngle;
-  _fix16_sin_cache_value[tempIndex] = tempOut;
-#endif
 #endif
 
   return tempOut;
@@ -146,14 +114,6 @@ fix16_t fix16_atan2(fix16_t inY, fix16_t inX)
 {
   fix16_t abs_inY, mask, angle, r, r_3;
 
-#ifndef FIXMATH_NO_CACHE
-  uintptr_t hash = (inX ^ inY);
-  hash ^= hash >> 20;
-  hash &= 0x0FFF;
-  if ((_fix16_atan_cache_index[0][hash] == inX) && (_fix16_atan_cache_index[1][hash] == inY))
-    return _fix16_atan_cache_value[hash];
-#endif
-
   /* Absolute inY */
   mask = (inY >> (sizeof(fix16_t) * CHAR_BIT - 1));
   abs_inY = (inY + mask) ^ mask;
@@ -173,12 +133,6 @@ fix16_t fix16_atan2(fix16_t inY, fix16_t inX)
   if (inY < 0) {
     angle = -angle;
   }
-
-#ifndef FIXMATH_NO_CACHE
-  _fix16_atan_cache_index[0][hash] = inX;
-  _fix16_atan_cache_index[1][hash] = inY;
-  _fix16_atan_cache_value[hash] = angle;
-#endif
 
   return angle;
 }

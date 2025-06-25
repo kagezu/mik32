@@ -1,10 +1,6 @@
 #include "fix16.h"
 #include <stdbool.h>
 
-#ifndef FIXMATH_NO_CACHE
-static fix16_t _fix16_exp_cache_index[4096] = { 0 };
-static fix16_t _fix16_exp_cache_value[4096] = { 0 };
-#endif
 
 fix16_t fix16_exp(fix16_t inValue)
 {
@@ -12,12 +8,6 @@ fix16_t fix16_exp(fix16_t inValue)
   if (inValue == fix16_one) return fix16_e;
   if (inValue >= 681391) return fix16_maximum;
   if (inValue <= -772243) return 0;
-
-#ifndef FIXMATH_NO_CACHE
-  fix16_t tempIndex = (inValue ^ (inValue >> 4)) & 0x0FFF;
-  if (_fix16_exp_cache_index[tempIndex] == inValue)
-    return _fix16_exp_cache_value[tempIndex];
-#endif
 
   /* Алгоритм основан на степенном ряде для exp(x):
  * http://en.wikipedia.org/wiki/Exponential_function#Formal_definition
@@ -44,11 +34,6 @@ fix16_t fix16_exp(fix16_t inValue)
   }
 
   if (neg) result = fix16_div(fix16_one, result);
-
-#ifndef FIXMATH_NO_CACHE
-  _fix16_exp_cache_index[tempIndex] = inValue;
-  _fix16_exp_cache_value[tempIndex] = result;
-#endif
 
   return result;
 }
@@ -95,16 +80,9 @@ fix16_t fix16_log(fix16_t inValue)
   return guess + fix16_from_int(scaling);
 }
 
-
-
 static inline fix16_t fix16_rs(fix16_t x)
 {
-#ifdef FIXMATH_NO_ROUNDING
   return (x >> 1);
-#else
-  fix16_t y = (x >> 1) + (x & 1);
-  return y;
-#endif
 }
 
 /**
@@ -133,15 +111,9 @@ static fix16_t fix16__log2_inner(fix16_t x)
       x = fix16_rs(x);
     }
   }
-#ifndef FIXMATH_NO_ROUNDING
-  x = fix16_mul(x, x);
-  if (x >= fix16_from_int(2)) result++;
-#endif
 
   return result;
 }
-
-
 
 /**
 * вычисляет логарифм по основанию 2 входных данных.

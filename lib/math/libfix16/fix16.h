@@ -6,28 +6,6 @@ extern "C"
 {
 #endif
 
-  /* Эти параметры могут позволить оптимизатору удалить некоторые вызовы функций.
-  * См. http://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html
-  */
-#ifndef FIXMATH_FUNC_ATTRS
-# ifdef __GNUC__
-#   if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 6)
-#     define FIXMATH_FUNC_ATTRS __attribute__((leaf, nothrow, const))
-#   else
-#     define FIXMATH_FUNC_ATTRS __attribute__((nothrow, const))
-#   endif
-# else
-#   define FIXMATH_FUNC_ATTRS
-# endif
-#endif
-
-  /* Автоматически определить FIXMATH_NO_HARD_DIVISION для поддержания обратной
-  совместимости с использованием FIXMATH_OPTIMIZE_8BIT.
-  */
-#if defined(FIXMATH_OPTIMIZE_8BIT)
-#  define FIXMATH_NO_HARD_DIVISION
-#endif
-
 #include <stdint.h>
 
   typedef int32_t fix16_t;
@@ -56,31 +34,18 @@ extern "C"
 
   static inline int fix16_to_int(fix16_t a)
   {
-  #ifdef FIXMATH_NO_ROUNDING
     return (a >> 16);
-  #else
-    if (a >= 0)
-      return (a + (fix16_one >> 1)) / fix16_one;
-    return (a - (fix16_one >> 1)) / fix16_one;
-  #endif
   }
 
   static inline fix16_t fix16_from_float(float a)
   {
     float temp = a * fix16_one;
-  #ifndef FIXMATH_NO_ROUNDING
-    temp += (temp >= 0) ? 0.5f : -0.5f;
-  #endif
     return (fix16_t)temp;
   }
 
   static inline fix16_t fix16_from_dbl(double a)
   {
     double temp = a * fix16_one;
-    /* F16() и F16C() всегда округляют, так что и это должно быть так же */
-//#ifndef FIXMATH_NO_ROUNDING
-    temp += (double)((temp >= 0) ? 0.5f : -0.5f);
-    //#endif
     return (fix16_t)temp;
   }
 
@@ -93,7 +58,7 @@ extern "C"
   вы должны использовать это только для константных значений. Для преобразований во время выполнения
   используйте функции выше.
   */
-#define F16(x) ((fix16_t)(((x) >= 0) ? ((x) * 65536.0 + 0.5) : ((x) * 65536.0 - 0.5)))
+#define F16(x) ((fix16_t)(((x) >= 0) ? (x) * 65536.0 : (x) * 65536.0))
 
   static inline fix16_t fix16_abs(fix16_t x)
   {
@@ -128,78 +93,78 @@ extern "C"
 
 #else
 
-  extern fix16_t fix16_add(fix16_t a, fix16_t b) FIXMATH_FUNC_ATTRS;
-  extern fix16_t fix16_sub(fix16_t a, fix16_t b) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_add(fix16_t a, fix16_t b);
+  extern fix16_t fix16_sub(fix16_t a, fix16_t b);
 
   /* Saturating arithmetic */
-  extern fix16_t fix16_sadd(fix16_t a, fix16_t b) FIXMATH_FUNC_ATTRS;
-  extern fix16_t fix16_ssub(fix16_t a, fix16_t b) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_sadd(fix16_t a, fix16_t b);
+  extern fix16_t fix16_ssub(fix16_t a, fix16_t b);
 
 #endif
 
   /*! Умножает два заданных fix16_t и возвращает результат.
- */
-  extern fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1) FIXMATH_FUNC_ATTRS;
+  */
+  extern fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1);
 
   /*! Делит первый заданный fix16_t на второй и возвращает результат.
   */
-  extern fix16_t fix16_div(fix16_t inArg0, fix16_t inArg1) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_div(fix16_t inArg0, fix16_t inArg1);
 
 #ifndef FIXMATH_NO_OVERFLOW
   /*! Выполняет насыщенное умножение (с защитой от переполнения) двух заданных fix16_t и возвращает результат.
   */
-  extern fix16_t fix16_smul(fix16_t inArg0, fix16_t inArg1) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_smul(fix16_t inArg0, fix16_t inArg1);
 
   /*! Выполняет насыщенное деление (с защитой от переполнения) первого fix16_t на второй и возвращает результат.
   */
-  extern fix16_t fix16_sdiv(fix16_t inArg0, fix16_t inArg1) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_sdiv(fix16_t inArg0, fix16_t inArg1);
 #endif
 
   /*! Делит первый заданный fix16_t на второй и возвращает результат.
   */
-  extern fix16_t fix16_mod(fix16_t x, fix16_t y) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_mod(fix16_t x, fix16_t y);
 
 
 
   /*! Возвращает линейную интерполяцию: (inArg0 * (1 - inFract)) + (inArg1 * inFract)
   */
-  extern fix16_t fix16_lerp8(fix16_t inArg0, fix16_t inArg1, uint8_t inFract) FIXMATH_FUNC_ATTRS;
-  extern fix16_t fix16_lerp16(fix16_t inArg0, fix16_t inArg1, uint16_t inFract) FIXMATH_FUNC_ATTRS;
-  extern fix16_t fix16_lerp32(fix16_t inArg0, fix16_t inArg1, uint32_t inFract) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_lerp8(fix16_t inArg0, fix16_t inArg1, uint8_t inFract);
+  extern fix16_t fix16_lerp16(fix16_t inArg0, fix16_t inArg1, uint16_t inFract);
+  extern fix16_t fix16_lerp32(fix16_t inArg0, fix16_t inArg1, uint32_t inFract);
 
 
 
   /*! Returns the sine of the given fix16_t.
   */
-  extern fix16_t fix16_sin_parabola(fix16_t inAngle) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_sin_parabola(fix16_t inAngle);
 
   /*! Returns the sine of the given fix16_t.
   */
-  extern fix16_t fix16_sin(fix16_t inAngle) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_sin(fix16_t inAngle);
 
   /*! Returns the cosine of the given fix16_t.
   */
-  extern fix16_t fix16_cos(fix16_t inAngle) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_cos(fix16_t inAngle);
 
   /*! Returns the tangent of the given fix16_t.
   */
-  extern fix16_t fix16_tan(fix16_t inAngle) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_tan(fix16_t inAngle);
 
   /*! Returns the arcsine of the given fix16_t.
   */
-  extern fix16_t fix16_asin(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_asin(fix16_t inValue);
 
   /*! Returns the arccosine of the given fix16_t.
   */
-  extern fix16_t fix16_acos(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_acos(fix16_t inValue);
 
   /*! Returns the arctangent of the given fix16_t.
   */
-  extern fix16_t fix16_atan(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_atan(fix16_t inValue);
 
   /*! Returns the arctangent of inY/inX.
   */
-  extern fix16_t fix16_atan2(fix16_t inY, fix16_t inX) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_atan2(fix16_t inY, fix16_t inX);
 
   static const fix16_t fix16_rad_to_deg_mult = 3754936;
   static inline fix16_t fix16_rad_to_deg(fix16_t radians)
@@ -217,7 +182,7 @@ extern "C"
 
   /*! Returns the square root of the given fix16_t.
   */
-  extern fix16_t fix16_sqrt(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_sqrt(fix16_t inValue);
 
   /*! Returns the square of the given fix16_t.
   */
@@ -228,19 +193,19 @@ extern "C"
 
   /*! Returns the exponent (e^) of the given fix16_t.
   */
-  extern fix16_t fix16_exp(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_exp(fix16_t inValue);
 
   /*! Returns the natural logarithm of the given fix16_t.
    */
-  extern fix16_t fix16_log(fix16_t inValue) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_log(fix16_t inValue);
 
   /*! Returns the base 2 logarithm of the given fix16_t.
    */
-  extern fix16_t fix16_log2(fix16_t x) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_log2(fix16_t x);
 
   /*! Returns the saturated base 2 logarithm of the given fix16_t.
    */
-  extern fix16_t fix16_slog2(fix16_t x) FIXMATH_FUNC_ATTRS;
+  extern fix16_t fix16_slog2(fix16_t x);
 
   /*! Преобразовать значение fix16_t в строку.
   * Требуемая длина буфера для самых больших значений — 13 байт.
@@ -351,7 +316,6 @@ extern "C"
 
 #ifdef __cplusplus
 }
-#include "fix16.hpp"
 #endif
 
 #endif
