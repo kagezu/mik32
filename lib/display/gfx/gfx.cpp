@@ -150,28 +150,27 @@ void GFX::circle_fat(int16_t x, int16_t y, int16_t radius)
 
 void GFX::circle_fill(int16_t x, int16_t y, int16_t radius)
 {
-  radius++;
   int16_t f = 1 - radius;
-  uint16_t ddF_x = 1;
+  int16_t ddF_x = 1;
   int16_t ddF_y = -2 * radius;
-  uint16_t dx = 0;
-  uint16_t dy = radius;
+  int16_t dx = 0;
+  int16_t dy = radius;
 
-  w_line(x - radius + 1, y, x + radius - 1);
+  w_line(x - radius, y, x + radius);
   while (dx < dy) {
     if (f >= 0) {
       dy--;
       ddF_y += 2;
       f += ddF_y;
-      w_line(x - dx + 1, y + dy, x + dx - 1);
-      w_line(x - dx + 1, y - dy, x + dx - 1);
     }
     dx++;
     ddF_x += 2;
     f += ddF_x;
 
-    w_line(x - dy + 1, y + dx, x + dy - 1);
-    w_line(x - dy + 1, y - dx, x + dy - 1);
+    w_line(x - dx, y - dy, x + dx);
+    w_line(x - dy, y - dx, x + dy);
+    w_line(x - dx, y + dy, x + dx);
+    w_line(x - dy, y + dx, x + dy);
   }
 }
 

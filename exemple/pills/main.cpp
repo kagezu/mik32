@@ -3,10 +3,12 @@
 #include "timer.h"
 #include "fixmath.h"
 
-#define RADIUS  8
-#define TOP     15
+#define TOP     0
 #define BOTTOM  18
-#define COUNT   8
+
+#define RADIUS  7
+#define COUNT   6
+
 #define X       0
 #define Y       1
 #define VX      2
@@ -47,12 +49,6 @@ int main(void)
     colors[i] = rnd();
   }
 
-  Fix16 fixV = 0L;
-  for (int i = 0; i < COUNT; i++) {
-    fixV += fix16_mul(balls[i][VX], balls[i][VX]);
-    fixV += fix16_mul(balls[i][VY], balls[i][VY]);
-  }
-
   // Квадрат минимального расстояния между шарами
   Fix16 D2 = (int16_t)(RADIUS * RADIUS * 4);
 
@@ -80,12 +76,12 @@ loop:
     lcd.color(colors[i]);
     lcd.circle_fill(X0, Y0, RADIUS);
 
-    // Отражение от стенок, дополнено проверяется,
+    // Отражение от стенок: дополнено проверяется,
     // что действительно происходит сближение, а не отскок
-    if (X0 > (int16_t)(view.max_x - RADIUS) && VX0 > 0L) VX0 = -VX0;
-    if (X0 < (int16_t)(view.min_x + RADIUS) && VX0 < 0L) VX0 = -VX0;
-    if (Y0 > (int16_t)(view.max_y - RADIUS) && VY0 > 0L) VY0 = -VY0;
-    if (Y0 < (int16_t)(view.min_y + RADIUS) && VY0 < 0L) VY0 = -VY0;
+    if (X0 > (int16_t)(view.max_x - RADIUS) && VX0 > (int16_t)0) VX0 = -VX0;
+    if (X0 < (int16_t)(view.min_x + RADIUS) && VX0 < (int16_t)0) VX0 = -VX0;
+    if (Y0 > (int16_t)(view.max_y - RADIUS) && VY0 > (int16_t)0) VY0 = -VY0;
+    if (Y0 < (int16_t)(view.min_y + RADIUS) && VY0 < (int16_t)0) VY0 = -VY0;
 
     // Соударения между объектами
     for (int j = i + 1; j < COUNT; j++) {
@@ -96,25 +92,33 @@ loop:
       Fix16 &VX1 = balls[j][VX];
       Fix16 &VY1 = balls[j][VY];
 
-      // Достаточно проверить квадрат расстояния
+      // Проверяем квадрат расстояния, чтобы не вычислять корень
       Fix16 DX = X1 - X0;
       Fix16 DY = Y1 - Y0;
       Fix16 S2 = DX * DX + DY * DY;
+
       // Слишком далеко: удар не происходит
       if (S2 > D2) continue;
 
-      // Извлекаем корень, только для сблизившихся объектов
-      Fix16 S = S2.sqrt();
+      // Защита от больших погрешностей или переполнения
+      if (S2 < 0.001) continue;
+
       // Проекции скоростей на прямую проходящею через центры масс
-      Fix16 V0 = (VX0 * DX + VY0 * DY) / S;
-      Fix16 V1 = (VX1 * DX + VY1 * DY) / S;
-      // Вычисляем скорость сближения
+      // Делим сразу на квадрат расстояния, для
+      // экономии на извлечении корня и 2м делении
+      Fix16 V0 = (VX0 * DX + VY0 * DY) / S2;
+      Fix16 V1 = (VX1 * DX + VY1 * DY) / S2;
+
+      // Вычисляем скорость сближения (делённую на расстояние)
       Fix16 DV = V1 - V0;
-      // Проверка на сближение, чтобы объекты не прилипали
-      if (DV > 0L) continue;
+
+      // Проверка на сближение
+      if (DV > (int16_t)0) continue;
+
       // Находим проекции скоростей сближения на оси координат
-      Fix16 DVX = DV * DX / S;
-      Fix16 DVY = DV * DY / S;
+      // На расстояние мы уже разделили, поэтому тут просто умножение
+      Fix16 DVX = DV * DX;
+      Fix16 DVY = DV * DY;
 
       // Изменяем скорости сближения, на скорости удаления
       VX0 += DVX;
@@ -122,21 +126,13 @@ loop:
       VX1 -= DVX;
       VY1 -= DVY;
     }
-
-  }
-
-  Fix16 sumV = (int16_t)0;
-  for (int i = 0; i < COUNT; i++) {
-    sumV += fix16_mul(balls[i][VX], balls[i][VX]);
-    sumV += fix16_mul(balls[i][VY], balls[i][VY]);
   }
 
   uint16_t fps = (F_CPU * 10) / T32_0;
   lcd.color(Aquamarine);
   lcd.viewport();
   lcd.at(10, lcd.max_y() - lcd.get_height());
-  lcd.printf("FPS: %u.%u ", fps / 10, fps - (fps / 10) * 10);
-  lcd.printf("\fError : %ld  ", fixV.value - sumV.value);
-
+  lcd.printf(P("FPS: %u.%u "), fps / 10, fps - (fps / 10) * 10);
+  delay_ms(50);
   goto loop;
 }

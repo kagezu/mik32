@@ -17,14 +17,14 @@ extern "C"
 
   // Не использовать: Проверка на переполнение и возврат констант переполнения.
   // Использовать: Не проверять на переполнение.
-  // #define FIXMATH_NO_OVERFLOW
+#define FIXMATH_NO_OVERFLOW
 
-  // Не использовать: Использовать округление.
-  // Использовать: Не использовать округление.
-  // #define FIXMATH_NO_ROUNDING
+// Не использовать: Использовать округление.
+// Использовать: Не использовать округление.
+// #define FIXMATH_NO_ROUNDING
 
 
-  // #define FIXMATH_SIN_LUT
+// #define FIXMATH_SIN_LUT
 
 
 #include "libfix16/uint32.h"

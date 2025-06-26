@@ -8,7 +8,7 @@
 // Типы
 
 typedef uint8_t reg;
-typedef uint16_t adr;
+typedef uint16_t addr;
 
 // Прочее
 

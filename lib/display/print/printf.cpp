@@ -63,8 +63,11 @@ void PrintF::print(char *string, reg algin)
 {
   reg flag = algin & LEFT_ALGIN;
   reg count = algin - flag - (reg)strlen(string);
-  // count = count > LEFT_ALGIN ? 0 : count;
+#ifdef __AVR__
+  count = count > LEFT_ALGIN ? 0 : count;
+#else
   count = count < 0 ? 0 : count;
+#endif
   if (!flag) while (count--)putc(' ');
   while (char ch = *string++) putc(ch);
   if (flag) while (count--)putc(' ');

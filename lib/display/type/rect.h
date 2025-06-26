@@ -3,35 +3,19 @@
 
 class Rect {
 public:
-  union {
-    uint32_t X;
-    struct {
-      int16_t max_x;
-      int16_t min_x;
-    };
-  };
 
-  union {
-    uint32_t Y;
-    struct {
-      int16_t max_y;
-      int16_t min_y;
-    };
-  };
+  int16_t min_x;
+  int16_t min_y;
+  int16_t max_x;
+  int16_t max_y;
 
-  union {
-    uint32_t Z;
-    struct {
-      int16_t width;
-      int16_t height;
-    };
-  };
-
+  int16_t width;
+  int16_t height;
 
 public:
-  Rect() : X(0), Y(0), width(0), height(0) {}
-  Rect(int16_t x, int16_t y) : X(x), Y(y), width(x + 1), height(y + 1) {}
-  Rect(int16_t x0, int16_t y0, int16_t x1, int16_t y1) : X((x0 << 16) | x1), Y((y0 << 16) | y1), width(x1 - x0 + 1), height(y1 - y0 + 1)
+  Rect() :min_x(0), min_y(0), max_x(0), max_y(0), width(1), height(1) {}
+  Rect(int16_t x, int16_t y) : min_x(0), min_y(0), max_x(x), max_y(y), width(x + 1), height(y + 1) {}
+  Rect(int16_t x0, int16_t y0, int16_t x1, int16_t y1) : min_x(x0), min_y(y0), max_x(x1), max_y(y1), width(x1 - x0 + 1), height(y1 - y0 + 1)
   {}
 
 
