@@ -40,10 +40,10 @@ public:
   }
 
 
-  GCC_INLINE void single() { ANALOG_REG->ADC_SINGLE = 1; }
-  GCC_INLINE void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
-  GCC_INLINE void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
-  GCC_INLINE void wait() { while (!(ANALOG_REG->ADC_VALID)); }
+  ATTR_INLINE void single() { ANALOG_REG->ADC_SINGLE = 1; }
+  ATTR_INLINE void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
+  ATTR_INLINE void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
+  ATTR_INLINE void wait() { while (!(ANALOG_REG->ADC_VALID)); }
 
-  GCC_INLINE uint16_t value() { return ANALOG_REG->ADC_VALUE; }
+  ATTR_INLINE uint16_t value() { return ANALOG_REG->ADC_VALUE; }
 };

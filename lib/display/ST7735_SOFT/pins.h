@@ -28,11 +28,17 @@
 #endif
 
 #ifdef MIK32V2
-#define ST_SOFT_SCK(x)     x ( 1, 5 )     // A0
-#define ST_SOFT_SDA(x)     x ( 1, 7 )     // A1
-#define ST_SOFT_RS(x)      x ( 0, 4 )     // A2
-#define ST_SOFT_RST(x)     x ( 0, 7 )     // A3
-#define ST_SOFT_CS(x)      x ( 0, 9 )     // A4
+// #define ST_SOFT_SCK(x)     x ( 1, 5 )     // A0
+// #define ST_SOFT_SDA(x)     x ( 1, 7 )     // A1
+// #define ST_SOFT_RS(x)      x ( 0, 4 )     // A2
+// #define ST_SOFT_RST(x)     x ( 0, 7 )     // A3
+// #define ST_SOFT_CS(x)      x ( 0, 9 )     // A4
+
+#define ST_SOFT_SCK(x)     x ( 1, 2 )
+#define ST_SOFT_SDA(x)     x ( 1, 1 )
+#define ST_SOFT_RS(x)      x ( 0, 9 )
+#define ST_SOFT_RST(x)     x ( 2, 15)
+#define ST_SOFT_CS(x)      x ( 1, 15)
 #endif
 
 #endif

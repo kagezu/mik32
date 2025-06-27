@@ -6,8 +6,8 @@
 #define TOP     0
 #define BOTTOM  18
 
-#define RADIUS  7
-#define COUNT   6
+#define RADIUS  5
+#define COUNT   20
 
 #define X       0
 #define Y       1
@@ -33,9 +33,7 @@ int main(void)
   T32_0_C;
 
   lcd.init();
-  lcd.background(Black);
   lcd.color(Blue);
-  lcd.clear();
   // lcd.font(sans_24, 0, 0);
   lcd.font(arial_14, 1, 0);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
@@ -128,11 +126,12 @@ loop:
     }
   }
 
+
   uint16_t fps = (F_CPU * 10) / T32_0;
   lcd.color(Aquamarine);
   lcd.viewport();
   lcd.at(10, lcd.max_y() - lcd.get_height());
   lcd.printf(P("FPS: %u.%u "), fps / 10, fps - (fps / 10) * 10);
-  delay_ms(50);
+
   goto loop;
 }

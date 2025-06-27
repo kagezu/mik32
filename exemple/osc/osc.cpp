@@ -185,15 +185,15 @@ void encode(void (*delta)(reg))
   static reg count = 2, c1 = 0, c2 = 0;
   static bool a0, b0;
 
-  // подтянуты ли контакты A и B ?
+  // состояние контактов A и B ?
   bool a = (bool)ENCODER_A(GET);
   bool b = (bool)ENCODER_B(GET);
 
-  // если положение контакта A изменилось и оно такое как B
+  // если состояние контакта A изменилось и оно такое как B
   // то попорот по часовой, иначе против
   if (a != a0) count += a ^ b ? -1 : 1;
 
-  // если положение контакта B изменилось и оно не такое как A
+  // если состояние контакта B изменилось и оно не такое как A
   // то попорот по часовой, иначе против
   if (b != b0) count += a ^ b ? 1 : -1;
 
@@ -210,9 +210,11 @@ void encode(void (*delta)(reg))
 
 inline void next(reg d) { menu.next(d); }
 
-extern "C" __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
-{
-  encode(next);
-  T32_0_FC;
-  EPIC_C;
+extern "C" {
+  __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
+  {
+    encode(next);
+    T32_0_FC;
+    EPIC_C;
+  }
 }

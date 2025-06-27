@@ -43,11 +43,11 @@ public:
     return value();
   }
 
-  GCC_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
-  GCC_INLINE void single() { ADCSRA |= _BV(ADSC); }
-  GCC_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
-  GCC_INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
-  GCC_INLINE void wait() { while (!(ADCSRA & _BV(ADIF))); }
+  ATTR_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
+  ATTR_INLINE void single() { ADCSRA |= _BV(ADSC); }
+  ATTR_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
+  ATTR_INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
+  ATTR_INLINE void wait() { while (!(ADCSRA & _BV(ADIF))); }
 
 #if ADC_ADLAR
   uint8_t value() { return ADCH; }

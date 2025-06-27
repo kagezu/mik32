@@ -12,6 +12,7 @@ class Display : public Driver, public PrintF, public GFX {
 
 public:
   void init()
+    // Display()
   {
     Driver::init(R);
     color(0xffffff);
@@ -58,17 +59,17 @@ private:
 public:
   using Driver::area;
 
-  GCC_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
-  GCC_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
+  ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
+  ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
 
-  GCC_INLINE inline void color(C c) { _color = c; }
-  GCC_INLINE inline void background(C b) { _background = b; }
-  GCC_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
-  GCC_INLINE inline void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
-  GCC_INLINE inline void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
-  GCC_INLINE inline void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
-  GCC_INLINE inline void viewport(Rect *view) { _viewport = view; }
-  GCC_INLINE inline void viewport() { _viewport = &_didplay; }
+  ATTR_INLINE inline void color(C c) { _color = c; }
+  ATTR_INLINE inline void background(C b) { _background = b; }
+  ATTR_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
+  ATTR_INLINE inline void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
+  ATTR_INLINE inline void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
+  ATTR_INLINE inline void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
+  ATTR_INLINE inline void viewport(Rect *view) { _viewport = view; }
+  ATTR_INLINE inline void viewport() { _viewport = &_didplay; }
 
   void fill(int16_t x, int16_t y, int16_t x1, int16_t y1)
   {
@@ -126,13 +127,13 @@ public:
     set_interval(w);
   }
 
-  GCC_INLINE inline void at(uint16_t x, uint16_t y) { point_x = _viewport->min_x + x; point_y = _viewport->min_y + y; }
-  GCC_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
-  GCC_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
-  GCC_INLINE inline uint8_t get_height() { return _interline; }
-  GCC_INLINE inline uint8_t get_weight() { return _font.weight + _interval; }
+  ATTR_INLINE inline void at(uint16_t x, uint16_t y) { point_x = _viewport->min_x + x; point_y = _viewport->min_y + y; }
+  ATTR_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
+  ATTR_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
+  ATTR_INLINE inline uint8_t get_height() { return _interline; }
+  ATTR_INLINE inline uint8_t get_weight() { return _font.weight + _interval; }
 
-  GCC_NO_INLINE void putc(uint8_t ch)
+  ATTR_NOINLINE void putc(uint8_t ch)
   {
     switch ((uint8_t)ch) {
       // Символ в русской кодировке, пропускаем префикс
@@ -247,6 +248,7 @@ public:
         xx += x;
 
         send_rgb(C(r, g, b));
+        // send_rgb(r, g, b);
       }
       yy += y;
     }

@@ -17,7 +17,6 @@
 #define SPI_MISO(x)   x (B, PB3)
 #endif
 
-
 #define SPI_MASTER    _BV(MSTR)
 #define SPI_SLAVE     0x00
 
@@ -38,15 +37,18 @@
 
 #define SPI_INTERRUPT _BV(SPIE)
 
-class SPI_Settings {
+class SPIConf {
 public:
-  void init(uint8_t mode = SPI_MSB | SPI_MODE0 | SPI_MASTER)
+  uint8_t spcr;
+  uint8_t spsr;
+
+  SPIConf()
   {
-    spcr = _BV(SPE) | mode;
-    fq();
+    spcr = _BV(SPE) | SPI_MASTER;
+    fq(0x4000);
   }
 
-  void fq(uint16_t fq = 0xffff)
+  void fq(uint16_t fq)
   {
     uint8_t sck = 0, spi2x = 0;
 
@@ -62,14 +64,14 @@ public:
     spsr = spi2x;
   }
 
+  void mode(uint8_t m) { spcr = (spcr & ~SPI_MODE3) | m; }
+  void master() { spcr |= SPI_MASTER; }
+  void slave() { spcr &= ~SPI_MASTER; }
+
   // заглушки
-  void thr(uint8_t x) {}
-
-private:
-  uint8_t spcr;
-  uint8_t spsr;
-
-  friend class SPI;
+  void thr(uint8_t) {}
+  void select_cs(uint8_t) {}
+  void delay(uint32_t) {}
 };
 
 class SPI {
@@ -83,7 +85,7 @@ public:
     SPI_SS(SET);
   }
 
-  void begin(SPI_Settings settings)
+  void begin(SPIConf settings)
   {
     if (!transaction) { sreg = SREG; cli(); transaction = 1; }
     SPCR = settings.spcr;
@@ -99,13 +101,13 @@ public:
 
   // Передача данных
 
-  GCC_INLINE void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
-  GCC_INLINE void wait_clr() { wait(); }
-  GCC_INLINE void wait_thr() { wait(); }
+  ATTR_INLINE void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
+  ATTR_INLINE void wait_idle() { wait(); }
+  ATTR_INLINE void wait_thr() { wait(); }
 
-  GCC_INLINE void send(uint8_t data) { SPDR = data; }
-  GCC_INLINE void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
-  GCC_INLINE uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
+  ATTR_INLINE void send(uint8_t data) { SPDR = data; }
+  ATTR_INLINE void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
+  ATTR_INLINE uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
 
   uint16_t transfer16(uint16_t data)
   {

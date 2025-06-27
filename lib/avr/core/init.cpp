@@ -1,7 +1,7 @@
 #include "avr.h"
 #include "macros/attribute.h"
 
-GCC_INIT(0)
+ATTR_INIT(0)
 {
 #ifdef __ATMmega328P__
   TCCR0B |= _BV(CS00); // Включить тактирование

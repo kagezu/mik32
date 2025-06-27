@@ -12,8 +12,8 @@ template<typename C = RGB32>
 class ILI9486_8 {
 public:
   // Разрешение дисплея
-  GCC_INLINE constexpr int16_t max_x() { return 319; }
-  GCC_INLINE constexpr int16_t max_y() { return 479; }
+  ATTR_INLINE constexpr int16_t max_x() { return 319; }
+  ATTR_INLINE constexpr int16_t max_y() { return 479; }
 
   void init(uint8_t position)
   {
@@ -154,15 +154,15 @@ protected:
         ILI_8_PORT(OUTPUT) = rgb.blue;
         ILI_8_WR(INV); ILI_8_WR(INV);
       #endif
-    }
+      }
 
     release();
-  }
+    }
 
 private:
   void set_rgb_format();
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
-};
+  };
 
 template<>
 void ILI9486_8<RGB16>::send_rgb(RGB16 color)

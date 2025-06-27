@@ -19,15 +19,18 @@ SECTIONS {
         *(.text.SystemInit)
         *(.text)
         *(.text.*)
+
+        PROVIDE(spifi_limit = . - 1);
+
         *(.rodata)
         *(.rodata.*)
         
-        # секции для вызова конструкторов, если код на плюсах и есть глобальные объекты,
-        # которые требуют вызов конструкторов
-        PROVIDE_HIDDEN ( __preinit_array_start = . );
-        KEEP (*(.preinit_array))
-        PROVIDE_HIDDEN ( __preinit_array_end = . );
+        #PROVIDE_HIDDEN ( __preinit_array_start = . );
+        #KEEP (*(.preinit_array))
+        #PROVIDE_HIDDEN ( __preinit_array_end = . );
 
+        # секции для вызова конструкторов, если код на плюсах и есть глобальные объекты,
+        # которые требуют вызов статических конструкторов
         PROVIDE_HIDDEN ( __init_array_start = . );
         KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
         KEEP (*(.init_array .ctors))

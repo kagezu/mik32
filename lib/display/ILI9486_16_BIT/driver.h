@@ -6,8 +6,8 @@ template<typename C = RGB16>
 class ILI9486_16 {
 public:
   // Разрешение дисплея
-  GCC_INLINE constexpr int16_t max_x() { return 319; }
-  GCC_INLINE constexpr int16_t max_y() { return 479; }
+  ATTR_INLINE constexpr int16_t max_x() { return 319; }
+  ATTR_INLINE constexpr int16_t max_y() { return 479; }
 
   void init(uint8_t position)
   {

@@ -59,7 +59,7 @@ _start:
     
     # Установка вектора прерывания
     # в зависимости от результата сборки
-    lui t0, %hi(2f)
+    lui t0, %hi(trap_handler)
     csrrw zero, mtvec, t0
 
     # Перенос кода и переменных в RAM
@@ -74,11 +74,23 @@ _start:
     memset a1, a2, zero
     
     jalr_abs ra, SystemInit
+
+    # Инициализация статических конструкторов
+    la_abs  s1, __init_array_start
+    la_abs  s2, __init_array_end
+.loop:
+    beq     s1, s2, .next
+    lw      a0, 0(s1)
+    addi    s1, s1, 4
+    jalr    a0
+    j       .loop
+.next:
+
     jalr_abs ra, main
 1:  wfi
     j 1b
 
-    
+
 // Действия перед main: по умолчанию отсутствуют
 // (SystemInit - может быть переопределена)
 SystemInit:
@@ -87,5 +99,5 @@ SystemInit:
 .section .trap_text, "ax"
 //.org 0xC0
 trap_handler:
-2:  j 2b
+    j trap_handler
 

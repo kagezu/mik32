@@ -16,7 +16,7 @@ RGB color[] = {
 };
 
 LCD lcd;
-// SPI spi;
+SPI spi;
 // ADC mic;
 
 #define FAT           4
@@ -98,10 +98,8 @@ void mic_view()
 
 */
 
-int main(void)
+ATTR_RAM int main(void)
 {
-  // _init();
-
   T32_0_PS;
   T32_0_E;
   T32_0_C;
@@ -110,7 +108,7 @@ int main(void)
   USER_B(IN);
 
 
-  // spi.init();
+  spi.init();
   lcd.init();
   lcd.background(RGB(32, 32, 32));
   lcd.color(RGB(64, 255, 64));

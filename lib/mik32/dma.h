@@ -28,10 +28,10 @@ public:
   void reset() { DMA_CH->CFG = 0; }
 
   // Ожидание завершения работы канала
-  void GCC_INLINE wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)) for (uint32_t i = 0; i < 100; i++); }
-  bool GCC_INLINE is_active() { return !(DMA_CONFIG->CONFIG_STATUS & dma_ready); }
+  void ATTR_INLINE wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)) for (uint32_t i = 0; i < 100; i++); }
+  bool ATTR_INLINE is_active() { return !(DMA_CONFIG->CONFIG_STATUS & dma_ready); }
   // Начать работу
-  void GCC_INLINE start() { DMA_CH->CFG = config; }
+  void ATTR_INLINE start() { DMA_CH->CFG = config; }
 
   // Установка данных
   void setup(void *dst, void *src, uint32_t len)

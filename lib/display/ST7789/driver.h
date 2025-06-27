@@ -9,8 +9,8 @@ template<typename C = RGB32>
 class ST7789 {
 public:
   // Разрешение дисплея
-  GCC_INLINE constexpr int16_t max_x() { return 239; }
-  GCC_INLINE constexpr int16_t max_y() { return 319; }
+  ATTR_INLINE constexpr int16_t max_x() { return 239; }
+  ATTR_INLINE constexpr int16_t max_y() { return 319; }
 
   void init(uint8_t position)
   {
@@ -146,10 +146,10 @@ protected:
         ST_8_PORT(OUTPUT) = color.blue;
         ST_8_WR(INV); ST_8_WR(INV);
       #endif
-    }
+      }
     release();
-  }
+    }
 
 private:
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
-};
+  };

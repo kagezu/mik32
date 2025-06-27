@@ -4,8 +4,7 @@ SECTIONS {
         PROVIDE(__TEXT_START__ = .);
         *crt0.o(.text .text.*)
         . = ORIGIN(REGION_TEXT) + 0xC0;
-        KEEP(*crt0.o(.trap_text))
-
+        KEEP (*(.trap_text))
         *(.small_ram_text)
         *(.ram_text)
         *(.text.SystemInit)
@@ -14,12 +13,12 @@ SECTIONS {
         *(.rodata)
         *(.rodata.*)
 
-        # секции для вызова конструкторов, если код на плюсах и есть глобальные объекты,
-        # которые требуют вызов конструкторов
-        PROVIDE_HIDDEN ( __preinit_array_start = . );
-        KEEP (*(.preinit_array))
-        PROVIDE_HIDDEN ( __preinit_array_end = . );
+        #PROVIDE_HIDDEN ( __preinit_array_start = . );
+        #KEEP (*(.preinit_array))
+        #PROVIDE_HIDDEN ( __preinit_array_end = . );
 
+        # секции для вызова конструкторов, если код на плюсах и есть глобальные объекты,
+        # которые требуют вызов статических конструкторов
         PROVIDE_HIDDEN ( __init_array_start = . );
         KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
         KEEP (*(.init_array .ctors))

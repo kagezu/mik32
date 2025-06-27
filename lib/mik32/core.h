@@ -1,8 +1,6 @@
 #pragma once
 #include "mik32.h"
 
-extern void _init();
-
 // ISR
 
 void sei();

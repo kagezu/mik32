@@ -33,22 +33,22 @@
 
 
 // Адаптация AVR -> MIK32
+#include "pinout.h"
 
 // Системная частота
-
 #define F_CPU   OSC_SYSTEM_VALUE
 
 // Доступ к байтам
+#define to_byte(w,x)  ((uint8_t)(w >> (x << 3)))
+#define to_dbyte(w,x)  ((uint16_t)(w >> (x << 4)))
 
-#define to_byte(w,x)  (((uint8_t *)&w)[x])
-#define to_word(w,x)  (((uint16_t *)&w)[x])
+// #define to_byte(w,x)  (((uint8_t *)&w)[x])
+// #define to_dbyte(w,x)  (((uint16_t *)&w)[x])
 
 // Типы
-
 typedef int32_t reg;
 typedef uint32_t addr;
 
-// #include "macros/pgmspace.h"
 #include "macros/attribute.h"
 #include "macros/gpio.h"
 

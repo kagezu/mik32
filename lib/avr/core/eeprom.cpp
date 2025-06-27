@@ -2,7 +2,7 @@
 #include "type/buffer.h"
 #include "macros/attribute.h"
 
-struct GCC_PACKED EEPROM_Frame {
+struct ATTR_PACKED EEPROM_Frame {
   uint16_t address;
   uint8_t value;
 };

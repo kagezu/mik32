@@ -36,9 +36,9 @@ public:
   void set_volume();
   uint8_t sum_vol(char vol_ch);
 
-  SPI_Settings _init;
-  SPI_Settings _read;
-  SPI_Settings _write;
+  SPIConf _init;
+  SPIConf _read;
+  SPIConf _write;
 
   uint8_t _vol_master;
   uint8_t _vol_left = 0;
