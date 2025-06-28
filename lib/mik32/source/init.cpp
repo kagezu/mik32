@@ -48,16 +48,16 @@ extern "C" {
     // PM->DIV_APB_P = 0;  // Задает значение делителя шины APB_P.
 
     // Включить тактирование модулей
-    // PM->CLK_AHB_SET = 0
-      // | PM_CLOCK_AHB_CPU_M
-      // | PM_CLOCK_AHB_EEPROM_M
-      // | PM_CLOCK_AHB_RAM_M
-      // | PM_CLOCK_AHB_SPIFI_M
+    PM->CLK_AHB_SET = 0
+      | PM_CLOCK_AHB_CPU_M
+      | PM_CLOCK_AHB_EEPROM_M
+      | PM_CLOCK_AHB_RAM_M
+      | PM_CLOCK_AHB_SPIFI_M
       // | PM_CLOCK_AHB_TCB_M
-      // | PM_CLOCK_AHB_DMA_M
+      | PM_CLOCK_AHB_DMA_M
       // | PM_CLOCK_AHB_CRYPTO_M
       // | PM_CLOCK_AHB_CRC32_M
-      // ;
+      ;
 
     // Отключить тактирование модулей
     // PM->CLK_AHB_CLEAR = 0
@@ -114,7 +114,7 @@ extern "C" {
       | PM_CLOCK_APB_P_GPIO_0_M
       | PM_CLOCK_APB_P_GPIO_1_M
       | PM_CLOCK_APB_P_GPIO_2_M
-      // | PM_CLOCK_APB_P_ANALOG_REGS_M
+      | PM_CLOCK_APB_P_ANALOG_REGS_M
       // | PM_CLOCK_APB_P_GPIO_IRQ_M
       ;
 

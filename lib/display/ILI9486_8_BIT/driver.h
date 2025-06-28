@@ -15,7 +15,7 @@ public:
   ATTR_INLINE constexpr int16_t max_x() { return 319; }
   ATTR_INLINE constexpr int16_t max_y() { return 479; }
 
-  void init(uint8_t position)
+  void init(uint8_t position = 0)
   {
   #ifdef MIK32V2
     ILI_8_RD(GPIO); ILI_8_WR(GPIO); ILI_8_RS(GPIO); ILI_8_CS(GPIO); ILI_8_RST(GPIO);
@@ -154,15 +154,15 @@ protected:
         ILI_8_PORT(OUTPUT) = rgb.blue;
         ILI_8_WR(INV); ILI_8_WR(INV);
       #endif
-      }
+    }
 
     release();
-    }
+  }
 
 private:
   void set_rgb_format();
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
-  };
+};
 
 template<>
 void ILI9486_8<RGB16>::send_rgb(RGB16 color)

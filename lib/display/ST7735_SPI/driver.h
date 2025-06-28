@@ -17,7 +17,7 @@ public:
   constexpr int16_t max_x() { return 127; }
   constexpr int16_t max_y() { return 159; }
 
-  void init(uint8_t position)
+  void init(uint8_t position = 0)
   {
     ST_SPI_RST(OUT); ST_SPI_RST(CLR);
     ST_SPI_CS(OUT); ST_SPI_CS(SET);

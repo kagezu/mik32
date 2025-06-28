@@ -9,7 +9,7 @@ public:
   ATTR_INLINE constexpr int16_t max_x() { return 127; }
   ATTR_INLINE constexpr int16_t max_y() { return 159; }
   
-  void init(uint8_t position)
+  void init(uint8_t position = 0)
   {
   ST_SOFT_SCK(GPIO); ST_SOFT_SDA(GPIO);ST_SOFT_RST(GPIO);ST_SOFT_CS(GPIO);ST_SOFT_RS(GPIO);
   ST_SOFT_SCK(OUT);ST_SOFT_SDA(OUT);ST_SOFT_RST(OUT);ST_SOFT_CS(OUT);ST_SOFT_RS(OUT);

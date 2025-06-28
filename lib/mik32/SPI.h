@@ -64,22 +64,7 @@ public:
 template<auto N>
 class SPI {
 public:
-  void wait() {}
-
-  // Очистить FIFO
-  ATTR_INLINE inline void clear_fifo() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
-  // Очистить чтением RX_FIFO
-  ATTR_INLINE inline void clear_rx() { while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPI_N->RXDATA; }
-  // Ждать TX_FIFO < TX_THR
-  ATTR_INLINE inline void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
-  // Ждать TX_FIFO < 8
-  ATTR_INLINE inline void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
-  // Ждать TX_FIFO = 0
-  ATTR_INLINE inline void wait_idle() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  ATTR_INLINE inline void send(uint8_t data) { SPI_N->TXDATA = data; }
-  ATTR_INLINE inline void send16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
-
-  void init()
+  SPI()
   {
     // Настройка порта ввода/вывода
     if (N == SPI_0_BASE_ADDRESS) {
@@ -97,6 +82,20 @@ public:
     SPI_N->TX_THR = SPI_TX_THR;             // Установка порога по умолчанию
   }
 
+  void wait() {}
+  // Очистить FIFO
+  ATTR_INLINE inline void clear_fifo() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  // Очистить чтением RX_FIFO
+  ATTR_INLINE inline void clear_rx() { while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPI_N->RXDATA; }
+  // Ждать TX_FIFO < TX_THR
+  ATTR_INLINE inline void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+  // Ждать TX_FIFO < 8
+  ATTR_INLINE inline void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
+  // Ждать TX_FIFO = 0
+  ATTR_INLINE inline void wait_idle() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
+  ATTR_INLINE inline void send(uint8_t data) { SPI_N->TXDATA = data; }
+  ATTR_INLINE inline void send16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
+
   void begin(SPIConf settings)
   {
     clear_fifo();
@@ -105,7 +104,7 @@ public:
     SPI_N->ENABLE = SPI_ENABLE_M;           // Включение модуля
   }
 
-  ATTR_INLINE inline void end() { wait_idle(); SPI_N->ENABLE = 0; }
+  ATTR_INLINE void end() { wait_idle(); SPI_N->ENABLE = 0; }
 
   uint8_t transfer(uint8_t data)
   {

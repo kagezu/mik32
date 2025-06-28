@@ -17,11 +17,10 @@
 
 class ADC {
 public:
-  // Частота в КГц
-  void init(uint8_t ch, uint8_t div = 1)
+  ADC(uint8_t ch, uint8_t div = 1)
   {
     DIDR0 |= _BV(ch);         // Отключить цифровой вход
-    ADMUX = ch                // Выборать канал
+    ADMUX = ch                // Выбрать канал
       | (ADC_ADLAR << ADLAR)  // Выравнивание 8/10 bit
       | (ADC_AVCC << REFS0);  // AREF = AVCC
     ADCSRA = (1 << ADEN)      // Включить
@@ -43,6 +42,7 @@ public:
     return value();
   }
 
+  ATTR_INLINE void delay(uint8_t div) { ADCSRA = (ADCSRA & ~(0x7 << ADPS0)) | (div << ADPS0); }
   ATTR_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
   ATTR_INLINE void single() { ADCSRA |= _BV(ADSC); }
   ATTR_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }

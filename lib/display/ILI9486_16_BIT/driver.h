@@ -9,7 +9,7 @@ public:
   ATTR_INLINE constexpr int16_t max_x() { return 319; }
   ATTR_INLINE constexpr int16_t max_y() { return 479; }
 
-  void init(uint8_t position)
+  void init(uint8_t position = 0)
   {
     // SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR);  // PORT 0.3 -> D9
     L_WR(GPIO); L_RS(GPIO); L_CS(GPIO);

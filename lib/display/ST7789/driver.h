@@ -12,10 +12,10 @@ public:
   ATTR_INLINE constexpr int16_t max_x() { return 239; }
   ATTR_INLINE constexpr int16_t max_y() { return 319; }
 
-  void init(uint8_t position)
+  void init(uint8_t position = 0)
   {
   #ifdef MIK32V2
-    ST_8_RD(GPIO); ST_8_WR(GPIO); ST_8_RS(GPIO); ST_8_CS(GPIO); ST_8_RST(GPIO);
+    // ST_8_RD(GPIO); ST_8_WR(GPIO); ST_8_RS(GPIO); ST_8_CS(GPIO); ST_8_RST(GPIO);
   #endif
     ST_8_RD(OUT); ST_8_WR(OUT); ST_8_RS(OUT); ST_8_CS(OUT); ST_8_RST(OUT);
     ST_8_PORT(OUT) | 0xFF;
@@ -146,10 +146,10 @@ protected:
         ST_8_PORT(OUTPUT) = color.blue;
         ST_8_WR(INV); ST_8_WR(INV);
       #endif
-      }
-    release();
     }
+    release();
+  }
 
 private:
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
-  };
+};
