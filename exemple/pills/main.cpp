@@ -5,8 +5,8 @@
 #define TOP     0
 #define BOTTOM  28
 
-#define RADIUS  7
-#define COUNT   16
+#define RADIUS  8
+#define COUNT   10
 #define PRECIS  10
 
 #define X       0
@@ -14,7 +14,7 @@
 #define VX      2
 #define VY      3
 
-Fix16 balls[COUNT][4]; // Q 16.16
+Fix16 balls[COUNT][4]; // Q 32.16
 RGB colors[COUNT];
 SPI spi;
 LCD lcd;

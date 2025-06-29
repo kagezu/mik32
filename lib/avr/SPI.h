@@ -76,7 +76,7 @@ public:
 
 class SPI {
 public:
-  void init()
+  SPI()
   {
     SPI_MOSI(OUT);
     SPI_MISO(OUT);

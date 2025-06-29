@@ -21,7 +21,7 @@ public:
     int8_t level;
   };
   int8_t max;
-  void *link[];
+  const void *link[];
 
 public:
   MItem *get(reg);

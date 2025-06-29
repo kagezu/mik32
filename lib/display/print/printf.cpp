@@ -5,7 +5,7 @@
 // #define KEY_d
 // #define KEY_x
 #define KEY_q
-// #define KEY_S
+#define KEY_S
 // #define KEY_p
 
 #define NUM_16

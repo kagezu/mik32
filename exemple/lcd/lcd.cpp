@@ -223,6 +223,7 @@ int main(void)
   USER_B(GPIO);
   USER_B(IN);
 
+  lcd.init();
   lcd.font(sans_24, 0, 0);
 
   // mic_view();
@@ -239,8 +240,8 @@ int main(void)
     else
       lcd.demo(x++);
 
-    uint16_t fps = (F_CPU * 10) / T32_0;
+    uint16_t fps = (F_CPU << 4) / T32_0;
     lcd.at(10, lcd.max_y() - lcd.get_height());
-    lcd.printf(P("FPS: %u.%u"), fps / 10, fps - (fps / 10) * 10);
+    lcd.printf(P("FPS: %.2.4q"), fps);
   }
 }

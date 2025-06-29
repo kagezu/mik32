@@ -3,8 +3,9 @@
 #include "timer.h"
 #include "dma.h"
 #include "lagrange.h"
-#include "pin.h"
 #include "osc.h"
+#include "encoder.h"
+#include "fft.h"
 
 #define Lp            12    // Узловых точек для интерполяции Лагранжа (чётная)
 #define Lh            10    // Шаг интерполяции
@@ -13,11 +14,13 @@
 #define AXIS_X        10    // Шаг сетки по X
 #define AXIS_Y        10    // Шаг сетки по Y
 #define AREF_MV       1300  // Опорное напряжение в милливольтах
+#define INT_FQ        100   // Hz
 
 SPI spi;
 LCD lcd;
 ADC adc(2);
 DMA dma(0, DMA::VERY);
+Encoder enc([] (reg d) { menu.next(d); });
 
 #define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
 #define SAMPLES   ((POINTES << 2) + Lp)
@@ -30,7 +33,7 @@ Rect view = Rect(
   lcd.max_y() - 1
 );
 int16_t buffer[SAMPLES];
-int16_t point[POINTES + 1];
+int16_t point[POINTES + 2];
 int16_t point2[POINTES + 1] = {};
 
 // Коэффициенты Лагранжа
@@ -38,31 +41,32 @@ int16_t point2[POINTES + 1] = {};
 // int32_t io_bits = 12;
 // Lagrange L(li, io_bits);
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 volatile uint32_t m_sec = 0;
 
 void info()
 {
-  static uint32_t fps = 100;
-  static uint32_t time = m_sec;
+  static uint32_t fps = 0;
+  static uint32_t time = 0;
+  fps = fps - (fps >> 3) + (INT_FQ / (m_sec - time));
+  time = m_sec;
 
   lcd.viewport();
   lcd.color(Aqua);
   lcd.printf(
-    P("\f%u us %u mV %u Hz %cC FPS %u.%u  "),
+    P("\f%uus %umV %cC %S   "),
     Fq.get_item<int>(),
     VScale.get_item<int>(),
-    (F_CPU >> 2) / (Fq.get_item<int>() * (uint32_t)view.width),
     VType.get_item<char>(),
-    fps >> 3, ((fps * 10) >> 3) - (fps >> 3) * 10
+    OType.get_item<char *>()
   );
-  lcd.printf(P("\f\n%s             "), menu.get_path());
-  fps = fps - (fps >> 3) + (100 / (m_sec - time));
-  time = m_sec;
+  lcd.printf(P("\f\n%s              "), menu.get_path());
+  lcd.at(lcd.max_x(), 0);
+  lcd.printf(P("\b\b\b\b\b\b\vFPS %.1.3q"), fps);
 }
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void sample(uint32_t tick)
 {
@@ -77,32 +81,41 @@ void sample(uint32_t tick)
   adc.stop();
 }
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-void draw()
+void osc()
 {
   int32_t med = 0;
   int16_t k = 0;
 
   int16_t min = 1 << 12, max = 0;
-  for (reg i = 0; i < END_POINT; i++) {
-    reg j = i + (POINTES >> 1);
+  for (int i = 0; i < END_POINT; i++) {
+    const int j = i + (POINTES >> 1);
     if (min > buffer[j]) min = buffer[j];
     if (max < buffer[j]) { max = buffer[j]; k = i; }
   }
   med = (min + max) >> 1;
 
   int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
-  if (VType.value == 0)
-    med = ((med * s) >> 12) - (view.height >> 1) - ZLevel.value;
+  if (VType.value == 0) med = ((med * s) >> 12) - (view.height >> 1) - ZLevel.value;
   else med = -ZLevel.value;
-
-  for (int16_t i = 0; i <= POINTES; i++) {
-    point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
-  }
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
 
   //////////////////////////
 
+  static uint16_t old;
+  lcd.color(Black);
+  lcd.w_line(view.min_x, old, view.max_x);
+  if (VType.value == 0) old = view.max_y - (view.height >> 1) - ZLevel.value;
+  else old = view.max_y + med;
+  lcd.color(DarkCyan);
+  lcd.w_line(view.min_x, old, view.max_x);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void draw()
+{
   lcd.viewport(&view);
 
   uint16_t last = point2[0];
@@ -117,34 +130,25 @@ void draw()
     last2 = point2[i] = point[i];
   }
 
-  //////////////////////////
-
   lcd.color(Blue);
   for (reg i = 1; i <= lcd.max_x() / AXIS_X; i++)
     for (reg j = 1; j <= lcd.max_y() / AXIS_Y; j++)
       lcd.pixel(i * AXIS_X, j * AXIS_Y);
-
-  static uint16_t old;
-  lcd.color(Black);
-  lcd.w_line(view.min_x, old, view.max_x);
-
-  if (VType.value == 0)
-    old = view.max_y - (view.height >> 1) - ZLevel.value;
-  else old = view.max_y + med;
-
-  lcd.color(DarkCyan);
-  lcd.w_line(view.min_x, old, view.max_x);
 }
 
-////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+void fft()
+{
+  int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
+  fft(buffer, point, POINTES + 2);
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((point[i] * s) >> 15);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 int main(void)
 {
-  ENCODER_A(IN) | ENCODER_B(MASK);
-  ENCODER_A(P_VCC);
-  ENCODER_B(P_VCC);
-  ENCODER_C(OUT);
-  ENCODER_C(CLR);
   USER_B(IN);
   USER_B(P_GND);
   ADC2(ANALOG);
@@ -153,7 +157,7 @@ int main(void)
   T32_1_E;
 
   T32_0_PS;
-  T32_0_FQ(100);
+  T32_0_FQ(INT_FQ);
   T32_0_OVF;
   T32_0_IS;
   T32_0_C;
@@ -175,44 +179,20 @@ int main(void)
     }
 
     sample(((uint32_t)Fq.get_item<int>() << 5) / AXIS_X);
+    if (OType.value) fft();
+    else osc();
     draw();
     info();
   }
 }
 
-void encode(void (*delta)(reg))
-{
-  static reg count = 2, c1 = 0, c2 = 0;
-  static bool a0, b0;
-
-  // состояние контактов A и B ?
-  bool a = (bool)ENCODER_A(GET);
-  bool b = (bool)ENCODER_B(GET);
-
-  // если состояние контакта A изменилось и оно такое как B
-  // то попорот по часовой, иначе против
-  if (a != a0) count += a ^ b ? -1 : 1;
-
-  // если состояние контакта B изменилось и оно не такое как A
-  // то попорот по часовой, иначе против
-  if (b != b0) count += a ^ b ? 1 : -1;
-
-  // запоминаем состояние контактов
-  a0 = a;
-  b0 = b;
-
-  // один "щелчок" энкодера соответствует 4-рём позициям
-  c1 = count >> 2;
-  // если произошёл сдвиг на 4 позиции, фиксируем поворот
-  if (c1 != c2) delta(c1 - c2);
-  c2 = c1;
-}
+///////////////////////////////////////////////////////////////////////////////
 
 extern "C" {
   __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
   {
     m_sec++;
-    encode([] (reg d) { menu.next(d); });
+    enc.scan();
     T32_0_FC;
     EPIC_C;
   }

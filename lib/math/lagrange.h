@@ -6,14 +6,9 @@
 
 #pragma once
 #include "int8.h"
+#include "int128.h"
 
 // #define USE_INT128
-#ifdef USE_INT128
-#include "int128.h"
-#define LONG_INT  int128_t
-#else
-#define LONG_INT  int64_t
-#endif
 
 /**
  * @brief Интерполяция Лагранжа (с равными интервалами)
@@ -37,7 +32,7 @@ public:
   {
     // Определим возможность вычислений с заданными параметрами
     // Максимальная разрядность числителя
-    constexpr uint8_t max_num = sizeof(LONG_INT) << 3;
+    constexpr uint8_t max_num = sizeof(int64_t) << 3;
     // Разрядность числителя log2((h^(n-1))*((n/2)!)^2/(n/2))
     const uint8_t l_num = ((fix16_log2_fact(N >> 1) << 1) + fix16_log2(H) * (N - 1) - fix16_log2(N >> 1)) >> 16;
     if (l_num > max_num)
@@ -98,21 +93,21 @@ public:
 
   #else
 
-    LONG_INT pow = 1;
+    int64_t pow = 1;
     for (int8_t i = 0; i < N; i++) // pow = h^p
       pow *= H;
     pow >>= dig_denum; // Q X.-denum
 
     // Переберем все узловые точки
     for (int8_t j = 0; j < N; j++) {
-      LONG_INT div = pow * fact(N - j - 1) * fact(j); // h^p * (p-j)! * j!
+      int64_t div = pow * fact(N - j - 1) * fact(j); // h^p * (p-j)! * j!
       if ((j & 1) == 0) div = -div; // (-1)^(p-j)
 
       // Переберем все промежуточные значения, необходимые интерполировать
       for (int8_t x = 0; x < H; x++) {
 
         // Перемножаем все отклонения от искомой точки П(x - x0 - ih), i = 0...p
-        LONG_INT num = 1;
+        int64_t num = 1;
         for (int8_t i = 0; i < N; i++)
           if (i != j) num *= x + H * (k - i);
 
