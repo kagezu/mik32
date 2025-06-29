@@ -11,8 +11,8 @@ class Display : public Driver, public PrintF, public GFX {
   // Driver =============================================================================
 
 public:
-  // void init()
-  Display()
+  void init()
+    // Display()
   {
     Driver::init(R);
     color(0x00FFFF);

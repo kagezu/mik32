@@ -1,29 +1,72 @@
 #pragma once
-#include "type/display.h"
+#include "core.h"
+#include "accel.h"
 
 // для mik32 должно быть чётным + 1 байт
 #define PRINT_BUFFER_SIZE   33
 
-class PrintF :public IDisplay {
-public:
-  void printf(const char *, ...);
-  void print(const char *);
-  void print(char *, reg algin = 0);
-  // char *print(int64_t);
-  char *print(int32_t);
-  char *print(int16_t);
-  // char *print(uint64_t);
-  char *print(uint32_t);
-  char *print(uint16_t);
-  char *print_h(uint64_t);
-  char *print_h(uint32_t);
-  char *print_h(uint16_t);
-  uint16_t print_h(uint8_t);
-  void print(char);
-
+class PrintF {
 private:
   char buffer[PRINT_BUFFER_SIZE];
-
-private:
   static reg strlen(char *);
+
+public:
+  void printf(const char *, ...);
+  void prints(const char *);
+  void prints(char *, reg algin = 0);
+  uint16_t h_print(uint8_t);
+
+  virtual void putc(uint8_t) = 0;
+
+  ///////////////////////////////
+
+  template<typename T, typename I>
+  char *sprint(char *ptr, T number, I digit, I fix)
+  {
+    T hi = number >> fix;
+    T mod = hi;
+
+    for (auto i = 0; i < digit; i++) {
+      number = number - (mod << fix);
+      number *= 10;
+      mod = number >> fix;
+      *--ptr = mod + '0';
+    }
+    *--ptr = '.';
+    return sprint(ptr, hi);
+  }
+
+  template<typename T>
+  char *sprint(char *ptr, T number)
+  {
+    bool neg = number < 0;
+    number = neg ? -number : number;
+
+    while (number > 9) {
+      char mod;
+    #ifdef __AVR__
+      uint8_t tmp;
+      div10_32bit(number, mod, tmp);
+    #else
+      mod = number % 10;
+      number /= 10;
+    #endif
+      *--ptr = mod + '0';
+    }
+    *--ptr = number + '0';
+    if (neg) *--ptr = '-';
+
+    return ptr;
+  }
+
+  template<typename T, typename I>
+  char *sprint(char *ptr, T number, I lng)
+  {
+    while (lng--) {
+      ptr -= 2;
+      *(uint16_t *)ptr = h_print(number);
+      number >>= 8;
+    }
+    return ptr;
+  }
 };

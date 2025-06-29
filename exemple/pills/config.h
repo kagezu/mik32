@@ -10,8 +10,8 @@
 
 // #define LCD_ROT     ROT_0
 // #define LCD_ROT     ROT_90
-#define LCD_ROT     ROT_180
-// #define LCD_ROT     ROT_270
+// #define LCD_ROT     ROT_180
+#define LCD_ROT     ROT_270
 // #define LCD_ROT     ROT_X
 // #define LCD_ROT     ROT_Y
 // #define LCD_ROT     ROT_EX
@@ -20,16 +20,16 @@
 
 // Драйвер дисплея
 
-#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
-// #include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
+// #include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB18
+#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB18
 // #include "ST7789/driver.h"           // RGB18
 // #include "ILI9486_8_BIT/driver.h"    // RGB16, RGB18
 // #include "ILI9486_16_BIT/driver.h"   // RGB16, RGB18
 
 #include "display.h"
 
-#define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
-// #define LCD Display<ST7735_SPI<RGB>, RGB, LCD_ROT>
+// #define LCD Display<ST7735_SOFT<RGB>, RGB, LCD_ROT>
+#define LCD Display<ST7735_SPI<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ST7789<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ILI9486_8<RGB>, RGB, LCD_ROT>
 // #define LCD Display<ILI9486_16<RGB>, RGB, LCD_ROT>

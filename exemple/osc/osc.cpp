@@ -6,16 +6,17 @@
 #include "pin.h"
 #include "osc.h"
 
-#define Lp        12  // Узловых точек для интерполяции Лагранжа (чётная)
-#define Lh        10  // Шаг интерполяции
-#define BORDER_Y  20  // Отступ от верха экрана
-#define BORDER_X  1   // Бордюр по краям
-#define AXIS_X    10  // Шаг сетки по X
-#define AXIS_Y    10  // Шаг сетки по Y
-#define AREF_MV   1300  // Опорное напряжение в милливольтах
+#define Lp            12    // Узловых точек для интерполяции Лагранжа (чётная)
+#define Lh            10    // Шаг интерполяции
+#define BORDER_Y      20    // Отступ от верха экрана
+#define BORDER_X      1     // Бордюр по краям
+#define AXIS_X        10    // Шаг сетки по X
+#define AXIS_Y        10    // Шаг сетки по Y
+#define AREF_MV       1300  // Опорное напряжение в милливольтах
 
+SPI spi;
 LCD lcd;
-ADC adc;
+ADC adc(2);
 DMA dma(0, DMA::VERY);
 
 #define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
@@ -39,19 +40,26 @@ int16_t point2[POINTES + 1] = {};
 
 ////////////////////////////////////////////////////
 
+volatile uint32_t m_sec = 0;
+
 void info()
 {
+  static uint32_t fps = 100;
+  static uint32_t time = m_sec;
+
   lcd.viewport();
   lcd.color(Aqua);
   lcd.printf(
-    P("\f%u us  %u mV  %u Hz  %cC %d  "),
+    P("\f%u us %u mV %u Hz %cC FPS %u.%u  "),
     Fq.get_item<int>(),
     VScale.get_item<int>(),
     (F_CPU >> 2) / (Fq.get_item<int>() * (uint32_t)view.width),
     VType.get_item<char>(),
-    ZLevel.value
+    fps >> 3, ((fps * 10) >> 3) - (fps >> 3) * 10
   );
   lcd.printf(P("\f\n%s             "), menu.get_path());
+  fps = fps - (fps >> 3) + (100 / (m_sec - time));
+  time = m_sec;
 }
 
 ////////////////////////////////////////////////////
@@ -61,7 +69,8 @@ void sample(uint32_t tick)
   if (tick < 32) tick = 32;
   T32_1_TOP(tick);
   T32_1_C;
-  adc.init(2, tick < 96 ? tick - 31 : 63);
+
+  adc.delay(tick < 96 ? tick - 31 : 63);
   adc.start();
   dma.start();
   dma.wait();
@@ -107,6 +116,7 @@ void draw()
     last = point2[i];
     last2 = point2[i] = point[i];
   }
+
   //////////////////////////
 
   lcd.color(Blue);
@@ -128,7 +138,7 @@ void draw()
 
 ////////////////////////////////////////////////////
 
-void init()
+int main(void)
 {
   ENCODER_A(IN) | ENCODER_B(MASK);
   ENCODER_A(P_VCC);
@@ -140,7 +150,6 @@ void init()
   ADC2(ANALOG);
 
   T32_1_PS;
-
   T32_1_E;
 
   T32_0_PS;
@@ -150,28 +159,19 @@ void init()
   T32_0_C;
   T32_0_E;
 
-  set_csr(mstatus, MSTATUS_MIE);
-}
-
-int main(void)
-{
-  init();
-
   lcd.init();
-  // lcd.font(system_5x7);
   lcd.font(micro_5x6);
-  dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
-
   lcd.color(Blue);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
+  dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
 
+  set_csr(mstatus, MSTATUS_MIE);
   sei();
 
   while (true) {
     if (USER_B(GET)) {
       menu.select();
       while (USER_B(GET));
-      // info();
     }
 
     sample(((uint32_t)Fq.get_item<int>() << 5) / AXIS_X);
@@ -208,12 +208,11 @@ void encode(void (*delta)(reg))
   c2 = c1;
 }
 
-inline void next(reg d) { menu.next(d); }
-
 extern "C" {
   __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
   {
-    encode(next);
+    m_sec++;
+    encode([] (reg d) { menu.next(d); });
     T32_0_FC;
     EPIC_C;
   }

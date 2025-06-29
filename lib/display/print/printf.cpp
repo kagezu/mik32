@@ -1,7 +1,18 @@
 #include "printf.h"
-#include "accel.h"
 // #include "string.h"
 
+#define KEY_u
+// #define KEY_d
+// #define KEY_x
+#define KEY_q
+// #define KEY_S
+// #define KEY_p
+
+#define NUM_16
+// #define NUM_32
+// #define NUM_64
+
+#define LEFT_RIGHT   0x00
 #define LEFT_ALGIN   0x80
 
 void PrintF::printf(const char *string, ...)
@@ -11,55 +22,136 @@ void PrintF::printf(const char *string, ...)
   __builtin_va_start(args, string);
 
   while ((ch = pgm_read_byte(string++))) {
-    if (ch != '%') { putc(ch); continue; }
+    if (ch != '%') {
+      putc(ch);
+      continue;
+    }
 
-    reg algin = 0, digit = 0, lng = 1;
+    reg algin = LEFT_RIGHT, // выравнивание справа
+      digit = 0,            // число цифр
+      lng = 2,              // число байт
+      fix = 0,              // цифр после запятой
+      fix2 = 0;             // формат Q (lng * 8).fix
+
     char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
     ch = pgm_read_byte(string++);
+
     if (ch == '-') {
-      algin = LEFT_ALGIN;
+      algin = LEFT_ALGIN;   // выравнивание слева
       ch = pgm_read_byte(string++);
     }
+
     while (ch > '/' && ch < ':') {
       digit = digit * 10 + ch - '0';
       ch = pgm_read_byte(string++);
     }
-    while (ch == 'l') { // увеличить разрядность
+
+    if (ch == '.') {
       ch = pgm_read_byte(string++);
-      lng++;
+      while (ch > '/' && ch < ':') {
+        fix = fix * 10 + ch - '0';
+        ch = pgm_read_byte(string++);
+      }
+
+      if (ch == '.') {
+        ch = pgm_read_byte(string++);
+        while (ch > '/' && ch < ':') {
+          fix2 = fix2 * 10 + ch - '0';
+          ch = pgm_read_byte(string++);
+        }
+      }
+    }
+
+    while (ch == 'l') {     // увеличить разрядность
+      ch = pgm_read_byte(string++);
+      lng <<= 1;
     }
     digit |= algin;
+
     switch (ch) {
-      case 'c': putc((char)__builtin_va_arg(args, addr)); break;
-      case 's': print((char *)__builtin_va_arg(args, char *), digit); break;
-      case 'S': print((const char *)__builtin_va_arg(args, char *)); break;
-      case 'd':
-        switch (lng) {
-          case 1: ptr = print((int16_t)__builtin_va_arg(args, addr)); break;
-          case 2: ptr = print((int32_t)__builtin_va_arg(args, int32_t)); break;
-        } print(ptr, digit); break;
+    #ifdef KEY_u
       case 'u':
         switch (lng) {
-          case 1: ptr = print((uint16_t)__builtin_va_arg(args, addr)); break;
-          case 2: ptr = print((uint32_t)__builtin_va_arg(args, uint32_t)); break;
-        } print(ptr, digit); break;
-      case 'x':
-        if (digit && (digit < 3)) lng = 0; // явное указание, что число короткое
-        switch (lng) {
-          case 0:  ptr--; *(uint16_t *)--ptr = print_h((uint8_t)__builtin_va_arg(args, addr)); break;
-          case 1:  ptr = print_h((uint16_t)__builtin_va_arg(args, addr)); break;
-          case 2:  ptr = print_h((uint32_t)__builtin_va_arg(args, uint32_t)); break;
-          case 3:  ptr = print_h((uint64_t)__builtin_va_arg(args, uint64_t)); break;
-        } print(ptr, digit); break;
+        #ifdef NUM_16
+          case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, addr)); break;
+          #endif
+          #ifdef NUM_32
+          case 4: ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t)); break;
+          #endif
+          #ifdef NUM_64
+          case 8: ptr = sprint(ptr, (uint64_t)__builtin_va_arg(args, uint64_t)); break;
+          #endif
+        } break;
+      #endif
 
-      case 'p': ptr = print_h((addr)__builtin_va_arg(args, addr)); print(ptr, digit); break;
-      case '%': putc('%'); break;
+      #ifdef KEY_d
+      case 'd':
+        switch (lng) {
+        #ifdef NUM_16
+          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, addr)); break;
+          #endif
+          #ifdef NUM_32
+          case 4: ptr = sprint(ptr, (int32_t)__builtin_va_arg(args, int32_t)); break;
+          #endif
+          #ifdef NUM_64
+          case 8: ptr = sprint(ptr, (int64_t)__builtin_va_arg(args, int64_t)); break;
+          #endif
+        } break;
+      #endif
+
+      #ifdef KEY_q
+      case 'q':
+        switch (lng) {
+        #ifdef NUM_16
+          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, addr), fix, fix2); break;
+          #endif
+          #ifdef NUM_32
+          case 4: ptr = sprint(ptr, (int32_t)__builtin_va_arg(args, int32_t), fix, fix2); break;
+          #endif
+          #ifdef NUM_64
+          case 8: ptr = sprint(ptr, (int64_t)__builtin_va_arg(args, int64_t), fix, fix2); break;
+          #endif
+        } break;
+      #endif
+
+      #ifdef KEY_x
+      case 'x':
+        if (digit && (digit < 3)) lng = 1; // явное указание, что число короткое
+        switch (lng) {
+          case 1:  ptr -= 2; *(uint16_t *)ptr = sprint((uint8_t)__builtin_va_arg(args, addr), lng); break;
+          #ifdef NUM_16
+          case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, addr), lng); break;
+          #endif
+          #ifdef NUM_32
+          case 4:  ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t), lng); break;
+          #endif
+          #ifdef NUM_64
+          case 8: ptr = sprint(ptr, (uint64_t)__builtin_va_arg(args, uint64_t), lng); break;
+          #endif
+        } break;
+      #endif
+
+      #ifdef KEY_S
+      case 'S': prints((const char *)__builtin_va_arg(args, char *)); continue;
+      #endif
+
+      #ifdef KEY_p
+      case 'p': ptr = sprint_h(ptr, (addr)__builtin_va_arg(args, addr)); break;
+      #endif
+
+      case 'c': putc((char)__builtin_va_arg(args, addr)); continue;
+      case 's': prints((char *)__builtin_va_arg(args, char *), digit); continue;
+      case '%': putc('%'); continue;
+      default: putc('?'); continue;
     }
+    prints(ptr, digit);
   }
   __builtin_va_end(args);
 }
 
-void PrintF::print(char *string, reg algin)
+///////////////////////////////////////////////////////////////////////////////
+
+void PrintF::prints(char *string, reg algin)
 {
   reg flag = algin & LEFT_ALGIN;
   reg count = algin - flag - (reg)strlen(string);
@@ -73,111 +165,12 @@ void PrintF::print(char *string, reg algin)
   if (flag) while (count--)putc(' ');
 }
 
-void PrintF::print(const char *string)
+void PrintF::prints(const char *string)
 {
-  // while (char ch = pgm_read_byte(string++)) if ((uint8_t)ch < 0xd0) putc(ch);
   while (char ch = pgm_read_byte(string++)) putc(ch);
 }
 
-// char *PrintF::print(int64_t number)
-// {
-//   reg neg = number < 0;
-//   number = neg ? -number : number;
-//   char *ptr = print(number);
-//   if (neg) *--ptr = '-';
-//   return ptr;
-// }
-
-char *PrintF::print(int32_t number)
-{
-  reg neg = number < 0;
-  number = neg ? -number : number;
-  char *ptr = print((uint32_t)number);
-  if (neg) *--ptr = '-';
-  return ptr;
-}
-
-char *PrintF::print(int16_t number)
-{
-  reg neg = number < 0;
-  number = neg ? -number : number;
-  char *ptr = print((uint16_t)number);
-  if (neg) *--ptr = '-';
-  return ptr;
-}
-
-char *PrintF::print(uint32_t number)
-{
-  char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  while (number > 9) {
-    uint8_t mod;
-
-  #ifdef __AVR__
-    uint8_t tmp;
-    div10_32bit(number, mod, tmp);
-  #else
-    mod = number % 10;
-    number /= 10;
-  #endif
-
-    *--ptr = mod + '0';
-  }
-  *--ptr = number + '0';
-  return ptr;
-}
-
-char *PrintF::print(uint16_t number)
-{
-  char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  while (number > 9) {
-    uint8_t mod;
-
-  #ifdef __AVR__
-    uint8_t tmp;
-    div10_16bit(number, mod, tmp);
-  #else
-    mod = number % 10;
-    number /= 10;
-  #endif
-    *--ptr = mod + '0';
-  }
-  *--ptr = number + '0';
-  return ptr;
-}
-
-char *PrintF::print_h(uint64_t number)
-{
-  char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 0));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 1));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 2));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 3));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 4));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 5));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 6));
-  ptr--; *(uint16_t *)--ptr = print_h(to_byte(number, 7));
-  return ptr;
-}
-
-char *PrintF::print_h(uint32_t number)
-{
-  char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 0));
-  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 1));
-  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 2));
-  ptr -= 2; *(uint16_t *)ptr = print_h(to_byte(number, 3));
-  return ptr;
-}
-
-char *PrintF::print_h(uint16_t number)
-{
-  char *ptr = &buffer[PRINT_BUFFER_SIZE - 1];
-  ptr--; *(uint16_t *)(--ptr) = print_h(to_byte(number, 0));
-  ptr--; *(uint16_t *)(--ptr) = print_h(to_byte(number, 1));
-  return ptr;
-}
-
-uint16_t PrintF::print_h(uint8_t number)
+uint16_t PrintF::h_print(uint8_t number)
 {
   uint8_t low = number & 0xf;
   uint8_t high = number >> 4;

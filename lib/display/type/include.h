@@ -1,5 +1,4 @@
 #pragma once
-#include "display.h"
 #include "colors.h"
 #include "rgb12.h"
 #include "rgb16.h"

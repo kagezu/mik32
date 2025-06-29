@@ -1,7 +1,7 @@
 #pragma once
-#include "type/display.h"
+#include "inttypes.h"
 
-class  GFX :public IDisplay {
+class  GFX {
 protected:
   int16_t _fat = 2;
 
@@ -29,4 +29,8 @@ public:
   // Полные фигуры
   void circle_fill(int16_t, int16_t, int16_t);
   void round_rect_fill(int16_t, int16_t, int16_t, int16_t, int16_t);
+
+
+  virtual void fill(int16_t, int16_t, int16_t, int16_t) = 0;
+  virtual void pixel(int16_t, int16_t) = 0;
 };

@@ -1,9 +1,12 @@
 #pragma once
-#include <mik32_memory_map.h>
-#include <power_manager.h>
-#include <dma_config.h>
+#include "mik32.h"
 
 class DMA {
+protected:
+  DMA_CHANNEL_TypeDef *DMA_CH;
+  uint32_t config;
+  uint32_t dma_ready;
+
 public:
   enum DMA_REQUEST : uint8_t {
     USART0, USART1, CRYPT, SPI0, SPI1, I2C0, I2C1,
@@ -21,41 +24,24 @@ public:
     DMA_CH = &DMA_CONFIG->CHANNELS[ch];     // Адрес регистров управления каналом
     config = DMA_CH_CFG_ENABLE_M
       | (prior << DMA_CH_CFG_PRIOR_S);      // Установка приоритета
-    dma_ready = DMA_STATUS_READY(ch);        // Признак, что канал свободен.
+    dma_ready = DMA_STATUS_READY(ch);       // Признак, что канал свободен.
   }
 
+  // Начать работу
+  ATTR_INLINE void start() { DMA_CH->CFG = config; }
   // Сбросить канал
-  void reset() { DMA_CH->CFG = 0; }
+  ATTR_INLINE void reset() { DMA_CH->CFG = 0; }
 
   // Ожидание завершения работы канала
-  void ATTR_INLINE wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)) for (uint32_t i = 0; i < 100; i++); }
-  bool ATTR_INLINE is_active() { return !(DMA_CONFIG->CONFIG_STATUS & dma_ready); }
-  // Начать работу
-  void ATTR_INLINE start() { DMA_CH->CFG = config; }
+  ATTR_INLINE void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & dma_ready)) delay_us(10); }
+  ATTR_INLINE bool is_active() { return !(DMA_CONFIG->CONFIG_STATUS & dma_ready); }
 
   // Установка данных
-  void setup(void *dst, void *src, uint32_t len)
+  template<typename D, typename S>
+  ATTR_INLINE void setup(D dst, S src, uint32_t len)
   {
     DMA_CH->DST = (uint32_t)dst;
     DMA_CH->SRC = (uint32_t)src;
-    DMA_CH->LEN = len - 1;
-  }
-  void setup(void *dst, uint32_t src, uint32_t len)
-  {
-    DMA_CH->DST = (uint32_t)dst;
-    DMA_CH->SRC = src;
-    DMA_CH->LEN = len - 1;
-  }
-  void setup(uint32_t dst, void *src, uint32_t len)
-  {
-    DMA_CH->DST = dst;
-    DMA_CH->SRC = (uint32_t)src;
-    DMA_CH->LEN = len - 1;
-  }
-  void setup(uint32_t dst, uint32_t src, uint32_t len)
-  {
-    DMA_CH->DST = dst;
-    DMA_CH->SRC = src;
     DMA_CH->LEN = len - 1;
   }
 
@@ -109,13 +95,10 @@ public:
       | (ack << DMA_CH_CFG_WRITE_ACK_EN_S);      // Установить подтверждение
   }
 
-
   // mem -> gpio
   void memout(uint32_t dst, uint32_t src, uint32_t len)
   {
-    DMA_CH->DST = dst;
-    DMA_CH->SRC = src;
-    DMA_CH->LEN = len - 1;
+    setup(dst, src, len);
     read(DMA::MEM, WORD, HALF, INC, NONE);
     write(DMA::MEM, HALF, HALF, IMM, NONE);
     DMA_CH->CFG = config;
@@ -128,9 +111,4 @@ public:
     read(line, HALF, HALF, IMM, ACK);
     write(MEM, WORD, WORD, INC);
   }
-
-protected:
-  DMA_CHANNEL_TypeDef *DMA_CH;
-  uint32_t config;
-  uint32_t dma_ready;
 };
