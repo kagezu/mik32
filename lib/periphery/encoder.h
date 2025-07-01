@@ -9,10 +9,9 @@ class Encoder {
 public:
   reg count = 2, c1 = 0, c2 = 0;
   bool a0, b0;
-  void (*callback)(reg);
 
 public:
-  Encoder(void (*cb)(reg))
+  Encoder()
   {
     ENCODER_A(IN);
     ENCODER_B(IN);
@@ -22,8 +21,10 @@ public:
     ENCODER_C(CLR);
   }
 
-  void scan()
+  reg scan()
   {
+    reg result;
+
     // состояние контактов A и B ?
     bool a = (bool)ENCODER_A(GET);
     bool b = (bool)ENCODER_B(GET);
@@ -43,7 +44,8 @@ public:
     // один "щелчок" энкодера соответствует 4-рём позициям
     c1 = count >> 2;
     // если произошёл сдвиг на 4 позиции, фиксируем поворот
-    if (c1 != c2) callback(c1 - c2);
+    result = c1 - c2;
     c2 = c1;
+    return result;
   }
 };

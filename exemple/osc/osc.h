@@ -7,7 +7,7 @@ const int _vsc[] = { 100, 50, 20, 10, 5, 2, 1 };
 const char _vt[] = { 'A', 'D' };
 
 MItem OType = { "ВЫВОД ", OptionType, 1, 0, 1, _type };
-MItem Fq = { "ЧАСТОТА ", OptionType, 9, 0, 12, _fq };
+MItem Fq = { "ЧАСТОТА ", OptionType, 6, 0, 12, _fq };
 MItem VScale = { "НАПРЯЖЕНИЕ ", OptionType, 0, 0, 6, _vsc };
 MItem VType = { "AC/DC ",  OptionType, 1, 0, 1, _vt };
 MItem ZLevel = { "Zero Level ", ValueType, 0, -120, 120, nullptr };

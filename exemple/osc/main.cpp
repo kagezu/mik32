@@ -7,24 +7,24 @@
 #include "encoder.h"
 #include "fft.h"
 
-#define Lp            12    // Узловых точек для интерполяции Лагранжа (чётная)
-#define Lh            10    // Шаг интерполяции
-#define BORDER_Y      20    // Отступ от верха экрана
-#define BORDER_X      1     // Бордюр по краям
-#define AXIS_X        10    // Шаг сетки по X
-#define AXIS_Y        10    // Шаг сетки по Y
-#define AREF_MV       1300  // Опорное напряжение в милливольтах
-#define INT_FQ        100   // Hz
+constexpr uint16_t Lp = 12;       // Узловых точек для интерполяции Лагранжа (чётная)
+constexpr uint16_t Lh = 10;       // Шаг интерполяции
+constexpr uint16_t BORDER_Y = 20; // Отступ от верха экрана
+constexpr uint16_t BORDER_X = 1;  // Бордюр по краям
+constexpr uint16_t AXIS_X = 10;   // Шаг сетки по X
+constexpr uint16_t AXIS_Y = 10;   // Шаг сетки по Y
+constexpr uint16_t AREF_MV = 1300;// Опорное напряжение в милливольтах
+constexpr uint16_t INT_FQ = 100;  // Hz
 
 SPI spi;
 LCD lcd;
 ADC adc(2);
 DMA dma(0, DMA::VERY);
-Encoder enc([] (reg d) { menu.next(d); });
+Encoder enc;
 
-#define POINTES   ((lcd.max_x() + 1)-(BORDER_X << 1))
-#define SAMPLES   ((POINTES << 2) + Lp)
-#define END_POINT SAMPLES - POINTES - 3
+constexpr uint16_t POINTES = ((lcd.max_x() + 1) - (BORDER_X << 1));// размер для отображения
+constexpr uint16_t SIZE_FFT = log2n(POINTES) > log2n(POINTES - 1) ? POINTES << 1 : 1 << (2 + log2n(POINTES));
+constexpr uint16_t SAMPLES = ((POINTES << 2) + Lp);
 
 Rect view = Rect(
   BORDER_X,
@@ -33,8 +33,13 @@ Rect view = Rect(
   lcd.max_y() - 1
 );
 int16_t buffer[SAMPLES];
-int16_t point[POINTES + 2];
+int16_t point[POINTES + 1];
 int16_t point2[POINTES + 1] = {};
+
+FFT<SIZE_FFT> fft;
+
+
+
 
 // Коэффициенты Лагранжа
 // int16_t li[Lh][Lp];
@@ -55,15 +60,15 @@ void info()
   lcd.viewport();
   lcd.color(Aqua);
   lcd.printf(
-    P("\f%uus %umV %cC %S   "),
-    Fq.get_item<int>(),
+    P("\f%u kHz %umV %cC %S  "),
+    1000 / Fq.get_item<int>(),
     VScale.get_item<int>(),
     VType.get_item<char>(),
     OType.get_item<char *>()
   );
   lcd.printf(P("\f\n%s              "), menu.get_path());
   lcd.at(lcd.max_x(), 0);
-  lcd.printf(P("\b\b\b\b\b\b\vFPS %.1.3q"), fps);
+  lcd.printf(P("\b\b\b\b\b\b\b\vFPS %.1.3q "), fps);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,6 +90,7 @@ void sample(uint32_t tick)
 
 void osc()
 {
+  constexpr uint16_t END_POINT = SAMPLES - POINTES;
   int32_t med = 0;
   int16_t k = 0;
 
@@ -138,11 +144,19 @@ void draw()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void fft()
+void dft()
 {
+  constexpr uint16_t END_POINT = SAMPLES - SIZE_FFT;
+  int16_t k = 0;
+  int16_t max = 0;
+  for (int i = 0; i < END_POINT; i++) {
+    if (max < buffer[i]) { max = buffer[i]; k = i; }
+  }
+
+  fft.run(&buffer[k]);
   int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
-  fft(buffer, point, POINTES + 2);
-  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((point[i] * s) >> 15);
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[i + k] * s) >> 12);
+  // for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - cosx(i << 3);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -178,8 +192,8 @@ int main(void)
       while (USER_B(GET));
     }
 
-    sample(((uint32_t)Fq.get_item<int>() << 5) / AXIS_X);
-    if (OType.value) fft();
+    sample((uint32_t)Fq.get_item<int>() << 5);
+    if (OType.value) dft();
     else osc();
     draw();
     info();
@@ -192,7 +206,7 @@ extern "C" {
   __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
   {
     m_sec++;
-    enc.scan();
+    menu.next(enc.scan());
     T32_0_FC;
     EPIC_C;
   }

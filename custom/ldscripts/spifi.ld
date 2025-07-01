@@ -16,11 +16,11 @@ SECTIONS {
         # код из crt0.S помещаем в начало сегмента spifi, здесь точка входа из сброса
         *crt0.o(.text .text.*)
 
-        *(.text.SystemInit)
+        #*(.text.SystemInit)
         *(.text)
         *(.text.*)
 
-        PROVIDE(spifi_limit = . - 1);
+        PROVIDE(__RODATA__ = .);
 
         *(.rodata)
         *(.rodata.*)

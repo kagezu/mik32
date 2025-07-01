@@ -1,3 +1,4 @@
+__RODATA__ = 0;
 
 SECTIONS {
     .text ORIGIN(REGION_TEXT) : {
@@ -7,7 +8,7 @@ SECTIONS {
         KEEP (*(.trap_text))
         *(.small_ram_text)
         *(.ram_text)
-        *(.text.SystemInit)
+        #*(.text.SystemInit)
         *(.text)
         *(.text.*)
         *(.rodata)

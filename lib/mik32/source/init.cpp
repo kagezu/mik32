@@ -1,10 +1,10 @@
 #include "mik32.h"
 
 extern "C" {
-  // extern void *spifi_limit;
+  extern uint8_t __RODATA__[];
 
-  // __attribute__((used, section(".small_ram_text"))) void SystemInit()
-  __attribute__((used)) void SystemInit()
+  __attribute__((used, section(".small_ram_text"))) void SystemInit()
+    // __attribute__((used)) void SystemInit()
   {
     // Модуль WakeUp ====================================================================
 
@@ -39,7 +39,6 @@ extern "C" {
       // PM_WDT_CLK_MUX_OSC32K_M    // 2 – внешний OSC32K
       // PM_WDT_CLK_MUX_LSI32K_M    // 3 – внутренний LSI32К
       ;
-
 
     // Модуль PowerManager ==============================================================
 
@@ -139,120 +138,62 @@ extern "C" {
       // | PM_CLOCK_APB_P_GPIO_IRQ_M;
       // ;
 
-  /*
-
-    if (BOOT_MANAGER->BOOT != BOOT_SPIFI) return;
-
-    // Настройка SPIFI ================================================================
+    // Настройка SPIFI ========================================================
 
     // сброс команды SPIFI
     SPIFI_CONFIG->STAT = SPIFI_CONFIG_STAT_RESET_M;
-    while (SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_RESET_M);
 
+    if (BOOT_MANAGER->BOOT == BOOT_SPIFI) {
 
-    // Enable QPI (38h) (передача всего по 4 линиям)
-    SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
-    SPIFI_CONFIG->CMD =
-      (1 << SPIFI_CONFIG_CMD_FRAMEFORM_S) // только код команды
-      | (0x38 << SPIFI_CONFIG_CMD_OPCODE_S)
-      ;
-    // ожидаем завершения отработки команды
-    while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
+      // Enable QPI (38h) (передача всего по 4 линиям)
+      SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+      SPIFI_CONFIG->CMD =
+        (1 << SPIFI_CONFIG_CMD_FRAMEFORM_S) // только код команды
+        | (0x38 << SPIFI_CONFIG_CMD_OPCODE_S)
+        ;
+      // ожидаем завершения отработки команды
+      while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
 
-
-    // Настройка Fast Read Quad I/O на работу с передачей исключительно адреса
-    SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
-    SPIFI_CONFIG->ADDR = 0;
-    SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh)
-    SPIFI_CONFIG->CMD =
-      (1 << SPIFI_CONFIG_CMD_DATALEN_S)         // прочитаем один байт
-      | (1 << SPIFI_CONFIG_MCMD_INTLEN_S)       // один dummy байт 0x0 для режима QPI
-      | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
-      | (4 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды и три байта адреса
-      | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
-      ;
-    // читаем один байт
-    SPIFI_CONFIG->DATA8;
-    // ожидаем завершения отработки команды
-    while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
-
+      // Настройка Fast Read Quad I/O на работу с передачей исключительно адреса
+      SPIFI_CONFIG->STAT |= SPIFI_CONFIG_STAT_INTRQ_M;
+      SPIFI_CONFIG->ADDR = 0;
+      SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh)
+      SPIFI_CONFIG->CMD =
+        (1 << SPIFI_CONFIG_CMD_DATALEN_S)         // прочитаем один байт
+        | (1 << SPIFI_CONFIG_MCMD_INTLEN_S)       // один dummy байт 0x0 для режима QPI
+        | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
+        | (4 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды и три байта адреса
+        | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
+        ;
+      // читаем один байт
+      SPIFI_CONFIG->DATA8;
+      // ожидаем завершения отработки команды
+      while (!(SPIFI_CONFIG->STAT & SPIFI_CONFIG_STAT_INTRQ_M));
+    }
 
     // настроим SPIFI на работу "с памятью"
-    SPIFI_CONFIG->CTRL = (SPIFI_CONFIG->CTRL & ~(SPIFI_CONFIG_CTRL_CSHIGH_M))
-      | (0 << SPIFI_CONFIG_CTRL_CSHIGH_S)       // 1 такт сигнала SCK между командами
-      | SPIFI_CONFIG_CTRL_CACHE_EN_M            // включение кэширования
-      | SPIFI_CONFIG_CTRL_D_CACHE_DIS_M         // отключение кэширования данных
+    SPIFI_CONFIG->CTRL = 0              // [15:0]  Зарезервировано
+      | SPIFI_CONFIG_CTRL_CSHIGH(0)     // [19:16] Тактов между командами
+      | SPIFI_CONFIG_CTRL_CACHE_EN_M    // [20]    Бит разрешения кэширования
+      | SPIFI_CONFIG_CTRL_D_CACHE_DIS_M // [21]    Бит запрещения кеширования данных
+      // | SPIFI_CONFIG_CTRL_INTEN_M       // [22]    Бит разрешения прерывания
+      // | SPIFI_CONFIG_CTRL_MODE3_M       // [23]    Бит режима 3
+      // | SPIFI_CONFIG_CTRL_SCK_DIV(0)    // [26:24] Делитель тактового сигнала
+      // | SPIFI_CONFIG_CTRL_PREFETCH_DIS_M// [27]    Бит запрещения упреждающих выборок кэш памяти
+      // | SPIFI_CONFIG_CTRL_DUAL_M        // [28]    Бит выбора протокола
+      // | SPIFI_CONFIG_CTRL_RFCLK_M       // [29]
+      | SPIFI_CONFIG_CTRL_FBCLK_M       // [30]
+      // | SPIFI_CONFIG_CTRL_DMAEN_M       // [31]    Бит разрешения запросов DMA
       ;
-    SPIFI_CONFIG->ADDR = 0;
-    SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh) (продолжаем использовать режим чтения без кода команды)
 
-    SPIFI_CONFIG->CLIMIT = (uint32_t)&spifi_limit;// граница кэширования
-
+    SPIFI_CONFIG->CLIMIT = (uintptr_t)__RODATA__ - SPIFI_BASE_ADDRESS;  // установить новый CLIMIT
+    // SPIFI_CONFIG->ADDR = 0;
+    // SPIFI_CONFIG->IDATA = 0x20; // содержимое первого dummy байта команды Fast Read Quad I/O (EBh)
     SPIFI_CONFIG->MCMD =
       (1 << SPIFI_CONFIG_MCMD_INTLEN_S)         // один dummy байт 0x00 для режима QPI и только адреса
       | (3 << SPIFI_CONFIG_MCMD_FIELDFORM_S)    // всё по четырём
       | (6 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды, три байта адреса
       | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
       ;
-
-      }
-
-      extern "C" {
-
-        // extern void (*__preinit_array_start[]) (void) __attribute__((weak));
-        // extern void (*__preinit_array_end[]) (void) __attribute__((weak));
-        extern void (*__init_array_start[]) (void) __attribute__((weak));
-        extern void (*__init_array_end[]) (void) __attribute__((weak));
-
-        // void *__dso_handle;
-
-        // int __cxa_atexit(void (*fn) (void *), void *arg, void *d) { return 0; }
-
-        __attribute__((used)) void SystemInit()
-        {
-          uint32_t count;
-          uint32_t i;
-
-          _init();
-
-          // count = __preinit_array_end - __preinit_array_start;
-          // for (i = 0; i < count; ++i)
-          //   __preinit_array_start[i]();
-
-          // count = __init_array_end - __init_array_start;
-          // for (i = 0; i < count; i++)
-          //   __init_array_start[i]();
-        }
-      */
   }
 }
-
-
-/* Для частоты: 32 MHz F_CPU */
-// __attribute__((noinline, section(".ram_text"))) void delay_us(uint32_t us)
-// {
-//   if (!us) return;
-//   int l = 4;
-//   asm volatile (
-//     "1:                 \n\t"
-//     "addi %0, %0, -1    \n\t" // 1 такт
-//     "bnez %0, 1b        \n\t" // 2 такта
-//     :"=r"(l) : "0" (l)
-//     );
-//   us--;
-//   us = us << 3; // 8 циклов на микросекунду
-//   if (!us) return; // 1 микросекунда с учётом вызова
-
-//   asm volatile (
-//     "1:                 \n\t"
-//     "xor x0, x0, x0     \n\t" // 1 такт
-//     "addi %0, %0, -1    \n\t" // 1 такт
-//     "bne x0, %0, 1b     \n\t" // 2 такта
-//     : "=r" (us) : "0" (us)
-//     );
-// }
-
-// __attribute__((noinline, section(".ram_text"))) void delay_ms(uint32_t ms)
-// {
-//   while (ms--) delay_us(1000);
-// }

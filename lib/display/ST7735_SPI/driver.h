@@ -29,9 +29,8 @@ public:
     // Ускоряет на 11,7% для MIK32
     spi_conf.mode(SPI_MODE3);
 
-    delay_ms(10);
     select();               // CS Выбор дисплея
-    send_command(SWRESET);  // Out of sleep mode
+    send_command(SWRESET);
     delay_ms(50);
     send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
     send_command(MADCTL);

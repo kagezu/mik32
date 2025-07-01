@@ -118,7 +118,7 @@ void PrintF::printf(const char *string, ...)
       case 'x':
         if (digit && (digit < 3)) lng = 1; // явное указание, что число короткое
         switch (lng) {
-          case 1:  ptr -= 2; *(uint16_t *)ptr = sprint((uint8_t)__builtin_va_arg(args, addr), lng); break;
+          case 1:  ptr -= 2; *(uint16_t *)ptr = h_print((uint8_t)__builtin_va_arg(args, addr)); break;
           #ifdef NUM_16
           case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, addr), lng); break;
           #endif
