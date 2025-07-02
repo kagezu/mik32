@@ -14,7 +14,7 @@ constexpr uint16_t BORDER_X = 1;  // Бордюр по краям
 constexpr uint16_t AXIS_X = 10;   // Шаг сетки по X
 constexpr uint16_t AXIS_Y = 10;   // Шаг сетки по Y
 constexpr uint16_t AREF_MV = 1300;// Опорное напряжение в милливольтах
-constexpr uint16_t INT_FQ = 100;  // Hz
+constexpr uint16_t INT_FQ = 1000;  // Hz
 
 SPI spi;
 LCD lcd;
@@ -23,7 +23,7 @@ DMA dma(0, DMA::VERY);
 Encoder enc;
 
 constexpr uint16_t POINTES = ((lcd.max_x() + 1) - (BORDER_X << 1));// размер для отображения
-constexpr uint16_t SIZE_FFT = log2n(POINTES) > log2n(POINTES - 1) ? POINTES << 1 : 1 << (2 + log2n(POINTES));
+constexpr uint16_t SIZE_FFT = ilog2(POINTES) > ilog2(POINTES - 1) ? POINTES << 1 : 1 << (2 + ilog2(POINTES));
 constexpr uint16_t SAMPLES = ((POINTES << 2) + Lp);
 
 Rect view = Rect(
@@ -36,10 +36,7 @@ int16_t buffer[SAMPLES];
 int16_t point[POINTES + 1];
 int16_t point2[POINTES + 1] = {};
 
-FFT<SIZE_FFT> fft;
-
-
-
+FFT<int16_t, SIZE_FFT> fft;
 
 // Коэффициенты Лагранжа
 // int16_t li[Lh][Lp];
@@ -54,6 +51,7 @@ void info()
 {
   static uint32_t fps = 0;
   static uint32_t time = 0;
+  time = 0;
   fps = fps - (fps >> 3) + (INT_FQ / (m_sec - time));
   time = m_sec;
 
@@ -155,8 +153,8 @@ void dft()
 
   fft.run(&buffer[k]);
   int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
-  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[i + k] * s) >> 12);
-  // for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - cosx(i << 3);
+  // for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[i + k] * s) >> 12);
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[(i)+k] * s) >> 12);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -182,6 +180,7 @@ int main(void)
   lcd.color(Blue);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
   dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
+  fft.init();
 
   set_csr(mstatus, MSTATUS_MIE);
   sei();
@@ -193,10 +192,11 @@ int main(void)
     }
 
     sample((uint32_t)Fq.get_item<int>() << 5);
+    m_sec = 0;
     if (OType.value) dft();
     else osc();
-    draw();
     info();
+    draw();
   }
 }
 

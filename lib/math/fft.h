@@ -7,9 +7,14 @@ https://microkontroller.ru/arduino-projects/bystroe-preobrazovanie-fure-fft-na-a
 
 // #include "fft.h"
 #include <inttypes.h>
-#include <math.h>
+#include "fixmath.h"
 
 //---------------------------------------------------------------------------//
+
+// Да! У нас pi/2 = 1, гениальное - просто
+constexpr int32_t PIx2 = 0x400; // Q32.8
+constexpr int32_t   PI = 0x200; // Q32.8
+constexpr int32_t PI_2 = 0x100; // Q32.8
 
 static const uint8_t sine_data[] = { // Q8.8
   0, 2, 3, 5, 6, 8, 9, 11,
@@ -43,123 +48,144 @@ static const uint8_t sine_data[] = { // Q8.8
   250, 250, 251, 251, 251, 252, 252, 252,
   252, 252, 253, 253, 253, 253, 253, 254,
   254, 254, 254, 254, 254, 254, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255
 };
 
-
-int sinx(int a) // Q16.8 sin( Q16.10 )
+static inline int32_t sin(int32_t alpha) // Q32.8 sin( Q32.10 )
 {
-  const int16_t b = a & 0xff;
-  switch ((a >> 8) & 0b11) {
-    case 0b00: return sine_data[b];
-    case 0b01: return sine_data[0xff - b];
-    case 0b10: return -(int)sine_data[b];
-    case 0b11: return -(int)sine_data[0xff - b];
+  const int32_t betta = alpha & (PI_2 - 1);
+  switch ((alpha >> 8) & 0b11) {
+    case 0b00: return sine_data[betta];
+    case 0b01: return sine_data[PI_2 - betta];
+    case 0b10: return -(int32_t)sine_data[betta];
+    case 0b11: return -(int32_t)sine_data[PI_2 - betta];
   }
   return 0;
 }
 
-int cosx(int a) // Q16.8 cos( Q16.10 )
+static inline int32_t cos(int32_t alpha) // Q32.8 cos( Q32.10 )
 {
-  const int16_t b = a & 0xff;
-  switch ((a >> 8) & 0b11) {
-    case 0b00: return sine_data[0xff - b];
-    case 0b01: return -(int)sine_data[b];
-    case 0b10: return -(int)sine_data[0xff - b];
-    case 0b11: return sine_data[b];
+  const int32_t betta = alpha & (PI_2 - 1);
+  switch ((alpha >> 8) & 0b11) {
+    case 0b00: return sine_data[PI_2 - betta];
+    case 0b01: return -(int)sine_data[betta];
+    case 0b10: return -(int)sine_data[PI_2 - betta];
+    case 0b11: return sine_data[betta];
   }
   return 0;
 }
 
 //---------------------------------------------------------------------------//
 
-template<typename U>
-constexpr static inline uint8_t log2n(U x)
+// Целочисленный логарифм по основанию 2
+constexpr int32_t ilog2(int32_t x)
 {
-  uint8_t res = -1;
-  while (x) { x >>= 1; res++; }
-  return res;
+  if (x == 0) return -1;
+  uint32_t result = 0;
+  if (x >= (1 << 16)) { x >>= 8; result += 16; }
+  if (x >= (1 << 8)) { x >>= 8; result += 8; }
+  if (x >= (1 << 4)) { x >>= 4; result += 4; }
+  if (x >= (1 << 2)) { x >>= 2; result += 2; }
+  if (x >= (1 << 1)) { result += 1; }
+  return result;
+}
+
+constexpr inline int32_t pow(const int32_t x, int32_t delta = 0)
+{
+  return 1 << (ilog2(x) + delta);
 }
 
 //-----------------------------FFT Class-------------------------------------//
 
-template< const int N>
+template<typename T, const int32_t N>
 class FFT {
 protected:
-  int16_t *data;
-  int16_t o;
-
-  int16_t in_ps[1 << log2n(N)] = {};
-  float   re[1 << log2n(N)];
-  float   im[1 << log2n(N)];
-
+  T *data;
+  int32_t in[pow(N)] = {};
+  int32_t real[pow(N)];
+  int32_t imag[pow(N)];
 
 public:
-  FFT()
+  init()
   {
-    int16_t c1, f, x = 0;
-    o = log2n(N);
-
-    for (int8_t b = 0; b < o; b++)    // bit reversal
+    int32_t x = 0;
+    for (int8_t bit = 0; bit < ilog2(N); bit++)  // Переворот битов
     {
-      c1 = 1 << b;
-      f = (1 << o) / (c1 + c1);
+      int32_t c1 = 1 << bit;
+      int32_t reverse = pow(N, -1 - bit);
       for (int16_t j = 0; j < c1; j++) {
-        x = x + 1;
-        in_ps[x] = in_ps[j] + f;
+        in[++x] = in[j] + reverse;
       }
     }
   }
 
-  void run(int16_t *data)
+  void run(T *input)
   {
+    data = input;
 
     // обновить входной массив в соответствии с обратным порядком бит
-    for (int16_t i = 0; i < 1 << o; i++) {
-      if (in_ps[i] < N) {
-        re[i] = data[in_ps[i]];
-      }
-      im[i] = 0;
+    for (int i = 0; i < pow(N); i++) {
+      real[i] = (int32_t)data[in[i]];  // Q32
+      imag[i] = 0;
     }
 
-
-
-    int16_t i10, i11, n1;
-    float e, c, s, tr, ti;
-
-    for (int16_t i = 0; i < o; i++)      //fft
+    for (int i = 0; i < ilog2(N); i++) //fft
     {
-      i10 = 1 << i;              // общие значения синуса/косинуса
-      i11 = 1 << (o - i - 1);
-      e = 0x400 / (1 << (i + 1));
-      e = 0 - e;
+      const int32_t i10 = 1 << i; // общие значения синуса/косинуса
+      const int32_t i11 = pow(N, -1 - i);
+      const int32_t e = ilog2(PI) - i;
 
-      for (int16_t j = 0; j < i10; j++) {
-        c = cosx(e * j) / 255.0;
-        s = sinx(e * j) / 255.0;
-        n1 = j;
+      for (int j = 0; j < i10; j++) {
+        const  int32_t c = cos(j << e);  // Q32.8
+        const  int32_t s = sin(j << e);  // Q32.8
+        int32_t n1 = j;
 
-        for (int16_t k = 0; k < i11; k++) {
-          tr = c * re[i10 + n1] - s * im[i10 + n1];
-          ti = s * re[i10 + n1] + c * im[i10 + n1];
+        for (int k = 0; k < i11; k++) {
+          const int32_t _real = (c * real[i10 + n1] + s * imag[i10 + n1]) >> 8;  // Q32
+          const int32_t _imag = (c * imag[i10 + n1] - s * real[i10 + n1]) >> 8;  // Q32
 
-          re[n1 + i10] = re[n1] - tr;
-          re[n1] = re[n1] + tr;
+          real[n1 + i10] = real[n1] - _real;
+          real[n1] = real[n1] + _real;
 
-          im[n1 + i10] = im[n1] - ti;
-          im[n1] = im[n1] + ti;
+          imag[n1 + i10] = imag[n1] - _imag;
+          imag[n1] = imag[n1] + _imag;
 
           n1 = n1 + i10 + i10;
         }
       }
     }
 
-    for (int16_t i = 0; i < 1 << (o - 1); i++) {
-      data[i] = (uint32_t)sqrt(re[i] * re[N - i] - im[i] * im[N - i]) >> ((o >> 1) + 2);  // Амплитуда
+    // Преобразование к амплитуде
+    constexpr int32_t div = ilog2(N) - 1;
+    constexpr int32_t half = pow(N, -1);
+
+    for (int i = 0; i < half; i++) {
+      const int32_t re = real[i] >> div;
+      const int32_t im = imag[i] >> div;
+      real[i] = re * re + im * im;      // квадрат амплитуды
+
     }
   }
 
+  void sum()
+  {
+    int32_t direct = 0;
+    int32_t revers = 0;
+    for (int i = 0; i < half; i++) {
+      if (real[i] < real[i + 1]) { direct += real[i]; real[i] = 0; }
+      else { real[i] += direct; direct = 0; }
+      if (real[half - i] < real[half - i - 1]) { revers += real[half - i]; real[half - i] = 0; }
+      else { real[half - i] += revers; revers = 0; }
+    }
+  }
 
+  void release()
+  {
+    constexpr int32_t half = pow(N, -1);
+    constexpr int32_t div = ilog2(N) - 1;
+    for (int i = 0; i < half; i++) data[i] = fix16_sqrt(real[i]) >> div;
+  }
 };
 
 //------------------------------------------------------------------------------------//
