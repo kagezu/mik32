@@ -14,7 +14,8 @@ constexpr uint16_t BORDER_X = 1;  // Бордюр по краям
 constexpr uint16_t AXIS_X = 10;   // Шаг сетки по X
 constexpr uint16_t AXIS_Y = 10;   // Шаг сетки по Y
 constexpr uint16_t AREF_MV = 1300;// Опорное напряжение в милливольтах
-constexpr uint16_t INT_FQ = 1000;  // Hz
+constexpr uint16_t INT_FQ = 1000; // Hz
+constexpr uint16_t ADC_DEPTH = 12;// Разрядность АЦП
 
 SPI spi;
 LCD lcd;
@@ -36,7 +37,7 @@ int16_t buffer[SAMPLES];
 int16_t point[POINTES + 1];
 int16_t point2[POINTES + 1] = {};
 
-FFT<int16_t, SIZE_FFT> fft;
+FFT<SIZE_FFT, ADC_DEPTH> fft;
 
 // Коэффициенты Лагранжа
 // int16_t li[Lh][Lp];
@@ -51,7 +52,6 @@ void info()
 {
   static uint32_t fps = 0;
   static uint32_t time = 0;
-  time = 0;
   fps = fps - (fps >> 3) + (INT_FQ / (m_sec - time));
   time = m_sec;
 
@@ -92,7 +92,7 @@ void osc()
   int32_t med = 0;
   int16_t k = 0;
 
-  int16_t min = 1 << 12, max = 0;
+  int16_t min = 1 << ADC_DEPTH, max = 0;
   for (int i = 0; i < END_POINT; i++) {
     const int j = i + (POINTES >> 1);
     if (min > buffer[j]) min = buffer[j];
@@ -101,9 +101,9 @@ void osc()
   med = (min + max) >> 1;
 
   int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
-  if (VType.value == 0) med = ((med * s) >> 12) - (view.height >> 1) - ZLevel.value;
+  if (VType.value == 0) med = ((med * s) >> ADC_DEPTH) - (view.height >> 1) - ZLevel.value;
   else med = -ZLevel.value;
-  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y + med - ((buffer[i + k] * s) >> 12);
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y + med - ((buffer[i + k] * s) >> ADC_DEPTH);
 
   //////////////////////////
 
@@ -145,16 +145,20 @@ void draw()
 void dft()
 {
   constexpr uint16_t END_POINT = SAMPLES - SIZE_FFT;
+  const int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
+
   int16_t k = 0;
   int16_t max = 0;
   for (int i = 0; i < END_POINT; i++) {
     if (max < buffer[i]) { max = buffer[i]; k = i; }
   }
 
-  fft.run(&buffer[k]);
-  int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
-  // for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[i + k] * s) >> 12);
-  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[(i)+k] * s) >> 12);
+  fft.run(buffer + k);
+  fft.contrast();
+  fft.sqrt(buffer + k);
+  // fft.log(buffer + k);
+
+  for (int16_t i = 0; i <= POINTES; i++) point[i] = view.max_y - ((buffer[i + k] * s) >> ADC_DEPTH);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -192,11 +196,10 @@ int main(void)
     }
 
     sample((uint32_t)Fq.get_item<int>() << 5);
-    m_sec = 0;
     if (OType.value) dft();
     else osc();
-    info();
     draw();
+    info();
   }
 }
 

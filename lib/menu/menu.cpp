@@ -20,7 +20,9 @@ char *MItem::get_path(bool f)
     if (active) return MLIST(value)->get_path(false);
     ptr = sjoin(ptr, MLIST(value)->name);
   }
-  if (type != ListType) sjoin(ptr, "*");
+  if (type == OptionType)ptr = sjoin(ptr, get_item<char * >());//temp
+  if (type == ValueType)ptr = sjoin(ptr, "V");//temp
+  sjoin(ptr, " <<");
   return buffer;
 }
 

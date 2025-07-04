@@ -8,8 +8,8 @@
 // Поворот дисплея
 
 // #define LCD_ROT     ROT_0
-// #define LCD_ROT     ROT_90
-#define LCD_ROT     ROT_180
+#define LCD_ROT     ROT_90
+// #define LCD_ROT     ROT_180
 // #define LCD_ROT     ROT_270
 // #define LCD_ROT     ROT_X
 // #define LCD_ROT     ROT_Y
