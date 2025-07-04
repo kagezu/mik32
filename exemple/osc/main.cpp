@@ -57,6 +57,7 @@ void info()
 
   lcd.viewport();
   lcd.color(Aqua);
+  lcd.color2(Yellow);
   lcd.printf(
     P("\f%u kHz %umV %cC %S  "),
     1000 / Fq.get_item<int>(),
@@ -64,7 +65,9 @@ void info()
     VType.get_item<char>(),
     OType.get_item<char *>()
   );
-  lcd.printf(P("\f\n%s              "), menu.get_path());
+  lcd.printf("\f\n");
+  menu.get_path(&lcd);
+  lcd.prints("         ");
   lcd.at(lcd.max_x(), 0);
   lcd.printf(P("\b\b\b\b\b\b\b\vFPS %.1.3q "), fps);
 }
@@ -96,9 +99,12 @@ void osc()
   for (int i = 0; i < END_POINT; i++) {
     const int j = i + (POINTES >> 1);
     if (min > buffer[j]) min = buffer[j];
-    if (max < buffer[j]) { max = buffer[j]; k = i; }
+    if (max < buffer[j]) { max = buffer[j]; }//k = i; }
   }
   med = (min + max) >> 1;
+
+  while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] > med) break;
+  while (k++ < END_POINT) if (buffer[k + (POINTES >> 1)] <= med) break;
 
   int32_t s = AREF_MV * AXIS_Y / VScale.get_item<int>(); // Q32.12
   if (VType.value == 0) med = ((med * s) >> ADC_DEPTH) - (view.height >> 1) - ZLevel.value;

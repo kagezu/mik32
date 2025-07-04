@@ -15,6 +15,11 @@
 #define LEFT_RIGHT   0x00
 #define LEFT_ALGIN   0x80
 
+// для mik32 должно быть чётным + 1 байт
+#define PRINT_BUFFER_SIZE   33
+
+char PrintF::buffer[PRINT_BUFFER_SIZE];
+
 void PrintF::printf(const char *string, ...)
 {
   char ch;

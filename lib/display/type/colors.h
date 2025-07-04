@@ -79,7 +79,6 @@
 #define Olive                 RGB(0x808000)   // #808000
 #define Lime                  RGB(0x00FF00)   // #00FF00
 #define Green                 RGB(0x008000)   // #008000
-#define Aqua                  RGB(0x00FFFF)   // #00FFFF
 #define Teal                  RGB(0x008080)   // #008080
 #define Blue                  RGB(0x0000FF)   // #0000FF
 #define Navy                  RGB(0x000080)   // #000080

@@ -1,6 +1,6 @@
 #pragma once
 #include "type/include.h"
-#include "print/printf.h"
+#include "printf.h"
 #include "gfx/gfx.h"
 
 #define FONT_TAB_FACTOR     2
@@ -32,6 +32,7 @@ public:
 
 private:
   C _color;         // Цвет
+  C _color2;        // Цвет 2
   C _background;    // Фон
   Rect *_viewport;  // Область вывода
   Rect _didplay = Rect(0, 0, max_x(), max_y());
@@ -63,6 +64,7 @@ public:
   ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
 
   ATTR_INLINE inline void color(C c) { _color = c; }
+  ATTR_INLINE inline void color2(C c) { _color2 = c; }
   ATTR_INLINE inline void background(C b) { _background = b; }
   ATTR_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
   ATTR_INLINE inline void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
@@ -171,8 +173,8 @@ public:
 
       case '\e':
         break;
-      case '\0':
-        point_x += _font.weight + _interval;
+      case '\1':
+        { C tmp = _color; _color = _color2; _color2 = tmp; }
         break;
 
       default:

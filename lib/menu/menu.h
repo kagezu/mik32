@@ -1,14 +1,16 @@
 #pragma once
 #include "core.h"
+#include "printf.h"
 
 enum MenuType : int8_t {
-  ItemType,
+  RootType,
   ListType,
   ActionType,
-  OptionType,
-  ValueType
+  ValueType,
+  TextType,
+  CharType,
+  IntType
 };
-
 
 class MItem {
 public:
@@ -24,20 +26,13 @@ public:
   const void *link[];
 
 public:
-  MItem *get(reg);
-  char *get_path(bool f = true);
+  template<typename T>
+  T get_item() { return ((T *)(link[0]))[value]; }
+  MItem *get(reg v) { return ((MItem *)(link[v])); }
+
+  void get_path(PrintF *);
   void next(reg);
   reg select();
 
-  template<typename T>
-  T get_item()
-  {
-    if (type == OptionType)
-      return ((T *)(link[0]))[value];
-    return 0;
-  }
 
-protected:
-  static char *ptr;
-  static char buffer[];
 };

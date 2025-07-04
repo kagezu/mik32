@@ -1,13 +1,12 @@
+// #include "printf.h"
 #pragma once
 #include "core.h"
 #include "accel.h"
 
-// для mik32 должно быть чётным + 1 байт
-#define PRINT_BUFFER_SIZE   33
 
 class PrintF {
 private:
-  char buffer[PRINT_BUFFER_SIZE];
+  static char buffer[];
   static reg strlen(char *);
 
 public:
