@@ -2,6 +2,14 @@
 #include "core.h"
 #include "printf.h"
 
+#define ADD_MTEXT(name, text, start, arr) MItem name = { text, TextType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr }
+#define ADD_MINT(name, text, start, arr) MItem name = { text, IntType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr }
+#define ADD_MCHAR(name, text, start, arr) MItem name = { text, CharType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr }
+#define ADD_MVALUE(name, text, start, min, max) MItem name = { text, ValueType, start, min, max, nullptr }
+#define ADD_MROOT(name, text, start, arr) MItem name = { text, RootType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr}
+// #define ADD_MLIST(name, text, start, arr) MItem name = { text, ListType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr }
+// #define ADD_MACTIVE(name, text, start, arr) MItem name = { text, ActiveType, start, 0, sizeof(arr) / sizeof(arr[0]) , arr }
+
 enum MenuType : int8_t {
   RootType,
   ListType,

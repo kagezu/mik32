@@ -58,7 +58,6 @@ _start:
     la_abs  gp, _gp
     
     # Установка вектора прерывания
-    # в зависимости от результата сборки
     lui t0, %hi(trap_handler)
     csrrw zero, mtvec, t0
 
@@ -73,6 +72,7 @@ _start:
     la_abs  a2, __BSS_END__
     memset a1, a2, zero
     
+    # Конфигуратор
     jalr_abs ra, SystemInit
 
     # Инициализация статических конструкторов

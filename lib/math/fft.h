@@ -6,7 +6,7 @@
 //---------------------------------------------------------------------------//
 
 // количество точек должно быть >= N
-constexpr static uint16_t sine_data[] = {
+constexpr static uint16_t ATTR_RAM sin_lut[] = {
    0,   25,   50,   75,  101,  126,  151,  176,  201,  226,  251,  276,  301,  326,  351,  376,
  401,  426,  451,  476,  501,  526,  551,  576,  601,  626,  651,  675,  700,  725,  750,  774,
  799,  824,  848,  873,  897,  922,  946,  971,  995, 1020, 1044, 1068, 1092, 1117, 1141, 1165,
@@ -27,30 +27,32 @@ constexpr static uint16_t sine_data[] = {
 };
 
 // У нас pi/2 = 1
-constexpr int32_t PI_2 = sizeof(sine_data) / 2 - 1; // Q32.E
-constexpr int32_t   PI = PI_2 << 1;                 // Q32.E
-constexpr int32_t PIx2 = PI_2 << 2;                 // Q32.E
+constexpr int32_t PI_2 = sizeof(sin_lut) / 2 - 1; // Q32.E
+constexpr int32_t   PI = PI_2 << 1;               // Q32.E
+constexpr int32_t PIx2 = PI_2 << 2;               // Q32.E
+constexpr int32_t E = ilog2(sin_lut[PI_2]);       // Дробная часть sin/cos
+constexpr int32_t W = ilog2(PIx2);                // Дробная часть аргумента sin/cos
 
-constexpr static inline int32_t sin(int32_t alpha)  // Q32.E sin( Q32.11 )
+constexpr static inline int32_t sin(int32_t alpha)  // Q32.E sin( Q32.W )
 {
   const int32_t betta = alpha & (PI_2 - 1);
   switch ((alpha >> ilog2(PI_2)) & 0b11) {
-    case 0b00: return sine_data[betta];
-    case 0b01: return sine_data[PI_2 - betta];
-    case 0b10: return -sine_data[betta];
-    case 0b11: return -sine_data[PI_2 - betta];
+    case 0b00: return sin_lut[betta];
+    case 0b01: return sin_lut[PI_2 - betta];
+    case 0b10: return -sin_lut[betta];
+    case 0b11: return -sin_lut[PI_2 - betta];
   }
   return 0;
 }
 
-constexpr static inline int32_t cos(int32_t alpha) // Q32.E cos( Q32.11 )
+constexpr static inline int32_t cos(int32_t alpha) // Q32.E cos( Q32.W )
 {
   const int32_t betta = alpha & (PI_2 - 1);
   switch ((alpha >> ilog2(PI_2)) & 0b11) {
-    case 0b00: return sine_data[PI_2 - betta];
-    case 0b01: return -sine_data[betta];
-    case 0b10: return -sine_data[PI_2 - betta];
-    case 0b11: return sine_data[betta];
+    case 0b00: return sin_lut[PI_2 - betta];
+    case 0b01: return -sin_lut[betta];
+    case 0b10: return -sin_lut[PI_2 - betta];
+    case 0b11: return sin_lut[betta];
   }
   return 0;
 }
@@ -83,15 +85,14 @@ public:
   {
     // Определяем количество свободных бит, и используем их для повышения точности
     constexpr int32_t D = (sizeof(int32_t) << 3);   // Битов в используемом типе
-    constexpr int32_t E = ilog2(cos(0));            // Дробная длинна функций sin/cos
-    constexpr int32_t P = D - M - E - ilog2(S / 4); // P бит под дробную часть
-    constexpr int32_t norm = ilog2(S / 4) + P;      // Нормализация амплитуды результата
+    constexpr int32_t P = D - M - E - ilog2(N(-2)); // Остаток под дробную часть
+    constexpr int32_t norm = ilog2(N(-2)) + P;      // Нормализация амплитуды результатов
     (void)(1 << P); // Тут ошибка компиляции при переполнении
 
     // Быстрый расчет FFT для 4-точечного сигнала.
     // Основан на простоте 4-точечной синусоиды.
     // При N = 512, экономия ~10% времени.
-    for (int i = 0; i < N(-2); i++) {                  // Q32.P
+    for (int i = 0; i < N(-2); i++) {             // Q32.P
       const int32_t x0 = (int32_t)input[in[i]] << P;
       const int32_t x1 = (int32_t)input[in[i] + N(-2)] << P;
       const int32_t x2 = (int32_t)input[in[i] + N(-1)] << P;
@@ -113,11 +114,11 @@ public:
       const int32_t p = N(-1 - i);// p = N/2 / q; вызовов DFT для каждого корня
       // Будем считать аргумент как j*2^w; => w = log2(π/q) = log2 π - i;
       // Таким образом мы избавились от операций деления и последующих умножений.
-      const int32_t w = ilog2(PI) - i;
+      const int32_t w = ilog2(PI) - i; // w = W - i - 1;
 
       // реализация бабочки
       for (int j = 0; j < q; j++) {
-        const int32_t c = cos(j << w); // Q32.E
+        const int32_t c = cos(j << w); // Q32.E cos( Q32.W )
         const int32_t s = sin(j << w);
         const int32_t q2 = q << 1;
         int32_t n = j;
@@ -136,7 +137,7 @@ public:
 
     // Преобразование к квадрату  амплитуды.
     for (int i = 0; i < N(-1); i++) {
-      const int32_t re = real[i] >> norm; // Q32.P -> Q32
+      const int32_t re = real[i] >> norm; // Q32.PN -> Q32
       const int32_t im = imag[i] >> norm;
       real[i] = re * re + im * im;
     }

@@ -53,7 +53,7 @@ void info()
   static uint32_t fps = 0;
   static uint32_t time = 0;
   fps = fps - (fps >> 3) + (INT_FQ / (m_sec - time));
-  time = m_sec;
+  // time = m_sec;
 
   lcd.viewport();
   lcd.color(Aqua);
@@ -202,10 +202,11 @@ int main(void)
     }
 
     sample((uint32_t)Fq.get_item<int>() << 5);
+    m_sec = 0;
     if (OType.value) dft();
     else osc();
-    draw();
     info();
+    draw();
   }
 }
 
