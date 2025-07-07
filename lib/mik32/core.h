@@ -3,6 +3,8 @@
 
 // ISR
 
+#define ISR extern "C" __attribute__((used, interrupt, section(".trap_text"))) void trap_handler()
+
 void sei();
 void cli();
 

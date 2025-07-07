@@ -5,7 +5,6 @@
 void MItem::next(reg step)
 {
   switch (type) {
-    case RootType:
     case ListType:
       if (active) return MLIST(value)->next(step);
 
@@ -21,7 +20,6 @@ reg MItem::select()
   reg current_level = 0;
 
   switch (type) {
-    case RootType:
     case ListType:
       if (active)
         current_level = MLIST(value)->select();
@@ -29,10 +27,10 @@ reg MItem::select()
       if (current_level-- > 0) active = false;
       break;
 
-    case ActionType:
-      ((void (*)())(link[0]))();
-      current_level = level;
-      break;
+      // case ActionType:
+      //   ((void (*)())(link[0]))();
+      //   current_level = level;
+      //   break;
 
     default:
       current_level = 1;
@@ -41,13 +39,12 @@ reg MItem::select()
   return current_level;
 }
 
-void MItem::get_path(PrintF *out)
+void MItem::print(PrintF *out)
 {
   switch (type) {
-    case RootType:
     case ListType:
       out->printf("%s ", name);
-      if (active) MLIST(value)->get_path(out);
+      if (active) MLIST(value)->print(out);
       else out->printf("\1%s\1 ", MLIST(value)->name);
       break;
 

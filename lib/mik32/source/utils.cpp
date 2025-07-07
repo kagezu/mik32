@@ -31,15 +31,15 @@ __attribute__((noinline, section(".ram_text"))) void delay_ms(uint32_t ms)
 
 void sei()
 {
-  // set_csr(mstatus, MSTATUS_MIE);
-  set_csr(mie, MIE_MEIE);
+  set_csr(mstatus, MSTATUS_MIE);
+  // set_csr(mie, MIE_MEIE);
   // set_csr(mie, MIE_MTIE);
 }
 
 void cli()
 {
-  // clear_csr(mstatus, MSTATUS_MIE);
-  clear_csr(mie, MIE_MEIE);
+  clear_csr(mstatus, MSTATUS_MIE);
+  // clear_csr(mie, MIE_MEIE);
   // clear_csr(mie, MIE_MTIE);
 }
 

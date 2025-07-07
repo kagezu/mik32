@@ -26,18 +26,21 @@ public:
 
     // Установка порога для буфера
     spi_conf.thr(sizeof(C) == 2 ? SPI_THR_2 : SPI_THR_3);
-    // Ускоряет на 11,7% для MIK32
-    spi_conf.mode(SPI_MODE3);
+    // Настройка для инициализации
+    spi_conf.mode(SPI_MODE0);
 
     select();               // CS Выбор дисплея
     send_command(SWRESET);
-    delay_ms(50);
+    delay_ms(100);
     send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
     send_command(MADCTL);
     send_byte(position);
     set_rgb_format();
     send_command(DISPON);   // Display On
     release();
+
+    // Ускоряет ещё на 11,7% для MIK32
+    spi_conf.mode(SPI_MODE3);
   }
 
 protected:

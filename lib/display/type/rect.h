@@ -18,7 +18,6 @@ public:
   Rect(int16_t x0, int16_t y0, int16_t x1, int16_t y1) : min_x(x0), min_y(y0), max_x(x1), max_y(y1), width(x1 - x0 + 1), height(y1 - y0 + 1)
   {}
 
-
   bool cut(Rect &rect)
   {
     if (rect.min_x < min_x) rect.min_x = min_x;

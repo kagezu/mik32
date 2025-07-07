@@ -9,9 +9,7 @@ const char _vt[] = { 'A', 'D' };
 ADD_MTEXT(OType, "ВЫВОД", 0, _type);
 ADD_MINT(Fq, "ЧАСТОТА", 3, _fq);
 ADD_MINT(VScale, "НАПРЯЖЕНИЕ", 0, _vsc);
-ADD_MCHAR(VType, "AC/DC", 1, _vt);
-ADD_MVALUE(ZLevel, "Zero Level", 0, -120, 120);
+ADD_MCHAR(VType, "AC/DC", 0, _vt);
+ADD_MVALUE(ZLevel, "УСТАНОВКА НУЛЯ", 0, -200, 200);
 
-MItem *_root[] = { &OType ,&Fq, &VScale, &VType, &ZLevel };
-
-ADD_MROOT(menu, "МЕНЮ:", 0, _root);
+MItem menu = { "", ListType, 0, 0, 4 , { &OType ,&Fq, &VScale, &VType, &ZLevel } };
