@@ -2,7 +2,7 @@
 #pragma once
 #include "core.h"
 
-static const int32_t _fix16_log2_lut[33] PROGMEM = {
+constexpr static int32_t _fix16_log2_lut[33] PROGMEM = {
   -1, 0, 65536, 103872,131072,152170,169408,183983,196608,
   207744,217706,226717,234944,242512,249519,256042,262144,
   267876,273280,278392,283242,287855,292253,296456,300480,
@@ -15,7 +15,7 @@ static const int32_t _fix16_log2_lut[33] PROGMEM = {
  * @param x
  * @return const int32_t
  */
-const inline int32_t fix16_log2(uint8_t x) { return _fix16_log2_lut[x]; }
+constexpr static inline int32_t fix16_log2(uint8_t x) { return _fix16_log2_lut[x]; }
 
 // log2(x!), x = [0...32], log(x!) = Σ log(x)
 constexpr static inline int32_t fix16_log2_fact(int8_t x)

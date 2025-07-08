@@ -37,16 +37,16 @@ Rect view = Rect(
   lcd.max_x() - BORDER_X,
   lcd.max_y() - BORDER_BOTTOM
 );
-int buffer[SAMPLES];
+uint16_t buffer[SAMPLES];
 int point[POINTES + 1];
 int point2[POINTES + 1] = {};
 
 FFT<SAMPLES, ADC_DEPTH> fft;
 
 // Коэффициенты Лагранжа
-int32_t li[STEP_GREED][Lp];
-int32_t io_bits = ADC_DEPTH;
-Lagrange L(li, io_bits);
+// int32_t li[STEP_GREED][Lp];
+// int32_t io_bits = ADC_DEPTH;
+// Lagrange L(li, io_bits);
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -108,10 +108,10 @@ int osc_trigger(int &median, Trigger trig = Front)
 }
 
 // Линейное преобразование массива в координатное пространство дисплея
-template<typename T>
-void apply_scale(T in[], int32_t scale, int32_t offset)
+template<typename I, typename O>
+void apply_scale(I in[], O out[], int32_t scale, int32_t offset)
 {
-  for (int16_t i = 0; i <= POINTES; i++) point[i] = offset - ((in[i] * scale) >> ADC_DEPTH);
+  for (int16_t i = 0; i <= POINTES; i++) out[i] = offset - ((in[i] * scale) >> ADC_DEPTH);
 }
 
 ////////////////////////////////// Axis ///////////////////////////////////////
@@ -203,12 +203,12 @@ int main(void)
 
     if (tick < ADC_TIME) {
       tick = ADC_TIME;
-
     }
+
     T32_1_TOP(tick);// Выставляем количество тактов между семплами
     T32_1_C; // Обнуляем таймер, на случай если он уже выше TOP
-    // if (tick > MAX_TIME) tick = MAX_TIME;
-    if (tick > MAX_TIME) tick >>= 1;
+    if (tick > MAX_TIME) tick = MAX_TIME;
+    // if (tick > MAX_TIME) tick >>= 1;
 
     // Запрещаем прерывания, поскольку
     // ADC не имеет аппаратной связи с DMA
@@ -235,9 +235,9 @@ int main(void)
 
     // Настраиваем смещение по вертикали
     int shift = VType.value == 0 ? MIDLE_AXIS + ((median * scale) >> ADC_DEPTH) : lcd.max_y() - BORDER_BOTTOM;
-    shift -= ZLevel.value;
+    // shift -= ZLevel.value;
 
-    apply_scale(buffer + offset, scale, shift);
+    apply_scale(buffer + offset, point, scale, shift);
     greed_draw();
     draw();
     info();
