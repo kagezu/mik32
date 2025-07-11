@@ -38,6 +38,4 @@ public:
   void print(PrintF *);
   void next(reg);
   reg select();
-
-
 };

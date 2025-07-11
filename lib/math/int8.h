@@ -15,10 +15,10 @@ constexpr static int32_t _fix16_log2_lut[33] PROGMEM = {
  * @param x
  * @return const int32_t
  */
-constexpr static inline int32_t fix16_log2(uint8_t x) { return _fix16_log2_lut[x]; }
+constexpr inline int32_t fix16_log2(uint8_t x) { return _fix16_log2_lut[x]; }
 
 // log2(x!), x = [0...32], log(x!) = Σ log(x)
-constexpr static inline int32_t fix16_log2_fact(int8_t x)
+constexpr inline int32_t fix16_log2_fact(int8_t x)
 {
   int32_t res = 0;
   for (uint8_t i = 2; i <= x; i++) res += _fix16_log2_lut[i];
@@ -27,7 +27,7 @@ constexpr static inline int32_t fix16_log2_fact(int8_t x)
 
 // Целочисленный логарифм по основанию 2
 template<typename U>
-constexpr static inline int8_t ilog2(U x)
+constexpr inline int8_t ilog2(U x)
 {
   uint8_t res = -1;
   while (x) { x >>= 1; res++; }

@@ -101,7 +101,7 @@ public:
     setup(dst, src, len);
     read(DMA::MEM, WORD, HALF, INC, NONE);
     write(DMA::MEM, HALF, HALF, IMM, NONE);
-    DMA_CH->CFG = config;
+    // DMA_CH->CFG = config;
   }
 
   // adc -> mem

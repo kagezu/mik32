@@ -121,8 +121,8 @@ static const uint32_t data[] PROGMEM = {
   0x00f1171f,   // Е
   0x2ae23aa0,   // Ж
   0x00698496,   // З
-  0x00bbdd96,   // Й
   0x00bbdd90,   // И
+  0x00bbdd96,   // Й
   0x00953359,   // К
   0x00baaaac,   // Л
   0x2318d771,   // М
