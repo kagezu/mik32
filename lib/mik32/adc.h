@@ -18,7 +18,8 @@ public:
   constexpr static int AREF = 1300;  // Опорное напряжение в милливольтах
 
 public:
-  static void init(uint8_t ch) // по умолчанию 500 kHz
+  // template<const int ch>
+  ATTR_INLINE static void init(const int ch)
   {
     switch (ch) {
       case 0: ADC0(ANALOG); break;
@@ -32,6 +33,7 @@ public:
     }
     chanel(ch);
   }
+
 
   // Преобразует число тактов в допустимое SAH_TIME
   ATTR_INLINE static int cycle(int32_t tick)

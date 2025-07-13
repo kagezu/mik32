@@ -1,18 +1,18 @@
 // #include "printf.h"
 #pragma once
-#include "core.h"
+#include "inttypes.h"
 #include "accel.h"
 
 
 class PrintF {
 private:
   static char buffer[];
-  static reg strlen(char *);
+  static char strlen(char *);
 
 public:
   void printf(const char *, ...);
   void prints(const char *);
-  void prints(char *, reg algin = 0);
+  void prints(char *, char algin = 0);
   uint16_t h_print(uint8_t);
 
   virtual void putc(uint8_t) = 0;

@@ -5,26 +5,26 @@
 #include <timer32.h>
 #include <epic.h>
 
-#define T16_0_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M
-#define T16_1_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M
-#define T16_2_POWER_ON            PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_2_M
-#define T16_0_POWER_OFF           PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_0_M
-#define T16_1_POWER_OFF           PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_1_M
-#define T16_2_POWER_OFF           PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_2_M
+#define T16_0_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M
+#define T16_1_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M
+#define T16_2_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_2_M
+#define T16_0_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_0_M
+#define T16_1_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_1_M
+#define T16_2_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_2_M
 
-#define T16_0_ON                  TIMER16_0->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_1_ON                  TIMER16_1->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_2_ON                  TIMER16_2->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_0_OFF                 TIMER16_0->CR = 0
-#define T16_1_OFF                 TIMER16_1->CR = 0
-#define T16_2_OFF                 TIMER16_2->CR = 0
+#define T16_0_EN          TIMER16_0->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
+#define T16_1_EN          TIMER16_1->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
+#define T16_2_EN          TIMER16_2->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
+#define T16_0_D           TIMER16_0->CR = 0
+#define T16_1_D           TIMER16_1->CR = 0
+#define T16_2_D           TIMER16_2->CR = 0
 
-#define T16_0_FQ(div, fq)         TIMER16_0->CR = TIMER16_0->CFGR = div << TIMER16_PRESCALER_S; \
-                                  TIMER16_0->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
-#define T16_1_FQ(div, fq)         TIMER16_1->CR = TIMER16_1->CFGR = div << TIMER16_PRESCALER_S; \
-                                  TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
-#define T16_2_FQ(div, fq)         TIMER16_2->CR = TIMER16_2->CFGR = div << TIMER16_PRESCALER_S; \
-                                  TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
+#define T16_0_FQ(div, fq) TIMER16_0->CR = TIMER16_0->CFGR = div << TIMER16_PRESCALER_S; \
+                          TIMER16_0->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
+#define T16_1_FQ(div, fq) TIMER16_1->CR = TIMER16_1->CFGR = div << TIMER16_PRESCALER_S; \
+                          TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
+#define T16_2_FQ(div, fq) TIMER16_2->CR = TIMER16_2->CFGR = div << TIMER16_PRESCALER_S; \
+                          TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
 
 
 
@@ -34,7 +34,7 @@
   + T32_[0, 1, 2] - счётчик
   + T32_[0, 1, 2]_PS Power Set включить питание
   + T32_[0, 1, 2]_PC Power Clear выключить питание
-  + T32_[0, 1, 2]_E Enable начать отсчёт
+  + T32_[0, 1, 2]_EN Enable начать отсчёт
   + T32_[0, 1, 2]_D Disable приостановить отсчёт
   + T32_[0, 1, 2]_C Clear сбросить таймер
   + T32_[0, 1, 2]_TOP(TOP + 1) количество тактов в цикле
@@ -42,8 +42,8 @@
   + T32_[0, 1, 2]_IS Int Set установить линию прерываний
   + T32_[0, 1, 2]_OVF переполнение
   + T32_[0, 1, 2]_UDF обнуление
-  + T32_[0, 1, 2]_IC Int Clear сброс маски прерываний
-  + T32_[0, 1, 2]_FC Flag Clear сброс флагов прерываний
+  + T32_[0, 1, 2]_IM Int Mask маски прерываний
+  + T32_[0, 1, 2]_IC Int Clear сброс флагов прерываний
 */
 #define T32
 
@@ -54,9 +54,9 @@
 #define T32_1_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER32_1_M
 #define T32_2_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER32_2_M
 
-#define T32_0_E           TIMER32_0->ENABLE = TIMER32_ENABLE_TIM_EN_M
-#define T32_1_E           TIMER32_1->ENABLE = TIMER32_ENABLE_TIM_EN_M
-#define T32_2_E           TIMER32_2->ENABLE = TIMER32_ENABLE_TIM_EN_M
+#define T32_0_EN          TIMER32_0->ENABLE = TIMER32_ENABLE_TIM_EN_M
+#define T32_1_EN          TIMER32_1->ENABLE = TIMER32_ENABLE_TIM_EN_M
+#define T32_2_EN          TIMER32_2->ENABLE = TIMER32_ENABLE_TIM_EN_M
 #define T32_0_D           TIMER32_0->ENABLE = 0;
 #define T32_1_D           TIMER32_1->ENABLE = 0;
 #define T32_2_D           TIMER32_2->ENABLE = 0;
@@ -88,13 +88,13 @@
 #define T32_1_IS          EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_1_S)
 #define T32_2_IS          EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_2_S)
 
-#define T32_0_IC          TIMER32_0->INT_MASK = 0
-#define T32_1_IC          TIMER32_1->INT_MASK = 0
-#define T32_2_IC          TIMER32_2->INT_MASK = 0
+#define T32_0_IM          TIMER32_0->INT_MASK
+#define T32_1_IM          TIMER32_1->INT_MASK
+#define T32_2_IM          TIMER32_2->INT_MASK
 
-#define T32_0_FC          TIMER32_0->INT_CLEAR = -1
-#define T32_1_FC          TIMER32_1->INT_CLEAR = -1
-#define T32_2_FC          TIMER32_2->INT_CLEAR = -1
+#define T32_0_IC          TIMER32_0->INT_CLEAR = -1
+#define T32_1_IC          TIMER32_1->INT_CLEAR = -1
+#define T32_2_IC          TIMER32_2->INT_CLEAR = -1
 
 
 #define EPIC_C            EPIC->CLEAR = -1

@@ -11,7 +11,7 @@ constexpr int Lp = 10;            // Узловых точек для интер
 constexpr int INT_FQ = 1000;      // Hz
 constexpr int ADC_CH = 2;         // Номер канала ADC
 Encoder enc;
-DMA dma(0, DMA::VERY);
+DMA<0, DMA_VH> dma;
 
 // SPI_1
 SPI spi;
@@ -41,31 +41,28 @@ Lagrange<Lp, P_SEG, ADC::DEPTH> L;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-volatile uint32_t m_sec = 0;
-
 // Вывод на экран текстовой информации
 void print_info()
 {
   static int fps = 0;
   static uint32_t time = 0;
-  fps = fps - (fps >> 3) + (INT_FQ / (m_sec - time));
-  time = m_sec;
+  fps = fps - (fps >> 2) + (F_CPU / (T32_2 - time));
+  time = T32_2;
 
   lcd.viewport();
   lcd.color(Aqua);
   lcd.color2(Yellow);
   lcd.printf(
-    P("\f\1%u\1us \1%u\1mV %S %S  "),
+    P("\f\1%u\1us \1%u\1mV %S  "),
     FqScale.get_item<int>(),
     VScale.get_item<int>(),
-    VType.get_item<char *>(),
-    AppMode.get_item<char *>()
+    VType.get_item<char *>()
   );
   lcd.printf("\f\n");
   menu.print(&lcd);
   lcd.prints("             ");
   lcd.at(lcd.max_x(), 0);
-  lcd.printf(P("\b\b\b\b\b\b\bFPS %.1.3q "), fps);
+  lcd.printf(P("\b\b\b\b\b\b\b\b\bFPS %.1.2q "), fps);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -154,6 +151,21 @@ void data_draw()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void init_timers()
+{
+  ENCODER_C(IN); ENCODER_C(P_VCC);
+  USER_B(IN); USER_B(P_GND);
+
+  T32_2_PS; T32_2_EN;
+  T32_1_PS; T32_1_EN;
+  T32_0_PS; T32_0_FQ(INT_FQ);
+  T32_0_OVF; T32_0_IS; T32_0_EN;
+  set_csr(mie, MIE_MEIE);
+  sei();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void test_button()
 {
   // if (USER_B(GET)) {
@@ -162,47 +174,38 @@ void test_button()
   // }
   if (!ENCODER_C(GET)) {
     menu.select();
+    menu.save((int *)RTC->REG);
     while (!ENCODER_C(GET));
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#define RTC_REG_SAVED 1
+
 int main(void)
 {
-  ENCODER_C(IN);
-  ENCODER_C(P_VCC);
+  if (RTC->REG[15] == RTC_REG_SAVED)
+    menu.load((int *)RTC->REG);
+  RTC->REG[15] = RTC_REG_SAVED;
 
-  USER_B(IN);
-  USER_B(P_GND);
-
-  T32_1_PS;
-  T32_1_E;
-
-  T32_0_PS;
-  T32_0_FQ(INT_FQ);
-  T32_0_OVF;
-  T32_0_IS;
-  T32_0_C;
-  T32_0_E;
-
+  init_timers();
   lcd.init();
-  lcd.font(micro_5x6, 1, 4);
+  lcd.font(system_5x7, 1, 3);
   lcd.color(Blue);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
-  dma.adc(DMA::TIMER1, buffer, sizeof(buffer));
+  dma.adc(DMA_TIMER1, buffer, sizeof(buffer));
   fft.init();
   ADC::init(ADC_CH);
 
-  set_csr(mie, MIE_MEIE);
-  sei();
+
 
   while (true) {
     const int32_t scale = (ADC::AREF * P_SEG) / VScale.get_item<int>();// ADC => Display
     const int32_t t_seg = (int32_t)FqScale.get_item<int>() << 5; // Умножаем микросекунды на 32 MHz. [такты на сегмент]
     int t_samp = 0, t_adc = 0, p_samp = 1;
 
-    switch (AppMode.value) {
+    switch (menu.value) {
       case MODE_OSC:
         t_adc = ADC::cycle(t_seg / P_SEG);        // Готовим допустимое значение для АЦП. [тактов на выборку]
         p_samp = (t_adc * P_SEG - 1) / t_seg + 1; // Если больше 1, необходима интерполяция. [точек на выборку]
@@ -217,10 +220,11 @@ int main(void)
         break;
     }
 
-    T32_1_TOP(t_samp);  // Выставляем количество тактов между семплами
+    T32_1_TOP(t_samp);  // Количество тактов между семплами
     T32_1_C;            // Обнуляем таймер, на случай если он уже выше TOP
 
-    cli(); // Запрещаем прерывания
+    // Запрещаем прерывания для высоких частот выборок
+    if (t_samp < 100) cli();
     ADC::delay(t_adc);
     ADC::start();
     dma.start();
@@ -228,7 +232,7 @@ int main(void)
     ADC::stop();
     sei();
 
-    switch (AppMode.value) {
+    switch (menu.value) {
       case MODE_OSC: {
           if (p_samp > 1) {
             L.init(p_samp);
@@ -267,9 +271,8 @@ int main(void)
 
 ISR
 {
-  m_sec++;
   menu.next(enc.scan());
-  T32_0_FC;
+  T32_0_IC;
   EPIC_C;
 }
 

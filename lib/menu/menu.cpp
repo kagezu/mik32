@@ -6,7 +6,7 @@ void MItem::next(reg step)
 {
   switch (type) {
     case ListType:
-      if (active) return MLIST(value)->next(step);
+      if (pass) return MLIST(value)->next(step);
 
     default:
       value += step;
@@ -15,28 +15,33 @@ void MItem::next(reg step)
   }
 }
 
-reg MItem::select()
+char MItem::select()
 {
-  reg current_level = 0;
+  char level = 0;
 
   switch (type) {
-    case ListType:
-      if (active)
-        current_level = MLIST(value)->select();
-      else active = true;
-      if (current_level-- > 0) active = false;
-      break;
+    case ListType: {
+        if (pass) level = MLIST(value)->select();
+        else switch (MLIST(value)->type) {
+          case ActionType:
+            ((void (*)())(link[0]))();
+          case ItemType:
+            level = 2;
+            break;
 
-      // case ActionType:
-      //   ((void (*)())(link[0]))();
-      //   current_level = level;
-      //   break;
+          default:
+            pass = true;
+            break;
+        }
+        if (level-- > 0) pass = false;
+        break;
+      }
 
     default:
-      current_level = 1;
+      level = 1;
   }
 
-  return current_level;
+  return level;
 }
 
 void MItem::print(PrintF *out)
@@ -44,27 +49,66 @@ void MItem::print(PrintF *out)
   switch (type) {
     case ListType:
       out->printf("%s ", name);
-      if (active) MLIST(value)->print(out);
+      if (pass) MLIST(value)->print(out);
       else out->printf("\1%s\1 ", MLIST(value)->name);
       break;
 
     case TextType:
       out->printf("%s ", name);
       out->printf("\1%s\1 ", get_item<char *>());
-      return;
+      break;
 
     case CharType:
       out->printf("%s ", name);
       out->printf("\1%c\1 ", get_item<char>());
-      return;
+      break;
 
     case IntType:
       out->printf("%s ", name);
       out->printf("\1%u\1 ", get_item<int>());
-      return;
+      break;
 
     case ValueType:
       out->printf("%s ", name);
       out->printf("\1%u\1 ", value);
+      break;
   }
+}
+
+int *MItem::save(int *ptr)
+{
+  switch (type) {
+    case ListType:
+      *ptr++ = value;
+      for (int i = 0; i <= max; i++) {
+        ptr = MLIST(i)->save(ptr);
+      }
+      break;
+
+    case TextType:
+    case CharType:
+    case IntType:
+    case ValueType:
+      *ptr++ = value;
+  }
+  return ptr;
+}
+
+int *MItem::load(int *ptr)
+{
+  switch (type) {
+    case ListType:
+      value = *ptr++;
+      for (int i = 0; i <= max; i++) {
+        ptr = MLIST(i)->load(ptr);
+      }
+      break;
+
+    case TextType:
+    case CharType:
+    case IntType:
+    case ValueType:
+      value = *ptr++;
+  }
+  return ptr;
 }

@@ -1,4 +1,5 @@
 #include "printf.h"
+#include "macros/pgmspace.h"
 // #include "string.h"
 
 #define KEY_u
@@ -32,7 +33,7 @@ void PrintF::printf(const char *string, ...)
       continue;
     }
 
-    reg algin = LEFT_RIGHT, // выравнивание справа
+    char algin = LEFT_RIGHT, // выравнивание справа
       digit = 0,            // число цифр
       lng = 2,              // число байт
       fix = 0,              // цифр после запятой
@@ -78,7 +79,7 @@ void PrintF::printf(const char *string, ...)
       case 'u':
         switch (lng) {
         #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, addr)); break;
+          case 2: ptr = sprint(ptr, (uint16_t)(uint32_t)__builtin_va_arg(args, void *)); break;
           #endif
           #ifdef NUM_32
           case 4: ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t)); break;
@@ -93,7 +94,7 @@ void PrintF::printf(const char *string, ...)
       case 'd':
         switch (lng) {
         #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, addr)); break;
+          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, void *)); break;
           #endif
           #ifdef NUM_32
           case 4: ptr = sprint(ptr, (int32_t)__builtin_va_arg(args, int32_t)); break;
@@ -108,7 +109,7 @@ void PrintF::printf(const char *string, ...)
       case 'q':
         switch (lng) {
         #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, addr), fix, fix2); break;
+          case 2: ptr = sprint(ptr, (int16_t)(uint32_t)__builtin_va_arg(args, void *), fix, fix2); break;
           #endif
           #ifdef NUM_32
           case 4: ptr = sprint(ptr, (int32_t)__builtin_va_arg(args, int32_t), fix, fix2); break;
@@ -123,9 +124,9 @@ void PrintF::printf(const char *string, ...)
       case 'x':
         if (digit && (digit < 3)) lng = 1; // явное указание, что число короткое
         switch (lng) {
-          case 1:  ptr -= 2; *(uint16_t *)ptr = h_print((uint8_t)__builtin_va_arg(args, addr)); break;
+          case 1:  ptr -= 2; *(uint16_t *)ptr = h_print((uint8_t)(uint32_t)__builtin_va_arg(args, void *)); break;
           #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, addr), lng); break;
+          case 2: ptr = sprint(ptr, (uint16_t)(uint32_t)__builtin_va_arg(args, void *, lng); break;
           #endif
           #ifdef NUM_32
           case 4:  ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t), lng); break;
@@ -141,10 +142,10 @@ void PrintF::printf(const char *string, ...)
       #endif
 
       #ifdef KEY_p
-      case 'p': ptr = sprint_h(ptr, (addr)__builtin_va_arg(args, addr)); break;
+      case 'p': ptr = sprint_h(ptr, (void *)__builtin_va_arg(args, void *); break;
       #endif
 
-      case 'c': putc((char)__builtin_va_arg(args, addr)); continue;
+      case 'c': putc((char)(uint32_t)__builtin_va_arg(args, void *)); continue;
       case 's': prints((char *)__builtin_va_arg(args, char *), digit); continue;
       case '%': putc('%'); continue;
       default: putc('?'); continue;
@@ -156,10 +157,10 @@ void PrintF::printf(const char *string, ...)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void PrintF::prints(char *string, reg algin)
+void PrintF::prints(char *string, char algin)
 {
-  reg flag = algin & LEFT_ALGIN;
-  reg count = algin - flag - (reg)strlen(string);
+  char flag = algin & LEFT_ALGIN;
+  char count = algin - flag - strlen(string);
 #ifdef __AVR__
   count = count > LEFT_ALGIN ? 0 : count;
 #else
@@ -184,9 +185,9 @@ uint16_t PrintF::h_print(uint8_t number)
   return high + (low << 8);
 }
 
-reg PrintF::strlen(char *string)
+char PrintF::strlen(char *string)
 {
-  reg count = 0;
+  char count = 0;
   while (*string++) count++;
   return count;
 }

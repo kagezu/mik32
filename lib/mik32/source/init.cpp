@@ -1,7 +1,7 @@
 #include "mik32.h"
 
 extern "C" {
-  extern uint8_t __RODATA__[];
+  // extern uint8_t __RODATA__[];
 
   __attribute__((used, section(".small_ram_text"))) void SystemInit()
     // __attribute__((used)) void SystemInit()
@@ -80,7 +80,7 @@ extern "C" {
       // | PM_CLOCK_APB_M_OTP_CONTROLLER_M
       // | PM_CLOCK_APB_M_PVD_CONTROL_M
       | PM_CLOCK_APB_M_WU_M
-      // | PM_CLOCK_APB_M_RTC_M
+      | PM_CLOCK_APB_M_RTC_M
       ;
 
     // Отключение тактирования устройств на шине APB_M.
@@ -139,7 +139,7 @@ extern "C" {
       // ;
 
     // Настройка SPIFI ========================================================
-
+/*
     // сброс команды SPIFI
     SPIFI_CONFIG->STAT = SPIFI_CONFIG_STAT_RESET_M;
 
@@ -195,5 +195,6 @@ extern "C" {
       | (6 << SPIFI_CONFIG_MCMD_FRAMEFORM_S)    // код команды, три байта адреса
       | (0xEB << SPIFI_CONFIG_MCMD_OPCODE_S)
       ;
+      */
   }
 }

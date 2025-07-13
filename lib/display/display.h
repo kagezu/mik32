@@ -107,7 +107,6 @@ private:
   uint8_t _charSize = 0;                  // Размер символа в словах
   uint8_t _interline = 0;                 // Расстояние между строками
   uint8_t _interval = 0;                  // Расстояние между символами
-  uint8_t _tab_factor = FONT_TAB_FACTOR;
   int16_t point_x = 0;
   int16_t point_y = 0;
 
