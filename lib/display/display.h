@@ -30,6 +30,17 @@ public:
     release();
   }
 
+  void window(int top, int bottom)
+  {
+    select();
+    send_command(PVSCRDEF);
+    send_byte(top >> 8);
+    send_byte(top);
+    send_byte(bottom >> 8);
+    send_byte(bottom);
+    release();
+  }
+
 private:
   C _color;         // Цвет
   C _color2;        // Цвет 2

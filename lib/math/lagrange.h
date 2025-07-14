@@ -77,7 +77,7 @@ public:
     for (int8_t j = 0; j < NODE; j++) {
       int128_t d = int128_mul_i128_i64(pow, fact(NODE - j - 1));
       d = int128_mul_i128_i64(d, fact(j)); // h^p · (p-j)! · j!
-      int8_t reduce = 1 + int8_log2(int128_hi(d)); // если reduce > 0, нужно сдвинуть до int64
+      int8_t reduce = 1 + ilog2(int128_hi(d)); // если reduce > 0, нужно сдвинуть до int64
       int64_t div = int128_lo(int128_shift(d, -reduce)); // Q64.-(denum + reduce)
       if (div < 0) { reduce++; div = ((uint64_t)div >> 1); }  // ещё 1 бит под знак
       if ((j & 1) == 0) div = -div; // (-1)^(p-j)

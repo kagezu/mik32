@@ -68,6 +68,7 @@ protected:
   int32_t imag[N()];
 
 public:
+  // Создание таблицы с перевёрнутыми битами
   void init()
   {
     // Переворот битов.
@@ -143,7 +144,7 @@ public:
     }
   }
 
-  void contrast()
+  void sum()
   {
     constexpr int32_t half = N(-1);
     int32_t direct = 0;
@@ -163,10 +164,17 @@ public:
   }
 
   template<typename T>
+  void sqrt_2(T *output)
+  {
+    for (int i = 0; i < N(-2); i++) output[i] = fix16_sqrt(real[i << 1] + real[(i << 1) + 1]) >> 8;
+  }
+
+  template<typename T>
   void log(T *output)
   {
-    constexpr int32_t D = (sizeof(int32_t) << 3);   // Бит в используемом типе
-    for (int i = 0; i < N(-1); i++) output[i] = ilog2(real[i]) << (M - ilog2(D));
+    // constexpr int32_t D = (sizeof(int32_t) << 3);   // Бит в используемом типе
+    // for (int i = 0; i < N(-1); i++) output[i] = (ilog2(real[i])) << (M - ilog2(D));// тоже самое только в профиль =)
+    for (int i = 0; i < N(-1); i++) output[i] = (ilog2(real[i])) << (M - ilog2(M) - 2);
   }
 
   int32_t *square() { return real; }
