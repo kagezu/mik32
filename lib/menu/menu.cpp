@@ -2,7 +2,7 @@
 
 #define MLIST(value)  ((MItem *)(link[value]))
 
-void MItem::next(reg step)
+void MItem::next(int step)
 {
   switch (type) {
     case ListType:

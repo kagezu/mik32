@@ -85,8 +85,8 @@ protected:
 
   void send_rgb(C color)
   {
-    static reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
-    static reg set = clr | L_WR(MASK);
+    static uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
+    static uint32_t set = clr | L_WR(MASK);
     L_PORT(OUTPUT) = color.rgb;
     L_WR(OUTPUT) = set;
     L_WR(OUTPUT) = clr;
@@ -97,9 +97,9 @@ protected:
     select();
     set_addr(x0, y0, x1, y1);
 
-    reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
-    reg set = L_WR(OUTPUT) | L_WR(MASK);
-    reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
+    uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
+    uint32_t set = L_WR(OUTPUT) | L_WR(MASK);
+    uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
     L_PORT(OUTPUT) = color.rgb;
     while (len--) {
       L_WR(OUTPUT) = set;
@@ -138,9 +138,9 @@ void ILI9486_16<RGB32>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 {
   select();
   set_addr(x0, y0, x1, y1);
-  reg len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
-  reg set = L_WR(OUTPUT) | L_WR(MASK);
-  reg clr = L_WR(OUTPUT) & ~L_WR(MASK);
+  uint32_t len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
+  uint32_t set = L_WR(OUTPUT) | L_WR(MASK);
+  uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
   uint16_t hword = *(uint16_t *)&color.green;
   uint16_t mword = color.red | (color.blue << 8);
   uint16_t lword = *(uint16_t *)&color.blue;

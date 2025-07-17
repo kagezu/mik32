@@ -19,14 +19,14 @@ template <typename T>
 class CBuffer {
 protected:
   T *_buffer;
-  reg _head;    // Голова
-  reg _tail;    // Хвост
-  reg _size;    // Максимальный размер
-  reg _heap;    // Размер кучи
+  int _head;    // Голова
+  int _tail;    // Хвост
+  int _size;    // Максимальный размер
+  int _heap;    // Размер кучи
 
 public:
   // Конструктор
-  CBuffer(T *buffer, reg size)
+  CBuffer(T *buffer, int size)
   {
     _buffer = buffer;
     _size = size;
@@ -41,13 +41,13 @@ public:
   }
 
   // Текущий размер буфера
-  reg length()
+  int length()
   {
     return _size - _heap;
   }
 
   // Свободный размер буфера
-  reg heap()
+  int heap()
   {
     return _heap;
   }
@@ -86,17 +86,17 @@ public:
   T read()
   {
     if (_heap == _size) return T();          // Буфер пуст
-    reg index = _tail++;
+    int index = _tail++;
     _tail = _tail == _size ? 0 : _tail;
     _heap++;
     return _buffer[index];
   }
 
   // Записывает элементы в буфер до заполнения буфера, то что не влезло - обрезается
-  void write(T *data, reg length)
+  void write(T *data, int length)
   {
     T *target = _buffer + _head;
-    reg count = _size - _head;                  // Линейный размер пространства
+    int count = _size - _head;                  // Линейный размер пространства
     length = length > _heap ? _heap : length; // Размер перемещаемых данных ограничен кучей
     _heap -= length;                          // Уменьшаем кучу
     _head += length;                          // Двигаем голову
@@ -110,10 +110,10 @@ public:
   }
 
   // Возвращает элементы из буфера до опустошения
-  void read(T *data, reg length)
+  void read(T *data, int length)
   {
     T *source = _buffer + _tail;
-    reg count = _size - _tail;                  // Линейный размер пространства
+    int count = _size - _tail;                  // Линейный размер пространства
     length = length > _size - _heap
       ? _size - _heap : length;               // Размер перемещаемых данных ограничен их количеством
     _heap += length;                          // высвобождаем кучу
@@ -128,12 +128,12 @@ public:
   }
 
   // Добавляет элемент с головы, возвращает его индекс
-  reg push(T data)
+  int push(T data)
   {
     if (!_heap) return -1;                 // Буфер полон
-    reg index = _head;
+    int index = _head;
     _buffer[_head++] = data;
-    _head = _head == _size ? reg(0) : _head;
+    _head = _head == _size ? int(0) : _head;
     _heap--;
     return index;
   }
@@ -148,7 +148,7 @@ public:
   }
 
   // Добавляет элемент в хвост, возвращает его индекс
-  reg unshift(T data)
+  int unshift(T data)
   {
     if (!_heap) return -1;                 // Буфер полон
     if (_tail == 0) _tail = _size;

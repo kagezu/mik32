@@ -73,7 +73,7 @@ protected:
   void send_word(uint16_t data)
   {
   #ifdef MIK32V2
-    static volatile reg tmp = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
+    static volatile uint32_t tmp = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
     ILI_8_PORT(OUTPUT) = (data >> 8) | tmp;
     ILI_8_WR(SET);
     ILI_8_PORT(OUTPUT) = (data & 0xff) | tmp;
@@ -102,7 +102,7 @@ protected:
   void send_rgb(C color)
   {
   #ifdef MIK32V2
-    static volatile reg mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
+    static volatile uint32_t mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
     ILI_8_PORT(OUTPUT) = color.red | mask;
     ILI_8_WR(SET);
     ILI_8_PORT(OUTPUT) = color.green | mask;
@@ -126,13 +126,13 @@ protected:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    volatile reg red = (ILI_8_PORT(OUTPUT) & ~0xff) | color.red;
-    volatile reg green = (ILI_8_PORT(OUTPUT) & ~0xff) | color.green;
-    volatile reg blue = (ILI_8_PORT(OUTPUT) & ~0xff) | color.blue;
-    volatile reg red_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.red;
-    volatile reg green_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.green;
-    volatile reg blue_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.blue;
-    reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+    volatile uint32_t red = (ILI_8_PORT(OUTPUT) & ~0xff) | color.red;
+    volatile uint32_t green = (ILI_8_PORT(OUTPUT) & ~0xff) | color.green;
+    volatile uint32_t blue = (ILI_8_PORT(OUTPUT) & ~0xff) | color.blue;
+    volatile uint32_t red_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.red;
+    volatile uint32_t green_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.green;
+    volatile uint32_t blue_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.blue;
+    uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
       ILI_8_PORT(OUTPUT) = red_c;
@@ -177,11 +177,11 @@ void ILI9486_8<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, 
   set_addr(x0, y0, x1, y1);
 
 #ifdef MIK32V2
-  volatile  reg h = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb >> 8);
-  volatile  reg l = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb & 0xff);
-  volatile  reg h_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb >> 8);
-  volatile  reg l_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb & 0xff);
-  reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+  volatile  uint32_t h = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb >> 8);
+  volatile  uint32_t l = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb & 0xff);
+  volatile  uint32_t h_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb >> 8);
+  volatile  uint32_t l_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb & 0xff);
+  uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
   while (len--) {
     ILI_8_PORT(OUTPUT) = h_c;

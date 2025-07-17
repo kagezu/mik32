@@ -1,7 +1,8 @@
 #include "mik32.h"
 
 /* Для частоты: 32 MHz F_CPU */
-__attribute__((noinline, section(".ram_text"))) void delay_us(uint32_t us)
+// __attribute__((noinline, section(".ram_text"))) 
+void delay_us(uint32_t us)
 {
   if (!us) return;
   int l = 4;
@@ -24,7 +25,8 @@ __attribute__((noinline, section(".ram_text"))) void delay_us(uint32_t us)
     );
 }
 
-__attribute__((noinline, section(".ram_text"))) void delay_ms(uint32_t ms)
+// __attribute__((noinline, section(".ram_text"))) 
+void delay_ms(uint32_t ms)
 {
   while (ms--) delay_us(1000);
 }

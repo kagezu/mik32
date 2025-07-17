@@ -32,10 +32,10 @@ public:
 public:
   template<typename T>
   T get_item() { return ((T *)(link[0]))[value]; }
-  MItem *get(reg v) { return ((MItem *)(link[v])); }
+  MItem *get(int v) { return ((MItem *)(link[v])); }
 
   void print(PrintF *);
-  void next(reg);
+  void next(int);
   char select();
   int *save(int *);
   int *load(int *);

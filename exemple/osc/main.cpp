@@ -1,16 +1,17 @@
-#include "config.h"
+#include "main.h"
+#include "display_mode.h"
 #include "adc.h"
 #include "timer.h"
 #include "dma.h"
 #include "lagrange.h"
-#include "osc.h"
 #include "encoder.h"
 #include "fft.h"
 
-constexpr int ADC_CH = 2;         // Номер канала ADC
+constexpr int ADC_CH = 0;         // Номер канала ADC
 constexpr int INT_FQ = 200;       // Hz опрос энкодера
-constexpr int MASK_UPDATE = 0x7;  // Маска счётчика для обновления фона = 2^n-1
-constexpr int Lp = 6;             // Узловых точек для интерполяции Лагранжа (чётная)
+constexpr int INFO_FQ = 3;        // Hz обновление текста
+constexpr int FFT_LENGTH = 0x200; // Длинна для алгоритма FFT
+constexpr int Lp = 10;             // Узловых точек для интерполяции Лагранжа (чётная)
 
 // Дисплей
 LCD lcd;
@@ -19,23 +20,24 @@ constexpr int BORDER_BOTTOM = 1;  // Отступ от низа экрана
 constexpr int P_SEG = 10;         // Шаг сетки, точек на сегмент
 constexpr int SEG = P_SEG * 5;    // Шаг крупной сетки
 constexpr int POINTES = ((lcd.max_x() + 2));                    // Количество точек для отображения
-constexpr int SAMPLES = (POINTES << 2) - 2;                     // Количество измерений для анализа
+constexpr int SAMPLES = POINTES << 1;                            // Количество измерений для анализа
 constexpr int END_POINT = SAMPLES - POINTES - P_SEG - 2;        // Последняя точка, с которой может начаться отображение
 constexpr int HEIGHT = lcd.max_y() - BORDER_BOTTOM - BORDER_TOP;// Высота области для граф. данных
 constexpr int MIDLE_AXIS = (lcd.max_y() - BORDER_BOTTOM - (HEIGHT >> 1));// Расположение оси X
 Rect view = Rect(0, BORDER_TOP, lcd.max_x(), lcd.max_y() - BORDER_BOTTOM);// Графическая область
 
 Lagrange<Lp, P_SEG, ADC::DEPTH> L;
-FFT<SAMPLES, ADC::DEPTH> fft;
+FFT <FFT_LENGTH, ADC::DEPTH > fft;
 Encoder enc;
 DMA<0, DMA_VH> dma;
-SPI spi;
+// SPI spi;
 
 short buffer[SAMPLES];
 short points[POINTES];
 short points2[POINTES] = {};
 
 int fps = 20;
+int count = 0;
 
 // Преобразование к координатам дисплея
 void transform_to_display(short in[], short out[], int32_t scale, int32_t offset)
@@ -58,7 +60,7 @@ void print_info()
     VType.get_item<char *>()
   );
   lcd.at(lcd.max_x(), 0);
-  lcd.printf(P("\b\b\b\b\b\b\b\b\bFPS %.1.3q "), fps);
+  lcd.printf(P("\b\b\b\b\b\b\b\b\bFPS %.1.2q "), fps);
   lcd.printf("\f\n");
   menu.print(&lcd);
   lcd.prints("             ");
@@ -168,10 +170,6 @@ void init()
     menu.load((int *)RTC->REG);
   RTC->REG[15] = RTC_REG_SAVED;
 
-  // Инициализация энкодера
-  ENCODER_C(IN); ENCODER_C(P_VCC);
-  USER_B(IN); USER_B(P_GND);
-
   // Сканирование энкодера по таймеру
   T32_0_PS; T32_0_FQ(INT_FQ);
   T32_0_OVF; T32_0_IS; T32_0_EN;
@@ -190,18 +188,7 @@ void init()
 ///////////////////////////////////////////////////////////////////////////////
 
 void test_button()
-{
-  // if (USER_B(GET)) {
-  //   menu.select();
-  //   while (USER_B(GET));
-  // }
-  if (!ENCODER_C(GET)) {
-    menu.select();
-    if (menu.value != MODE_SPEC) print_info();
-    menu.save((int *)RTC->REG);
-    while (!ENCODER_C(GET));
-  }
-}
+{}
 
 //////////////////////////////////  АЦП  //////////////////////////////////////
 
@@ -232,15 +219,13 @@ int main(void)
 
   volatile int mode = -1;
   int sl = 0;
-  int count = 0;
   uint32_t time = 0;
 
   while (true) {
     const int32_t t_seg = (int32_t)FqScale.get_item<int>() << 5; // Умножаем микросекунды на 32 MHz. [такты на сегмент]
     int32_t scale = (ADC::AREF * P_SEG) / VScale.get_item<int>();// Масштабирование по напряжению [пикселей на весь диапазон]
-    fps = fps - (fps >> 3) + (F_CPU / (T32_2 - time));// Расчёт FPS
+    fps = fps - (fps >> 2) + (F_CPU / (T32_2 - time));// Расчёт FPS
     time = T32_2;
-    test_button();
 
     // Инициализация режимов работы при переключении
     if (mode != menu.value) {
@@ -270,7 +255,7 @@ int main(void)
     }
 
     // Обновление фона и информации
-    if (!(count++ & MASK_UPDATE))
+    if (!(count = count < INT_FQ / INFO_FQ ? count : 0))
       switch (mode) {
         case MODE_OSC:
           print_info();
@@ -285,7 +270,8 @@ int main(void)
       }
 
     switch (mode) {
-      case MODE_OSC: {
+      case MODE_OSC:
+        {
           int t_adc = ADC::cycle(t_seg / P_SEG);        // Готовим допустимое значение для АЦП. [тактов на выборку]
           int p_samp = (t_adc * P_SEG - 1) / t_seg + 1; // Если больше 1, необходима интерполяция. [точек на выборку]
           int t_samp = t_seg * p_samp / P_SEG;          // Уточняем время выборки. [тактов на выборку]
@@ -307,22 +293,24 @@ int main(void)
           break;
         }
 
-      case MODE_FFT: {
+      case MODE_FFT:
+        {
           sample(t_seg);
           fft.run(buffer);            // Быстрое преобразование Фурье
           if (FType.value) fft.sum(); // Применяем суммирующий фильтр
-          fft.sqrt(buffer);           // Находим модуля амплитуд
+          fft.sqrt(buffer, lcd.max_x() + 1);// Находим модуля амплитуд
           transform_to_display(buffer, points, scale, lcd.max_y() - BORDER_BOTTOM);
           data_draw();
           break;
         }
 
-      case MODE_SPEC: {
+      case MODE_SPEC:
+        {
           sample(t_seg);
           fft.run(buffer);
-          fft.sqrt_2(buffer); // Увеличение шага частоты в 2 раза
+          fft.sqrt(buffer, lcd.max_y() + 2);
 
-          for (int i = 0; i <= lcd.max_y(); i++) {
+          for (int i = 1; i < lcd.max_y() + 2; i++) {
             int val = buffer[i];
             int r = val >> 4;
             int  g = val > 1023 ? 255 : val >> 2;
@@ -335,6 +323,13 @@ int main(void)
           break;
         }
     }
+
+    if (enc.is_push()) {
+      menu.select();
+      if (menu.value != MODE_SPEC) print_info();
+      menu.save((int *)RTC->REG);
+      while (enc.is_push());
+    }
   }
 }
 
@@ -344,6 +339,7 @@ ISR
 {
   int inc = enc.scan();
   if (inc) menu.next(inc);
+  count++;
   T32_0_IC;
   EPIC_C;
 }

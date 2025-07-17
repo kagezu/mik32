@@ -8,6 +8,12 @@
 template<typename Driver, typename C = RGB16, const int R = ROT_0>
 class Display : public Driver, public PrintF, public GFX {
 
+#ifndef __AVR__
+  typedef uint8_t reg;
+#else
+  typedef uint32_t reg;
+#endif  
+
   // Driver =============================================================================
 
 public:

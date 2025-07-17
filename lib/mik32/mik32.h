@@ -31,8 +31,7 @@
 #include "wdt_bus.h"
 #include "wdt.h"
 
-
-// Адаптация AVR -> MIK32
+// MIK32 + ACE UNO
 #include "pinout.h"
 
 // Системная частота
@@ -41,15 +40,8 @@
 #endif
 
 // Доступ к байтам
-#define to_byte(w,x)  ((uint8_t)(w >> (x << 3)))
-#define to_dbyte(w,x)  ((uint16_t)(w >> (x << 4)))
-
-// #define to_byte(w,x)  (((uint8_t *)&w)[x])
-// #define to_dbyte(w,x)  (((uint16_t *)&w)[x])
-
-// Типы
-typedef int32_t reg;
-typedef uint32_t addr;
+// #define to_byte(w,x)  ((uint8_t)(w >> (x << 3)))
+// #define to_dbyte(w,x)  ((uint16_t)(w >> (x << 4)))
 
 #include "macros/attribute.h"
 #include "macros/gpio.h"

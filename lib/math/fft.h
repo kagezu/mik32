@@ -28,7 +28,7 @@ constexpr static uint16_t ATTR_RAM sin_lut[] = {
 
 // У нас pi/2 = 1
 constexpr int32_t PI_2 = sizeof(sin_lut) / 2 - 1; // Q32.E
-constexpr int32_t   PI = PI_2 << 1;               // Q32.E
+constexpr int32_t PI = PI_2 << 1;                 // Q32.E
 constexpr int32_t PIx2 = PI_2 << 2;               // Q32.E
 constexpr int32_t E = ilog2(sin_lut[PI_2]);       // Дробная часть sin/cos
 constexpr int32_t W = ilog2(PIx2);                // Дробная часть аргумента sin/cos
@@ -61,11 +61,13 @@ constexpr static inline int32_t cos(int32_t alpha) // Q32.E cos( Q32.W )
 
 template<const int32_t S, const int32_t M>
 class FFT {
+  typedef int32_t  int_t;
+
 protected:
   constexpr static int32_t N(int32_t pow = 0) { return 1 << (ilog2(S) + pow); }
-  int32_t in[N(-2)] = {};
-  int32_t real[N()];
-  int32_t imag[N()];
+  int16_t in[N(-2)] = {};
+  int_t real[N()];
+  int_t imag[N()];
 
 public:
   // Создание таблицы с перевёрнутыми битами
@@ -85,19 +87,20 @@ public:
   void run(T *input)
   {
     // Определяем количество свободных бит, и используем их для повышения точности
-    constexpr int32_t D = (sizeof(int32_t) << 3);   // Битов в используемом типе
+    constexpr int32_t D = (sizeof(int_t) << 3);   // Битов в используемом типе
     constexpr int32_t P = D - M - E - ilog2(N(-2)); // Остаток под дробную часть
-    constexpr int32_t norm = ilog2(N(-2)) + P;      // Нормализация амплитуды результатов
+    // constexpr int32_t norm = ilog2(N(-2)) + P;      // Нормализация амплитуды результатов
+    constexpr int32_t norm = D - M - E;             // Нормализация амплитуды результатов
     (void)(1 << P); // Тут ошибка компиляции при переполнении
 
     // Быстрый расчет FFT для 4-точечного сигнала.
     // Основан на простоте 4-точечной синусоиды.
     // При N = 512, экономия ~10% времени.
     for (int i = 0; i < N(-2); i++) {             // Q32.P
-      const int32_t x0 = (int32_t)input[in[i]] << P;
-      const int32_t x1 = (int32_t)input[in[i] + N(-2)] << P;
-      const int32_t x2 = (int32_t)input[in[i] + N(-1)] << P;
-      const int32_t x3 = (int32_t)input[in[i] + N(-2) + N(-1)] << P;
+      const int_t x0 = (int_t)input[in[i]] << P;
+      const int_t x1 = (int_t)input[in[i] + N(-2)] << P;
+      const int_t x2 = (int_t)input[in[i] + N(-1)] << P;
+      const int_t x3 = (int_t)input[in[i] + N(-2) + N(-1)] << P;
 
       real[(i << 2) + 0] = x0 + x1 + x2 + x3;
       imag[(i << 2) + 0] = 0;
@@ -125,8 +128,8 @@ public:
         int32_t n = j;
 
         for (int k = 0; k < p; k++) {
-          const int32_t re = (c * real[n + q] + s * imag[n + q]) >> E; // Q32.P -> Q32.PE -> Q32.P
-          const int32_t im = (c * imag[n + q] - s * real[n + q]) >> E;
+          const int_t re = (c * real[n + q] + s * imag[n + q]) >> E; // Q32.P -> Q32.PE -> Q32.P
+          const int_t im = (c * imag[n + q] - s * real[n + q]) >> E;
           real[n + q] = real[n] - re;
           imag[n + q] = imag[n] - im;
           real[n] += re;
@@ -147,8 +150,8 @@ public:
   void sum()
   {
     constexpr int32_t half = N(-1);
-    int32_t direct = 0;
-    int32_t revers = 0;
+    int_t direct = 0;
+    int_t revers = 0;
     for (int i = 0; i < half; i++) {
       if (real[i] < real[i + 1]) { direct += real[i]; real[i] = 0; }
       else { real[i] += direct; direct = 0; }
@@ -164,9 +167,10 @@ public:
   }
 
   template<typename T>
-  void sqrt_2(T *output)
+  void sqrt(T *output, int len)
   {
-    for (int i = 0; i < N(-2); i++) output[i] = fix16_sqrt(real[i << 1] + real[(i << 1) + 1]) >> 8;
+    int32_t k = (N(-1) << 8) / len;
+    for (int i = 0; i < len; i++) output[i] = fix16_sqrt(real[(i * k) >> 8]) >> 8;
   }
 
   template<typename T>

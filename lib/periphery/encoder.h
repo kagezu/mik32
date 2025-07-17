@@ -1,29 +1,31 @@
 // #include "encoder.h"
 #include "mik32.h"
-
-#define ENCODER_A   D2
-#define ENCODER_C   D3
-#define ENCODER_B   D4
+#include "pins.h"
 
 class Encoder {
 public:
-  reg count = 2, c1 = 0, c2 = 0;
+  int count = 2, c1 = 0, c2 = 0;
   bool a0, b0;
 
 public:
   Encoder()
   {
+    ENCODER_A(GPIO);
+    ENCODER_B(GPIO);
+    ENCODER_SW(GPIO);
     ENCODER_A(IN);
     ENCODER_B(IN);
+    ENCODER_SW(IN);
     ENCODER_A(P_VCC);
     ENCODER_B(P_VCC);
-    ENCODER_C(OUT);
-    ENCODER_C(CLR);
+    ENCODER_SW(P_VCC);
   }
 
-  reg scan()
+  bool is_push() { return !ENCODER_SW(GET); }
+
+  int scan()
   {
-    reg result;
+    int result;
 
     // состояние контактов A и B ?
     bool a = (bool)ENCODER_A(GET);

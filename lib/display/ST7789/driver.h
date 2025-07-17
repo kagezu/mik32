@@ -64,7 +64,7 @@ protected:
   void send_word(uint16_t data)
   {
   #ifdef MIK32V2
-    volatile reg tmp = (ST_8_PORT(OUTPUT) & ~0xff);
+    volatile uint32_t tmp = (ST_8_PORT(OUTPUT) & ~0xff);
     ST_8_PORT(OUTPUT) = (data >> 8) | tmp;
     ST_8_WR(CLR);
     ST_8_WR(SET);
@@ -95,7 +95,7 @@ protected:
   void send_rgb(C color)
   {
   #ifdef MIK32V2
-    static reg tmp = ST_8_PORT(OUTPUT) & ~0xff;
+    static uint32_t tmp = ST_8_PORT(OUTPUT) & ~0xff;
     ST_8_PORT(OUTPUT) = color.red | tmp;
     ST_8_WR(CLR); ST_8_WR(SET);
     ST_8_PORT(OUTPUT) = color.green | tmp;
@@ -118,13 +118,13 @@ protected:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    reg red = (ST_8_PORT(OUTPUT) & ~0xff) | color.red;
-    reg green = (ST_8_PORT(OUTPUT) & ~0xff) | color.green;
-    reg blue = (ST_8_PORT(OUTPUT) & ~0xff) | color.blue;
-    reg red_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.red;
-    reg green_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.green;
-    reg blue_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.blue;
-    reg len = (x1 - x0 + 1) * (y1 - y0 + 1);
+    uint32_t red = (ST_8_PORT(OUTPUT) & ~0xff) | color.red;
+    uint32_t green = (ST_8_PORT(OUTPUT) & ~0xff) | color.green;
+    uint32_t blue = (ST_8_PORT(OUTPUT) & ~0xff) | color.blue;
+    uint32_t red_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.red;
+    uint32_t green_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.green;
+    uint32_t blue_c = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.blue;
+    uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
       ST_8_PORT(OUTPUT) = red;

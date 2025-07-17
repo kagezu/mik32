@@ -1,4 +1,3 @@
-#include "core.h"
 #include "menu.h"
 
 enum AppModeEnum :int {

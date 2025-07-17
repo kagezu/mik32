@@ -4,6 +4,13 @@
 
 template<typename C = RGB16>
 class ST7735_SOFT {
+
+  #ifdef __AVR__
+typedef uint8_t reg;
+  #else
+typedef uint32_t reg;
+  #endif
+
 public:
   // Разрешение дисплея
   ATTR_INLINE constexpr int16_t max_x() { return 127; }
@@ -513,7 +520,7 @@ ATTR_NOINLINE void ST7735_SOFT<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x
     reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
     reg s0 = (ST_SOFT_SCK(OUTPUT) & ~ST_SOFT_SDA(MASK)) | ST_SOFT_SCK(MASK);
     #ifndef __AVR__
-    reg s1 = ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK);
+    uint8_t s1 = ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK);
     #endif
 
     // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
