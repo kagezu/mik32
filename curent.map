@@ -6,7 +6,7 @@ ram              0x02000000         0x00004000         xrw
 
 Linker script and memory map
 
-.text           0x80000000     0x29a0
+.text           0x80000000     0x2bf0
  *crt0.o(.text .text.*)
                 0x80000000                _start
                 0x80000092                memset
@@ -22,12 +22,12 @@ Linker script and memory map
                 0x80000368       0x56 
                 0x80000368                Display<ILI9486_16<RGB16>, RGB16, 160>::send_config(unsigned char const*, unsigned char)
                 0x800003be       0x40 
-                0x800003fe       0x74 
-                0x800003fe                Display<ILI9486_16<RGB16>, RGB16, 160>::pixel(short, short)
-                0x8000046e                non-virtual thunk to Display<ILI9486_16<RGB16>, RGB16, 160>::pixel(short, short)
-                0x80000472      0x286 
-                0x80000472                Display<ILI9486_16<RGB16>, RGB16, 160>::putc(unsigned char)
-                0x800006f4                non-virtual thunk to Display<ILI9486_16<RGB16>, RGB16, 160>::putc(unsigned char)
+                0x800003fe      0x286 
+                0x800003fe                Display<ILI9486_16<RGB16>, RGB16, 160>::putc(unsigned char)
+                0x80000680                non-virtual thunk to Display<ILI9486_16<RGB16>, RGB16, 160>::putc(unsigned char)
+                0x80000684       0x74 
+                0x80000684                Display<ILI9486_16<RGB16>, RGB16, 160>::pixel(short, short)
+                0x800006f4                non-virtual thunk to Display<ILI9486_16<RGB16>, RGB16, 160>::pixel(short, short)
                 0x800006f8       0x14 
                 0x800006f8                ILI9486_16<RGB16>::set_rgb_format()
                 0x8000070c       0x28 
@@ -38,60 +38,58 @@ Linker script and memory map
                 0x800007f2                osc_window(int&, int&)
                 0x800008e8       0x54 
                 0x800008e8                border_draw()
-                0x8000093c       0xd4 
+                0x8000093c       0xd6 
                 0x8000093c                axis_draw()
-                0x80000a10       0xc4 
-                0x80000a10                greed_draw()
-                0x80000ad4       0xc2 
-                0x80000ad4                data_draw()
-                0x80000b96       0x98 
-                0x80000b96                init()
-                0x80000c2e       0x86 
-                0x80000c2e                sample(unsigned long)
-                0x80000cb4      0x1b2 
-                0x80000cb4                Lagrange<10, 10, 12>::init(int)
-                0x80000e66      0x1b6 
-                0x80000e66                void FFT<128l, 12l>::run<short>(short*)
-                0x8000101c       0x58 
-                0x8000101c                void FFT<128l, 12l>::sqrt<short>(short*, int)
-                0x80001074       0xe2 
-                0x80001074                ILI9486_16<RGB16>::init(unsigned char)
+                0x80000a12       0xc2 
+                0x80000a12                data_draw()
+                0x80000ad4       0x98 
+                0x80000ad4                init()
+                0x80000b6c       0x86 
+                0x80000b6c                sample(unsigned long)
+                0x80000bf2      0x202 
+                0x80000bf2                Lagrange<8, 30, 12>::init(int)
+                0x80000df4      0x1c2 
+                0x80000df4                void FFT<962l, 12l>::run<short>(short*)
+                0x80000fb6       0x5a 
+                0x80000fb6                void FFT<962l, 12l>::sqrt<short>(short*, int)
+                0x80001010       0xe2 
+                0x80001010                ILI9486_16<RGB16>::init(unsigned char)
  .text.startup.main
-                0x80001156      0x54a 
-                0x80001156                main
-                0x800016a0       0xfa 
-                0x800017b2                delay_us(unsigned long)
-                0x800017b8                delay_ms(unsigned long)
+                0x800010f2      0x54e 
+                0x800010f2                main
+                0x80001640       0xfa 
+                0x80001752                delay_us(unsigned long)
+                0x80001758                delay_ms(unsigned long)
  .text.fix16_sqrt
-                0x800017d4                fix16_sqrt
-                0x8000185e                PrintF::prints(char const*)
-                0x80001886                PrintF::strlen(char*)
-                0x80001896                PrintF::prints(char*, char)
-                0x80001924                PrintF::printf(char const*, ...)
-                0x80001bda                GFX::w_line(short, short, short)
-                0x80001c06                GFX::h_line(short, short, short)
-                0x80001c30                MItem::next(int)
-                0x80001c5e                MItem::select()
-                0x80001cbe                MItem::print(PrintF*)
-                0x80001da6                MItem::save(int*)
-                0x80001df8                MItem::load(int*)
-                0x80001e4a                strlen
-                0x80001eae                __ashldi3
-                0x80001ed4                __ashrdi3
-                0x80001f00                __divdi3
- .rodata        0x800022e4      0x138 
-                0x8000241c                system_5x7
-                0x80002744       0x50 
+                0x80001774                fix16_sqrt
+                0x800017fe                PrintF::prints(char const*)
+                0x80001826                PrintF::strlen(char*)
+                0x80001836                PrintF::prints(char*, char)
+                0x800018c4                PrintF::printf(char const*, ...)
+                0x80001b7a                GFX::w_line(short, short, short)
+                0x80001ba6                GFX::h_line(short, short, short)
+                0x80001bd0                MItem::next(int)
+                0x80001bfe                MItem::select()
+                0x80001c5e                MItem::print(PrintF*)
+                0x80001d46                MItem::save(int*)
+                0x80001d98                MItem::load(int*)
+                0x80001dea                strlen
+                0x80001e4e                __ashldi3
+                0x80001e74                __ashrdi3
+                0x80001ea0                __divdi3
+ .rodata        0x80002284      0x138 
+                0x800023bc                arial_14
+                0x80002990       0x50 
  .rodata.str1.4
-                0x80002794       0xd2 
-                                 0xbb (size before relaxing)
-                0x80002868       0x34 
-                0x80002868                vtable for Display<ILI9486_16<RGB16>, RGB16, 160>
+                0x800029e0       0xd6 
+                                 0xbf (size before relaxing)
+                0x80002ab8       0x34 
+                0x80002ab8                vtable for Display<ILI9486_16<RGB16>, RGB16, 160>
  .rodata.str1.4
-                0x8000289c                __clz_tab
- .init_array    0x8000299c        0x4 
+                0x80002aec                __clz_tab
+ .init_array    0x80002bec        0x4 
 
-.data           0x02000000      0x504 load address 0x800029a0
+.data           0x02000000      0x504 load address 0x80002bf0
  .small_ram_text
                 0x02000000                SystemInit
  .trap_text     0x020000c0       0xee 
@@ -119,7 +117,7 @@ Linker script and memory map
 
 .tbss           0x02000504        0x0
 
-.sbss           0x02000508       0x28 load address 0x80002ea8
+.sbss           0x02000508       0x28 load address 0x800030f8
                 0x02000508        0x8 
                 0x02000508                guard variable for ILI9486_16<RGB16>::send_rgb(RGB16)::set
                 0x02000510        0x4 
@@ -132,26 +130,26 @@ Linker script and memory map
                 0x02000524                count
                 0x02000528                dma
 
-.bss            0x02000530     0x1560 load address 0x80002ed0
- .bss           0x02000530     0x153c 
+.bss            0x02000530     0x2450 load address 0x80003120
+ .bss           0x02000530     0x242c 
                 0x02000530                lcd
                 0x0200056c                buffer
                 0x02000cf0                view
                 0x02000cfc                points2
                 0x020010c0                points
                 0x02001484                enc
-                0x02001494                fft
-                0x020018d4                L
-                0x02001a6c                PrintF::buffer
+                0x02001494                L
+                0x0200185c                fft
+                0x0200295c                PrintF::buffer
  *(COMMON)
 
-.rela.dyn       0x02001a90        0x0 load address 0x80004430
-                0x02001a90        0x0 
-                0x02001a90        0x0 
-                0x02001a90        0x0 
- .rela.text     0x02001a90        0x0 
+.rela.dyn       0x02002980        0x0 load address 0x80005570
+                0x02002980        0x0 
+                0x02002980        0x0 
+                0x02002980        0x0 
+ .rela.text     0x02002980        0x0 
 
-.stack          0x02003d00      0x300 load address 0x800066a0
+.stack          0x02003d00      0x300 load address 0x800068f0
  FILL mask 0x00000000
 
 /DISCARD/

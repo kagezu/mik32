@@ -11,7 +11,7 @@
 #ifdef USE_INT128 // Вариант с числами 128 bit
 typedef int128_t num_t;// Тип для расчёта коэффициентов
 typedef int64_t int_t; // Аккумулятор
-typedef int32_t lag_t; // Коэффициенты Лагранжа
+typedef int64_t lag_t; // Коэффициенты Лагранжа
 #else
 typedef int64_t num_t; // Тип для расчёта коэффициентов
 typedef int32_t int_t; // Аккумулятор
@@ -19,11 +19,11 @@ typedef int32_t lag_t; // Коэффициенты Лагранжа
 #endif
 
 // Разрядность типа для расчёта коэффициентов
-constexpr int max_num = sizeof(num_t) << 3;
+constexpr int max_num = (sizeof(num_t) << 3) - 1;
 // Максимальная разрядность аккумулятора минус знак
 constexpr uint8_t max_int = (sizeof(int_t) << 3) - 1;
 // Максимальная разрядность коэффициентов Лагранжа, 1 бит оставлен под знак
-constexpr uint8_t max_dig = (sizeof(lag_t) << 3) - 1;
+constexpr uint8_t max_dig = (sizeof(lag_t) << 3) - 2;
 
 
 // Интерполяция Лагранжа (с равными интервалами)
@@ -70,7 +70,7 @@ public:
   #ifdef USE_INT128  // Вариант с числами 128 bit
 
     int128_t pow = int128_const(0, 1); // 1
-    for (int8_t i = 0; i < NODE - 1; i++) pow = int128_mul_i128_i64(pow, i); // pow = h^p
+    for (int8_t i = 0; i < NODE - 1; i++) pow = int128_mul_i128_i64(pow, step); // pow = h^p
     pow = int128_shift(pow, -dig_denum); // Q128.-denum
 
     // Переберем все узловые точки
@@ -88,7 +88,7 @@ public:
         // Перемножаем все отклонения от искомой точки
         int128_t num = int128_const(0, 1);
         for (int8_t i = 0; i < NODE; i++)
-          if (i != j) num = int128_mul_i128_i64(num, (int64_t)step * (x0 - i)); // П(x - x0 - ih), i = 0...p
+          if (i != j) num = int128_mul_i128_i64(num, x + (int64_t)step * (x0 - i)); // П(x - x0 - ih), i = 0...p
 
         // Q128.( dig_num - reduce)
         num = int128_shift(num, dig_num - reduce);

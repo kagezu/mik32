@@ -24,8 +24,7 @@ ADD_MTEXT(VType, "Current", 0, _vt);
 ADD_MVALUE(ZeroLevel, "Setup zero", 0, -200, 200);
 ADD_MTEXT(FType, "Filter", 0, _ft);
 ADD_MTEXT(TType, "Trigger", 0, _tt);
-ADD_MITEM(MExit, "\177\177\177");
-
+ADD_MITEM(MExit, "< < <");
 
 MItem OSC_Menu = { "\bOSC", ListType, 0, 0, 0, 5 , { &MExit, &FqScale, &VScale, &VType, &ZeroLevel, &TType } };
 MItem FFT_Menu = { "\bFFT", ListType, 0, 0, 0, 3 , { &MExit, &FqScale, &VScale, &FType } };
