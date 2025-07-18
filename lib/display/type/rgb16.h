@@ -1,5 +1,6 @@
 #pragma once
 #include "convert.h"
+#include "inttypes.h"
 
 class RGB16 {
 public:

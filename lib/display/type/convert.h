@@ -1,5 +1,4 @@
 #pragma once
-#include <core.h>
 
 #define RGB_TO_32(r, g, b)  ((r) | (g << 8) |(b << 16))
 #define RGB_TO_16(r, g, b)  ((((r & 0xf8) << 8) | ((g & 0xfc) << 3) | ((b&0xf8) >> 3)))

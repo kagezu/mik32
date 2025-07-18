@@ -24,7 +24,13 @@
     "stdbool.h": "c",
     "ctype.h": "c",
     "stdint.h": "c",
-    "fix16.h": "c"
+    "fix16.h": "c",
+    "rgb16.h": "c",
+    "convert.h": "c",
+    "colors.h": "c",
+    "font.h": "c",
+    "rgb12.h": "c",
+    "const.h": "c"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

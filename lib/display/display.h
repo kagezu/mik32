@@ -212,7 +212,8 @@ public:
             point_x = _viewport->min_x;
           }
           if (point_y + _font.height > _viewport->max_y + 1) { point_x = _viewport->min_x; point_y = _viewport->min_y; }
-          symbol((reg *)source, point_x, point_y, dx, _font.height);
+          if (ch) symbol((reg *)source, point_x, point_y, dx, _font.height);
+          else area(point_x, point_y, point_x + dx + _interval - 1, point_y + _font.height - 1, _background);
           point_x += dx + _interval;
         }
     }
@@ -237,7 +238,8 @@ private:
         else send_rgb(_background);
         bit <<= 1;
       }
-      for (reg i = 0; i < _interval; i++) send_rgb(_background);
+      // for (reg i = 0; i < _interval; i++) send_rgb(_background);
+      send_rgb(_background, _interval);
     }
     release();
   }

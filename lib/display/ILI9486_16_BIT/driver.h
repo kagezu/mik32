@@ -1,6 +1,6 @@
 #pragma once
-#include "pins.h"
 #include "type/include.h"
+#include "pins.h"
 
 template<typename C = RGB16>
 class ILI9486_16 {
@@ -43,24 +43,24 @@ public:
   // }
 
 protected:
-  inline void select() { L_CS(CLR); }
-  inline void release() { L_CS(SET); }
+  ATTR_INLINE inline void select() { L_CS(CLR); }
+  ATTR_INLINE inline void release() { L_CS(SET); }
 
-  void send_command(uint8_t command)
+  ATTR_INLINE void send_command(uint8_t command)
   {
     L_RS(CLR);
     send_byte(command);
     L_RS(SET);
   }
 
-  void send_byte(uint8_t data)
+  ATTR_INLINE void send_byte(uint8_t data)
   {
     L_PORT(OUTPUT) = data;
     L_WR(SET);
     L_WR(CLR);
   }
 
-  void send_word(uint16_t data)
+  ATTR_INLINE void send_word(uint16_t data)
   {
     L_PORT(OUTPUT) = (data >> 8);
     L_WR(SET);
@@ -83,13 +83,20 @@ protected:
     send_command(RAMWR); // Memory Write
   }
 
-  void send_rgb(C color)
+  ATTR_INLINE void send_rgb(C color)
   {
-    static uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
-    static uint32_t set = clr | L_WR(MASK);
     L_PORT(OUTPUT) = color.rgb;
-    L_WR(OUTPUT) = set;
-    L_WR(OUTPUT) = clr;
+    L_WR(SET);
+    L_WR(CLR);
+  }
+
+  ATTR_INLINE void send_rgb(C color, int32_t len)
+  {
+    L_PORT(OUTPUT) = color.rgb;
+    while (len--) {
+      L_WR(SET);
+      L_WR(CLR);
+    }
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color)
@@ -98,18 +105,16 @@ protected:
     set_addr(x0, y0, x1, y1);
 
     uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
-    uint32_t set = L_WR(OUTPUT) | L_WR(MASK);
-    uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
     L_PORT(OUTPUT) = color.rgb;
     while (len--) {
-      L_WR(OUTPUT) = set;
-      L_WR(OUTPUT) = clr;
+      L_WR(SET);
+      L_WR(CLR);
     }
     release();
   }
 
 private:
-  void set_rgb_format();
+  ATTR_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t *config, uint8_t size) = 0;
 };
 
@@ -122,11 +127,11 @@ void ILI9486_16<RGB32>::send_rgb(RGB32 color)
     L_PORT(OUTPUT) = color.red | half;
     L_WR(SET); L_WR(CLR);
     flag = 0;
-    L_PORT(OUTPUT) = *(uint16_t *)&color.blue;
+    L_PORT(OUTPUT) = color.rgb;
     L_WR(SET); L_WR(CLR);
   }
   else {
-    L_PORT(OUTPUT) = *(uint16_t *)&color.green;
+    L_PORT(OUTPUT) = color.rgb >> 8;
     L_WR(SET); L_WR(CLR);
     half = color.blue << 8;
     flag = 1;
@@ -139,24 +144,22 @@ void ILI9486_16<RGB32>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
   select();
   set_addr(x0, y0, x1, y1);
   uint32_t len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
-  uint32_t set = L_WR(OUTPUT) | L_WR(MASK);
-  uint32_t clr = L_WR(OUTPUT) & ~L_WR(MASK);
   uint16_t hword = *(uint16_t *)&color.green;
   uint16_t mword = color.red | (color.blue << 8);
   uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
     L_PORT(OUTPUT) = hword;
-    L_WR(OUTPUT) = set;
-    L_WR(OUTPUT) = clr;
+    L_WR(SET);
+    L_WR(CLR);
 
     L_PORT(OUTPUT) = mword;
-    L_WR(OUTPUT) = set;
-    L_WR(OUTPUT) = clr;
+    L_WR(SET);
+    L_WR(CLR);
 
     L_PORT(OUTPUT) = lword;
-    L_WR(OUTPUT) = set;
-    L_WR(OUTPUT) = clr;
+    L_WR(SET);
+    L_WR(CLR);
   }
   release();
 }

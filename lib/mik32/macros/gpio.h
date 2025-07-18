@@ -19,8 +19,8 @@
 #define IN(port, pin)       GPIO_ ## port ->DIRECTION_IN = (1 << pin)
 #define OUT(port, pin)      GPIO_ ## port ->DIRECTION_OUT = (1 << pin)
 
-#define SET(port, pin)      GPIO_ ## port ->OUTPUT |= (1 << pin)
-#define CLR(port, pin)      GPIO_ ## port ->OUTPUT &= ~(1 << pin)
+#define SET(port, pin)      GPIO_ ## port ->SET = (1 << pin)
+#define CLR(port, pin)      GPIO_ ## port ->CLEAR = (1 << pin)
 #define INV(port, pin)      GPIO_ ## port ->OUTPUT ^= (1 << pin)
 #define GET(port, pin)      (GPIO_ ## port ->STATE & (1 << pin))
 
