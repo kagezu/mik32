@@ -10,7 +10,7 @@
 constexpr int ADC_CH = 0;         // Номер канала ADC
 constexpr int INT_FQ = 200;       // Hz опрос энкодера
 constexpr int INFO_FQ = 3;        // Hz обновление текста
-constexpr int FFT_LENGTH = 0x200; // Длинна для алгоритма FFT
+constexpr int FFT_LENGTH = 0x80; // Длинна для алгоритма FFT
 constexpr int Lp = 10;             // Узловых точек для интерполяции Лагранжа (чётная)
 
 // Дисплей

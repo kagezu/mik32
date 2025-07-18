@@ -1,0 +1,31 @@
+#!/bin/bash
+clear
+USB_PATH=.pio/build/MIK32-USB/firmware.map
+JTAG_PATH=.pio/build/MIK32-JTAG/firmware.map
+if test -e ${USB_PATH}; then MAP_FILE=${USB_PATH};fi
+if test -e ${JTAG_PATH}; then MAP_FILE=${JTAG_PATH};fi
+if test -e ${MAP_FILE};then 
+
+DEST_FILE=curent.map
+grep -m 1 "Memory"      ${MAP_FILE} -A 8 |\
+grep -v "default"    >  ${DEST_FILE}
+grep -m 1 ".text           0x80000000"        ${MAP_FILE} -A 10000 |\
+grep -i -v \
+-e "PROVIDE" \
+-e "LOADADDR" \
+-e "ALIGN" \
+-e "SORT_BY_INIT_PRIORITY" \
+-e "\*fill\*" \
+-e "=" \
+-e "\._" \
+-e "\.o)" \
+-e "\*(\." |\
+grep -m 1 "/DISCARD/" -B 10000 |\
+sed -r "s/\.pio.+//g" |\
+sed -r "s/\.text\._[A-Z]{1,3}[0-9]{1,3}/                                         /" \
+>>  ${DEST_FILE}
+
+else echo "map файла не найдено"
+fi
+
+# sed -r "s/\.text\._[A-Z]{1,3}[0-9]{1,3}/                                         /" \
