@@ -134,3 +134,6 @@ private:
   uint8_t sreg;
   uint8_t transaction = 0;
 };
+
+class SPI0 : public SPI {};
+#define SPI1  SPI

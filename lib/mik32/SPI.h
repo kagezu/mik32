@@ -84,17 +84,17 @@ public:
 
   void wait() {}
   // Очистить FIFO
-  ATTR_INLINE inline void clear_fifo() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  ATTR_INLINE  void clear_fifo() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
   // Очистить чтением RX_FIFO
-  ATTR_INLINE inline void clear_rx() { while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPI_N->RXDATA; }
+  ATTR_INLINE  void clear_rx() { while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPI_N->RXDATA; }
   // Ждать TX_FIFO < TX_THR
-  ATTR_INLINE inline void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+  ATTR_INLINE  void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
   // Ждать TX_FIFO < 8
-  ATTR_INLINE inline void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
+  ATTR_INLINE  void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
   // Ждать TX_FIFO = 0
-  ATTR_INLINE inline void wait_idle() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  ATTR_INLINE inline void send(uint8_t data) { SPI_N->TXDATA = data; }
-  ATTR_INLINE inline void send16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
+  ATTR_INLINE  void wait_idle() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
+  ATTR_INLINE  void send(uint8_t data) { SPI_N->TXDATA = data; }
+  ATTR_INLINE  void send16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
 
   void begin(SPIConf settings)
   {
@@ -125,4 +125,5 @@ public:
   }
 };
 
-#define SPI SPI<SPI_1_BASE_ADDRESS>
+#define SPI0 SPI<SPI_0_BASE_ADDRESS>
+#define SPI1 SPI<SPI_1_BASE_ADDRESS>

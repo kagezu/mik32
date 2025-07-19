@@ -1,5 +1,5 @@
 #pragma once
-#include "mik32.h"
+#include "core.h"
 
 struct Font {
   uint8_t count_char;

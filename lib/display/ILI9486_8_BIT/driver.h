@@ -2,9 +2,6 @@
 #include "pins.h"
 #include "type/include.h"
 
-// #define ILI_8_BEGIN       ILI_8_CS(CLR);
-// #define ILI_8_END         ILI_8_CS(SET);
-
 // #define ILI_8_WRITE  ILI_8_RD(SET); ILI_8_PORT(OUT) | 0xFF;
 // #define ILI_8_READ   ILI_8_PORT(IN) & 0x00; ILI_8_RD(CLR);
 
@@ -17,9 +14,7 @@ public:
 
   void init(uint8_t position = 0)
   {
-  #ifdef MIK32V2
     ILI_8_RD(GPIO); ILI_8_WR(GPIO); ILI_8_RS(GPIO); ILI_8_CS(GPIO); ILI_8_RST(GPIO);
-  #endif
     ILI_8_RD(OUT); ILI_8_WR(OUT); ILI_8_RS(OUT); ILI_8_CS(OUT); ILI_8_RST(OUT);
     ILI_8_PORT(OUT) | 0xFF;
     ILI_8_RD(SET); ILI_8_WR(CLR); ILI_8_RS(CLR); ILI_8_CS(SET); ILI_8_RST(CLR);
@@ -49,40 +44,43 @@ public:
   }
 
 protected:
-  inline void select() { ILI_8_CS(CLR); }
-  inline void release() { ILI_8_CS(SET); }
+  ATTR_INLINE  void select() { ILI_8_CS(CLR); }
+  ATTR_INLINE  void release() { ILI_8_CS(SET); }
 
-  void send_command(uint8_t command)
+  ATTR_INLINE void send_command(uint8_t command)
   {
     ILI_8_RS(CLR);
     send_byte(command);
     ILI_8_RS(SET);
   }
 
-  void send_byte(uint8_t data)
+  ATTR_INLINE void send_byte(uint8_t data)
   {
   #ifdef MIK32V2
-    ILI_8_PORT(OUTPUT) = data | (ILI_8_PORT(OUTPUT) & ~0xff);
-    ILI_8_WR(CLR); ILI_8_WR(SET);
+    ILI_8_WR(CLR) | 0xff;
+    ILI_8_PORT(SET) | data;
+    ILI_8_WR(SET);
   #else
     ILI_8_PORT(OUTPUT) = data;
     ILI_8_WR(SET); ILI_8_WR(CLR);
   #endif
   }
 
-  void send_word(uint16_t data)
+  ATTR_INLINE void send_rgb(C color, int32_t len) { while (len--) send_rgb(color); }
+
+  ATTR_INLINE void send_word(uint16_t data)
   {
   #ifdef MIK32V2
-    static volatile uint32_t tmp = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
+    uint32_t tmp = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
     ILI_8_PORT(OUTPUT) = (data >> 8) | tmp;
     ILI_8_WR(SET);
     ILI_8_PORT(OUTPUT) = (data & 0xff) | tmp;
     ILI_8_WR(SET);
   #else
     ILI_8_PORT(OUTPUT) = to_byte(data, 1);
-    ILI_8_WR(INV); ILI_8_WR(INV);
+    ILI_8_WR(SET); ILI_8_WR(CLR);
     ILI_8_PORT(OUTPUT) = to_byte(data, 0);
-    ILI_8_WR(INV); ILI_8_WR(INV);
+    ILI_8_WR(SET); ILI_8_WR(CLR);
   #endif
   }
 
@@ -99,10 +97,10 @@ protected:
     send_command(RAMWR); // Memory Write
   }
 
-  void send_rgb(C color)
+  ATTR_INLINE void send_rgb(C color)
   {
   #ifdef MIK32V2
-    static volatile uint32_t mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
+    uint32_t mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
     ILI_8_PORT(OUTPUT) = color.red | mask;
     ILI_8_WR(SET);
     ILI_8_PORT(OUTPUT) = color.green | mask;
@@ -111,11 +109,11 @@ protected:
     ILI_8_WR(SET);
   #else
     ILI_8_PORT(OUTPUT) = color.red;
-    ILI_8_WR(INV); ILI_8_WR(INV);
+    ILI_8_WR(SET); ILI_8_WR(CLR);
     ILI_8_PORT(OUTPUT) = color.green;
-    ILI_8_WR(INV); ILI_8_WR(INV);
+    ILI_8_WR(SET); ILI_8_WR(CLR);
     ILI_8_PORT(OUTPUT) = color.blue;
-    ILI_8_WR(INV); ILI_8_WR(INV);
+    ILI_8_WR(SET); ILI_8_WR(CLR);
   #endif
   }
 
@@ -126,21 +124,18 @@ protected:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    volatile uint32_t red = (ILI_8_PORT(OUTPUT) & ~0xff) | color.red;
-    volatile uint32_t green = (ILI_8_PORT(OUTPUT) & ~0xff) | color.green;
-    volatile uint32_t blue = (ILI_8_PORT(OUTPUT) & ~0xff) | color.blue;
-    volatile uint32_t red_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.red;
-    volatile uint32_t green_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.green;
-    volatile uint32_t blue_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.blue;
+    uint32_t red = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.red;
+    uint32_t green = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.green;
+    uint32_t blue = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.blue;
     uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      ILI_8_PORT(OUTPUT) = red_c;
       ILI_8_PORT(OUTPUT) = red;
-      ILI_8_PORT(OUTPUT) = green_c;
+      ILI_8_WR(SET);
       ILI_8_PORT(OUTPUT) = green;
-      ILI_8_PORT(OUTPUT) = blue_c;
+      ILI_8_WR(SET);
       ILI_8_PORT(OUTPUT) = blue;
+      ILI_8_WR(SET);
     #else
     RGB32 rgb = color.rgb32();
     uint16_t x = x1 - x0;
@@ -148,24 +143,24 @@ protected:
     for (uint16_t i = 0; i <= x; i++)
       for (uint16_t j = 0; j <= y; j++) {
         ILI_8_PORT(OUTPUT) = rgb.red;
-        ILI_8_WR(INV); ILI_8_WR(INV);
+        ILI_8_WR(SET); ILI_8_WR(CLR);
         ILI_8_PORT(OUTPUT) = rgb.green;
-        ILI_8_WR(INV); ILI_8_WR(INV);
+        ILI_8_WR(SET); ILI_8_WR(CLR);
         ILI_8_PORT(OUTPUT) = rgb.blue;
-        ILI_8_WR(INV); ILI_8_WR(INV);
+        ILI_8_WR(SET); ILI_8_WR(CLR);
       #endif
-    }
+      }
 
     release();
   }
 
 private:
-  void set_rgb_format();
+  ATTR_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
 };
 
 template<>
-void ILI9486_8<RGB16>::send_rgb(RGB16 color)
+ATTR_INLINE void ILI9486_8<RGB16>::send_rgb(RGB16 color)
 {
   send_word(color.rgb);
 }
@@ -177,17 +172,15 @@ void ILI9486_8<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, 
   set_addr(x0, y0, x1, y1);
 
 #ifdef MIK32V2
-  volatile  uint32_t h = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb >> 8);
-  volatile  uint32_t l = (ILI_8_PORT(OUTPUT) & ~0xff) | (color.rgb & 0xff);
-  volatile  uint32_t h_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb >> 8);
-  volatile  uint32_t l_c = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb & 0xff);
+  uint32_t h = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb >> 8);
+  uint32_t l = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | (color.rgb & 0xff);
   uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
   while (len--) {
-    ILI_8_PORT(OUTPUT) = h_c;
     ILI_8_PORT(OUTPUT) = h;
-    ILI_8_PORT(OUTPUT) = l_c;
+    ILI_8_WR(SET);
     ILI_8_PORT(OUTPUT) = l;
+    ILI_8_WR(SET);
   }
 #else
   uint16_t x = x1 - x0;
@@ -201,13 +194,19 @@ void ILI9486_8<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, 
 }
 
 template<>
-void ILI9486_8<RGB32>::set_rgb_format()
+ATTR_INLINE void ILI9486_8<RGB32>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x66); // 6x6x6 bit (24 bit transfer)
 }
 template<>
-void ILI9486_8<RGB16>::set_rgb_format()
+ATTR_INLINE void ILI9486_8<RGB18>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x66); // 6x6x6 bit (24 bit transfer)
+}
+template<>
+ATTR_INLINE void ILI9486_8<RGB16>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x05); // 5x6x5 bit

@@ -13,14 +13,14 @@
 #define  FLIP_X   0x40
 #define  FLIP_Y   0x80
 
-#define  ROT_0      0
-#define  ROT_90     FLIP_Y | EX_X_Y
-#define  ROT_180    FLIP_X | FLIP_Y
-#define  ROT_270    FLIP_X | EX_X_Y
-#define  ROT_X      FLIP_X
-#define  ROT_Y      FLIP_X
-#define  ROT_EX     EX_X_Y
-#define  ROT_EX_XY  EX_X_Y | FLIP_X | FLIP_Y
+#define  R_0      0
+#define  R_90     FLIP_Y | EX_X_Y
+#define  R_180    FLIP_X | FLIP_Y
+#define  R_270    FLIP_X | EX_X_Y
+#define  R_X      FLIP_X
+#define  R_Y      FLIP_X
+#define  R_EX     EX_X_Y
+#define  R_EX_XY  EX_X_Y | FLIP_X | FLIP_Y
 
 
 // Команды дисплея

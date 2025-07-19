@@ -1,4 +1,4 @@
-#include "config.h"
+#include "lcd.h"
 #include "ernani.mid.h"
 #include "midi-play/midi-play.h"
 
@@ -8,7 +8,6 @@ SPI spi;
 
 int main(void)
 {
-  spi.init();
   lcd.init();
   midi.init();
   lcd.background(RGB(0, 16, 32));

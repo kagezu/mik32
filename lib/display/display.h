@@ -2,13 +2,20 @@
 #include "type/include.h"
 #include "printf.h"
 #include "gfx/gfx.h"
+#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB32
+#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB32
+#include "ST7789/driver.h"           // RGB32
+#include "ILI9486_8_BIT/driver.h"    // RGB16, RGB32
+#ifdef MIK32V2
+#include "ILI9486_16_BIT/driver.h"   // RGB16, RGB32
+#endif
 
 #define FONT_TAB_FACTOR     2
 
-template<typename Driver, typename C = RGB16, const int R = ROT_0>
+template<typename Driver, typename C = RGB16, const int R = R_0>
 class Display : public Driver, public PrintF, public GFX {
 
-#ifndef __AVR__
+#ifdef __AVR__
   typedef uint8_t reg;
 #else
   typedef uint32_t reg;
@@ -21,7 +28,7 @@ public:
     // Display()
   {
     Driver::init(R);
-    color(0x00FFFF);
+    color(0xFFFFFF);
     background(0);
     viewport();
     clear();
@@ -80,15 +87,15 @@ public:
   ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
   ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
 
-  ATTR_INLINE inline void color(C c) { _color = c; }
-  ATTR_INLINE inline void color2(C c) { _color2 = c; }
-  ATTR_INLINE inline void background(C b) { _background = b; }
-  ATTR_INLINE inline void clear() { area(0, 0, max_x(), max_y(), _background); }
-  ATTR_INLINE inline void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
-  ATTR_INLINE inline void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
-  ATTR_INLINE inline void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
-  ATTR_INLINE inline void viewport(Rect *view) { _viewport = view; }
-  ATTR_INLINE inline void viewport() { _viewport = &_didplay; }
+  ATTR_INLINE  void color(C c) { _color = c; }
+  ATTR_INLINE  void color2(C c) { _color2 = c; }
+  ATTR_INLINE  void background(C b) { _background = b; }
+  ATTR_INLINE  void clear() { area(0, 0, max_x(), max_y(), _background); }
+  ATTR_INLINE  void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
+  ATTR_INLINE  void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
+  ATTR_INLINE  void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
+  ATTR_INLINE  void viewport(Rect *view) { _viewport = view; }
+  ATTR_INLINE  void viewport() { _viewport = &_didplay; }
 
   void fill(int16_t x, int16_t y, int16_t x1, int16_t y1)
   {
@@ -145,11 +152,11 @@ public:
     set_interval(w);
   }
 
-  ATTR_INLINE inline void at(uint16_t x, uint16_t y) { point_x = _viewport->min_x + x; point_y = _viewport->min_y + y; }
-  ATTR_INLINE inline void set_interline(uint8_t interline) { _interline = _font.height + interline; }
-  ATTR_INLINE inline void set_interval(uint8_t interval) { _interval = interval; }
-  ATTR_INLINE inline uint8_t get_height() { return _interline; }
-  ATTR_INLINE inline uint8_t get_weight() { return _font.weight + _interval; }
+  ATTR_INLINE  void at(uint16_t x, uint16_t y) { point_x = _viewport->min_x + x; point_y = _viewport->min_y + y; }
+  ATTR_INLINE  void set_interline(uint8_t interline) { _interline = _font.height + interline; }
+  ATTR_INLINE  void set_interval(uint8_t interval) { _interval = interval; }
+  ATTR_INLINE  uint8_t get_height() { return _interline; }
+  ATTR_INLINE  uint8_t get_weight() { return _font.weight + _interval; }
 
   ATTR_NOINLINE void putc(uint8_t ch)
   {
@@ -239,7 +246,7 @@ private:
         bit <<= 1;
       }
       // for (reg i = 0; i < _interval; i++) send_rgb(_background);
-      send_rgb(_background, _interval);
+      if (_interval) send_rgb(_background, _interval);
     }
     release();
   }
@@ -268,7 +275,6 @@ public:
         xx += x;
 
         send_rgb(C(r, g, b));
-        // send_rgb(r, g, b);
       }
       yy += y;
     }

@@ -99,7 +99,7 @@ extern "C" {
       // Включения тактирования устройств на шине APB_P.
     PM->CLK_APB_P_SET = 0
       // PM_CLOCK_APB_P_WDT_M
-      // | PM_CLOCK_APB_P_UART_0_M
+      | PM_CLOCK_APB_P_UART_0_M
       // | PM_CLOCK_APB_P_UART_1_M
       // | PM_CLOCK_APB_P_TIMER16_0_M
       // | PM_CLOCK_APB_P_TIMER16_1_M

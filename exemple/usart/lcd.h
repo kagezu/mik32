@@ -1,8 +1,39 @@
-#include "config.h"
-#include "SPI.h"
-#include "adc.h"
-#include "pinout.h"
-#include "timer.h"
+// Цветовая модель
+
+// #define RGB         RGB12   // 4x4x4 bit
+#define RGB         RGB16   // 5x6x5 bit
+// #define RGB         RGB32   // 6x6x6 bit
+
+
+// Поворот дисплея
+
+#define LCD_ROT     R_0
+// #define LCD_ROT     R_90
+// #define LCD_ROT     R_180
+// #define LCD_ROT     R_270
+// #define LCD_ROT     R_X
+// #define LCD_ROT     R_Y
+// #define LCD_ROT     R_EX
+// #define LCD_ROT     R_EX_XY
+
+#include "display.h"
+
+// #define LCD Display<ST7735<RGB>, RGB, LCD_ROT>           // RGB12, RGB16, RGB32
+#define LCD Display<ST7735<SPI1, RGB>, RGB, LCD_ROT>     // RGB12, RGB16, RGB32
+// #define LCD Display<ST7789<RGB>, RGB, LCD_ROT>           // RGB32
+// #define LCD Display<ILI9486_8<RGB>, RGB, LCD_ROT>        // RGB16, RGB32
+// #define LCD Display<ILI9486_16<RGB>, RGB, LCD_ROT>       // RGB16, RGB32
+
+
+// Шрифты
+
+extern const struct Font arial_14;
+extern const struct Font micro_5x6;
+extern const struct Font system_5x7;
+extern const struct Font standard_5x8;
+extern const struct Font sans_24;
+extern const struct Font o_sans_18b;
+extern const struct Font serif_18i;
 
 RGB color[] = {
   RGB(0xCD5C5C),  // #CD5C5C
@@ -134,114 +165,3 @@ RGB color[] = {
   RGB(0x2F4F4F),  // #2F4F4F
   RGB(0x000000),  // #000000
 };
-
-SPI spi;
-LCD lcd;
-
-/*
-
-#define FAT           4
-#define MED_FACTOR    2
-
-#ifdef __AVR__
-#define ADC_MAX       256
-ADC mic(5);
-#else
-#define ADC_MAX       4096
-ADC mic(3);
-#endif
-
-#define ADC_DIV       ((ADC_MAX<<1) / lcd.max_x())
-
-void mic_view()
-{
-#ifdef __AVR__
-  ADC5(IN);
-#else
-  ADC3(ANALOG);
-#endif
-
-  mic.start();
-
-  uint16_t x = 1;
-  reg speed = 4;
-  const uint16_t xx = (lcd.max_x() + 1) >> 1;
-  uint16_t x2 = xx + (xx >> 1);
-  uint16_t pix[lcd.max_y() + 1] = {};
-  uint16_t yy = 0;
-  uint16_t old = 0;
-  uint16_t med = 0;
-
-  lcd.area(xx - 1, 0, xx - 1, lcd.max_y(), RGB(32, 32, 255));
-
-  while (true) {
-    uint16_t kk = mic.value() / ADC_DIV;
-    uint16_t y = x % (lcd.max_y() + 1);
-
-    if (USER_B(GET)) {
-      speed = 2;
-    }
-    else {
-      speed = 6;
-    }
-
-    if (!(x & ((1 << speed) - 1))) {
-      uint16_t y2 = (x >> speed) % (lcd.max_y() + 1);
-      uint16_t k = mic.value();
-      med = ((med << MED_FACTOR) - med + k) >> MED_FACTOR;
-      uint16_t k2 = k > med ? (k - med) / ADC_DIV : (med - k) / ADC_DIV;
-      if (k2 > (xx >> 1) - 1) k2 = -k2;
-      if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
-      lcd.scroll(y2 + 1);
-      lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
-      lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
-      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
-    }
-
-    lcd.color(RGB(32, 32, 32));
-    lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
-    // lcd.pixel(pix[y], y);
-    lcd.color(RGB(127, 255, 255));
-    lcd.w_line(yy > kk ? kk : yy, y, yy > kk ? yy : kk);
-    // lcd.pixel(kk, y);
-
-    old = pix[y];
-    yy = kk;
-    pix[y] = kk;
-
-    x++;
-  }
-}
-*/
-
-int main(void)
-{
-  T32_0_PS;
-  T32_0_E;
-  T32_0_C;
-
-  USER_B(GPIO);
-  USER_B(IN);
-
-  lcd.init();
-  lcd.font(sans_24, 0, 0);
-
-  // mic_view();
-
-  reg x = 1;
-
-  while (true) {
-    T32_0_C;
-    if (USER_B(GET)) {
-      lcd.color(color[x & 0x7F]);
-      lcd.background(~color[x++ & 0x7F]);
-      lcd.clear();
-    }
-    else
-      lcd.demo(x++);
-
-    uint16_t fps = (F_CPU << 4) / T32_0;
-    lcd.at(10, lcd.max_y() - lcd.get_height());
-    lcd.printf(P("FPS: %.2.4q"), fps);
-  }
-}

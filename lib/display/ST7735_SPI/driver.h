@@ -6,16 +6,15 @@
 #define SPI_THR_2     7
 #define SPI_THR_3     6
 
-extern SPI spi;
-
-template<typename C = RGB16>
-class ST7735_SPI {
+template<typename S = SPI1, typename C = RGB16>
+class ST7735 {
 public:
+  S spi;
   SPIConf spi_conf;
 
   // Разрешение дисплея
-  constexpr int16_t max_x() { return 127; }
-  constexpr int16_t max_y() { return 159; }
+  ATTR_INLINE constexpr int16_t max_x() { return 127; }
+  ATTR_INLINE constexpr int16_t max_y() { return 159; }
 
   void init(uint8_t position = 0)
   {
@@ -31,7 +30,7 @@ public:
 
     select();               // CS Выбор дисплея
     send_command(SWRESET);
-    delay_ms(100);
+    delay_ms(50);
     send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
     send_command(MADCTL);
     send_byte(position);
@@ -44,11 +43,11 @@ public:
   }
 
 protected:
-  inline void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); }
-  inline void release() { spi.end(); ST_SPI_CS(SET); }
+  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); flag = 0; }
+  ATTR_INLINE void release() { spi.end(); ST_SPI_CS(SET); }
 
-  void send_byte(uint8_t data) { spi.send(data); spi.wait_idle(); }
-  void send_command(uint8_t command)
+  ATTR_INLINE void send_byte(uint8_t data) { spi.send(data); spi.wait_idle(); }
+  ATTR_INLINE void send_command(uint8_t command)
   {
     ST_SPI_RS(CLR); // Запись команды
     send_byte(command);
@@ -72,7 +71,9 @@ protected:
     send_command(RAMWR); // Memory Write
   }
 
-  void send_rgb(C color)
+  ATTR_INLINE void send_rgb(C color, uint8_t len) { while (len--)send_rgb(color); }
+
+  ATTR_INLINE void send_rgb(C color)
   {
     spi.wait_thr();
     spi.send(color.red);
@@ -100,21 +101,24 @@ protected:
   }
 
 private:
-  void set_rgb_format();
+  ATTR_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t *config, uint8_t size) = 0;
+  uint8_t flag = 0;
 };
 
+////////////////////////////// SPI 0 //////////////////////////////////////////
+
 template<>
-inline void ST7735_SPI<RGB16>::send_rgb(RGB16 color)
+ATTR_INLINE void ST7735<SPI0, RGB16>::send_rgb(RGB16 color)
 {
   spi.wait_thr();
   spi.send16(color.rgb);
 }
 
 template<>
-inline void ST7735_SPI<RGB12>::send_rgb(RGB12 color)
+ATTR_INLINE  void ST7735<SPI0, RGB12>::send_rgb(RGB12 color)
 {
-  static uint8_t half, flag = 0;
+  static uint8_t half;
 
   if (flag) {
     spi.wait_thr();
@@ -131,7 +135,7 @@ inline void ST7735_SPI<RGB12>::send_rgb(RGB12 color)
 }
 
 template<>
-void ST7735_SPI<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+void ST7735<SPI0, RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
 {
   select();
   set_addr(x0, y0, x1, y1);
@@ -142,7 +146,7 @@ void ST7735_SPI<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 }
 
 template<>
-void ST7735_SPI<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
+void ST7735<SPI0, RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
 {
   select();
   set_addr(x0, y0, x1, y1);
@@ -164,21 +168,118 @@ void ST7735_SPI<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 }
 
 template<>
-void ST7735_SPI<RGB32>::set_rgb_format()
+void ST7735<SPI0, RGB32>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x06); // 6x6x6 bit (24 bit transfer)
   spi_conf.thr(SPI_THR_3);
 }
 template<>
-void ST7735_SPI<RGB16>::set_rgb_format()
+void ST7735<SPI0, RGB18>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
+  spi_conf.thr(SPI_THR_3);
+}
+template<>
+void ST7735<SPI0, RGB16>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x05); // 5x6x5 bit
   spi_conf.thr(SPI_THR_2);
 }
 template<>
-void ST7735_SPI<RGB12>::set_rgb_format()
+void ST7735<SPI0, RGB12>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x03); // 4x4x4 bit
+  spi_conf.thr(SPI_THR_3);
+}
+
+////////////////////////////// SPI 1 //////////////////////////////////////////
+
+template<>
+ATTR_INLINE void ST7735<SPI1, RGB16>::send_rgb(RGB16 color)
+{
+  spi.wait_thr();
+  spi.send16(color.rgb);
+}
+
+template<>
+ATTR_INLINE void ST7735<SPI1, RGB12>::send_rgb(RGB12 color)
+{
+  static uint8_t half;
+
+  if (flag) {
+    spi.wait_thr();
+    spi.send(half | (color.rgb >> 8));
+    flag = 0;
+    spi.wait();
+    spi.send(color.rgb);
+  }
+  else {
+    spi.send(color.rgb >> 4);
+    half = color.rgb << 4;
+    flag = 1;
+  }
+}
+
+template<>
+void ST7735<SPI1, RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+{
+  select();
+  set_addr(x0, y0, x1, y1);
+  uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
+
+  while (len--) { spi.wait_thr();  spi.send16(color.rgb); }
+  release();
+}
+
+template<>
+void ST7735<SPI1, RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
+{
+  select();
+  set_addr(x0, y0, x1, y1);
+  uint16_t len = ((x1 - x0 + 1) * (y1 - y0 + 1)) >> 1;
+
+  uint8_t hbyte = color.rgb >> 4;
+  uint8_t mbyte = (color.rgb << 4) | ((color.rgb & 0xf00) >> 8);
+  uint8_t lbyte = color.rgb;
+
+  while (len--) {
+    spi.wait_thr();
+    spi.send(hbyte);
+    spi.wait();
+    spi.send(mbyte);
+    spi.wait();
+    spi.send(lbyte);
+  }
+  release();
+}
+
+template<>
+void ST7735<SPI1, RGB32>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
+  spi_conf.thr(SPI_THR_3);
+}
+template<>
+void ST7735<SPI1, RGB18>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x06); // 6x6x6 bit (24 bit transfer)
+  spi_conf.thr(SPI_THR_3);
+}
+template<>
+void ST7735<SPI1, RGB16>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x05); // 5x6x5 bit
+  spi_conf.thr(SPI_THR_2);
+}
+template<>
+void ST7735<SPI1, RGB12>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x03); // 4x4x4 bit

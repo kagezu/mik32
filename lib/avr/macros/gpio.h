@@ -23,7 +23,7 @@
 
 // Для совместимости
 
-#define GPIO(port, pin)       DDR(port)
+#define GPIO(port, pin)
 #define DS_2MA(port, pin)
 #define DS_4MA(port, pin)
 #define DS_8MA(port, pin)

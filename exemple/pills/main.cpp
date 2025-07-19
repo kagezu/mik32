@@ -1,4 +1,4 @@
-#include "config.h"
+#include "lcd.h"
 #include "timer.h"
 #include "fixmath.h"
 
@@ -30,13 +30,12 @@ uint32_t rnd()
 int main(void)
 {
   T32_0_PS;
-  T32_0_E;
+  T32_0_EN;
   T32_0_C;
 
   lcd.init();
   lcd.color(Blue);
   lcd.font(sans_24, 0, 0);
-  // lcd.font(arial_14, 1, 0);
   lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
 
   for (int i = 0; i < COUNT; i++) {
@@ -100,7 +99,7 @@ loop:
 
         // Проекции скоростей на прямую проходящею через центры масс
         // Делим сразу на квадрат расстояния, для
-        // экономии на извлечении корня и 2м делении
+        // экономии на извлечении корня и 2ом делении
         Fix16 V0 = (VX0 * DX + VY0 * DY) / S2;
         Fix16 V1 = (VX1 * DX + VY1 * DY) / S2;
 
@@ -125,7 +124,6 @@ loop:
     }
 
     // Стираем устаревший объект с экрана
-    lcd.viewport(&view);
     lcd.color(Black);
     lcd.circle_fill(Xold, Yold, RADIUS);
 
@@ -134,12 +132,12 @@ loop:
     lcd.circle_fill(X0, Y0, RADIUS);
   }
 
-
   uint32_t fps = (F_CPU << 4) / T32_0;
   lcd.color(Aquamarine);
   lcd.viewport();
   lcd.at(10, lcd.max_y() - lcd.get_height());
   lcd.printf(P("FPS: %.1.4q  "), fps);
+  lcd.viewport(&view);
 
   goto loop;
 }

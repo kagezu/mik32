@@ -61,7 +61,7 @@
 #define ATTR_NO_INIT   __attribute__ ((section (".noinit")))
 
 // Принудительно сделать inline
-#define ATTR_INLINE    __attribute__ ((always_inline))
+#define ATTR_INLINE    __attribute__ ((always_inline)) inline
 
 // Попытаться избежать inline вставок
 #define ATTR_NOINLINE __attribute__ ((noinline))

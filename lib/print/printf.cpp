@@ -79,7 +79,7 @@ void PrintF::printf(const char *string, ...)
       case 'u':
         switch (lng) {
         #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (uint16_t)(uint32_t)__builtin_va_arg(args, void *)); break;
+          case 2: ptr = sprint(ptr, (uint16_t)__builtin_va_arg(args, void *)); break;
           #endif
           #ifdef NUM_32
           case 4: ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t)); break;
@@ -109,7 +109,7 @@ void PrintF::printf(const char *string, ...)
       case 'q':
         switch (lng) {
         #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (int16_t)(uint32_t)__builtin_va_arg(args, void *), fix, fix2); break;
+          case 2: ptr = sprint(ptr, (int16_t)__builtin_va_arg(args, void *), fix, fix2); break;
           #endif
           #ifdef NUM_32
           case 4: ptr = sprint(ptr, (int32_t)__builtin_va_arg(args, int32_t), fix, fix2); break;
@@ -161,11 +161,7 @@ void PrintF::prints(char *string, char algin)
 {
   char flag = algin & LEFT_ALGIN;
   char count = algin - flag - strlen(string);
-#ifdef __AVR__
-  count = count > LEFT_ALGIN ? 0 : count;
-#else
   count = count < 0 ? 0 : count;
-#endif
   if (!flag) while (count--)putc(' ');
   while (char ch = *string++) putc(ch);
   if (flag) while (count--)putc(' ');

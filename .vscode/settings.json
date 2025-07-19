@@ -30,7 +30,8 @@
     "colors.h": "c",
     "font.h": "c",
     "rgb12.h": "c",
-    "const.h": "c"
+    "const.h": "c",
+    "stdint-gcc.h": "c"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

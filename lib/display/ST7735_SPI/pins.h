@@ -6,8 +6,6 @@
 // ST_SPI_CS       Выбор дисплея
 // ST_SPI_RS       0 = Запись команды / 1 = Запись данных
 // ST_SPI_RST      0 = Reset
-// ST_SPI_SCK      Тактирование / low -> high
-// ST_SPI_SDA      Данные
 
 #ifndef ST_SPI_RS
 

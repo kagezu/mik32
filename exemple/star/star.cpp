@@ -1,4 +1,4 @@
-#include "config.h"
+#include "lcd.h"
 
 #define COUNT_STAR  250
 LCD lcd;

@@ -45,7 +45,7 @@ public:
       char mod;
     #ifdef __AVR__
       uint8_t tmp;
-      div10_32bit(number, mod, tmp);
+      div10_16bit(number, mod, tmp);
     #else
       mod = number % 10;
       number /= 10;

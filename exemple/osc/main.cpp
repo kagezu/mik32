@@ -1,5 +1,5 @@
 #include "main.h"
-#include "display_mode.h"
+#include "lcd.h"
 #include "adc.h"
 #include "timer.h"
 #include "dma.h"

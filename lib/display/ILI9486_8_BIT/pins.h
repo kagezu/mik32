@@ -33,5 +33,5 @@
 #define ILI_8_RS(x)   x ( 0, 10)
 #define ILI_8_CS(x)   x ( 1, 15)
 #define ILI_8_RST(x)  x ( 0, 0 )
-#define ILI_8_PORT(x) x ( 0, 0 )
+#define ILI_8_PORT(x) x ( 0, 16)
 #endif

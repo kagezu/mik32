@@ -34,17 +34,9 @@ public:
     release();
   }
 
-  // void scroll(uint16_t sl)
-  // {
-  //   select();                             // CS Выбор дисплея
-  //   send_command(VSCRSADD);
-  //   send_word(sl);                        // < MAX_Y + 1 ? sl : sl % (MAX_Y + 1));
-  //   release();
-  // }
-
 protected:
-  ATTR_INLINE inline void select() { L_CS(CLR); }
-  ATTR_INLINE inline void release() { L_CS(SET); }
+  ATTR_INLINE  void select() { L_CS(CLR); flag = 0; }
+  ATTR_INLINE  void release() { L_CS(SET); }
 
   ATTR_INLINE void send_command(uint8_t command)
   {
@@ -114,6 +106,7 @@ protected:
   }
 
 private:
+  uint16_t flag;
   ATTR_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t *config, uint8_t size) = 0;
 };
@@ -121,8 +114,7 @@ private:
 template<>
 void ILI9486_16<RGB32>::send_rgb(RGB32 color)
 {
-  static uint16_t half, flag = 0;
-
+  static uint16_t half;
   if (flag) {
     L_PORT(OUTPUT) = color.red | half;
     L_WR(SET); L_WR(CLR);
@@ -166,6 +158,12 @@ void ILI9486_16<RGB32>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 
 template<>
 void ILI9486_16<RGB32>::set_rgb_format()
+{
+  send_command(COLMOD);
+  send_byte(0x66); // 6x6x6 bit (24 bit transfer)
+}
+template<>
+void ILI9486_16<RGB18>::set_rgb_format()
 {
   send_command(COLMOD);
   send_byte(0x66); // 6x6x6 bit (24 bit transfer)

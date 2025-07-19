@@ -1,5 +1,5 @@
 // #include "encoder.h"
-#include "mik32.h"
+#include "core.h"
 #include "pins.h"
 
 class Encoder {
