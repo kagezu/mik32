@@ -12,11 +12,17 @@
 #ifndef ST_SOFT_RS
 
 #ifdef __AVR_ATmega328P__
-#define ST_SOFT_SCK(x)     x ( C, PC0)
-#define ST_SOFT_SDA(x)     x ( C, PC1)
-#define ST_SOFT_RS(x)      x ( C, PC2)
-#define ST_SOFT_RST(x)     x ( C, PC3)
-#define ST_SOFT_CS(x)      x ( C, PC4)
+// #define ST_SOFT_SCK(x)     x ( C, PC0)
+// #define ST_SOFT_SDA(x)     x ( C, PC1)
+// #define ST_SOFT_RS(x)      x ( C, PC2)
+// #define ST_SOFT_RST(x)     x ( C, PC3)
+// #define ST_SOFT_CS(x)      x ( C, PC4)
+
+#define ST_SOFT_SCK(x)     x ( C, PC1)
+#define ST_SOFT_SDA(x)     x ( C, PC2)
+#define ST_SOFT_RS(x)      x ( C, PC3)
+#define ST_SOFT_RST(x)     x ( C, PC4)
+#define ST_SOFT_CS(x)      x ( C, PC5)
 #endif
 
 #ifdef __AVR_ATmega128__
@@ -28,11 +34,17 @@
 #endif
 
 #ifdef MIK32V2
-#define ST_SOFT_SCK(x)     x ( 1, 5 )     // A0
-#define ST_SOFT_SDA(x)     x ( 1, 7 )     // A1
-#define ST_SOFT_RS(x)      x ( 0, 4 )     // A2
-#define ST_SOFT_RST(x)     x ( 0, 7 )     // A3
-#define ST_SOFT_CS(x)      x ( 0, 9 )     // A4
+// #define ST_SOFT_SCK(x)     x ( 1, 5 )     // A0
+// #define ST_SOFT_SDA(x)     x ( 1, 7 )     // A1
+// #define ST_SOFT_RS(x)      x ( 0, 4 )     // A2
+// #define ST_SOFT_RST(x)     x ( 0, 7 )     // A3
+// #define ST_SOFT_CS(x)      x ( 0, 9 )     // A4
+
+#define ST_SOFT_SCK(x)     x ( 1, 7 )     // A1
+#define ST_SOFT_SDA(x)     x ( 0, 4 )     // A2
+#define ST_SOFT_RS(x)      x ( 0, 7 )     // A3
+#define ST_SOFT_RST(x)     x ( 0, 9 )     // A4
+#define ST_SOFT_CS(x)      x ( 1, 15)     // A5
 
 // #define ST_SOFT_SCK(x)     x ( 1, 2 )
 // #define ST_SOFT_SDA(x)     x ( 1, 1 )

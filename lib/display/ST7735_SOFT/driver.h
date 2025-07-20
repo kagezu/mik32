@@ -2,7 +2,7 @@
 #include "pins.h"
 #include "type/include.h"
 
-template<typename C = RGB16>
+template<typename C = RGB16, const int R = R_0>
 class ST7735_SOFT {
 
 #ifdef __AVR__
@@ -12,9 +12,9 @@ class ST7735_SOFT {
 #endif
 
 public:
-  // Разрешение дисплея
-  ATTR_INLINE constexpr int16_t max_x() { return 127; }
-  ATTR_INLINE constexpr int16_t max_y() { return 159; }
+  using RGB = C;
+  ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? 159 : 127; }
+  ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? 127 : 159; }
 
   void init(uint8_t position = 0)
   {
@@ -93,78 +93,91 @@ protected:
     uint8_t g = color.green;
     uint8_t b = color.blue;
 
-    reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-    reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
+    if (r & 0x80)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    if (r & 0x40)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    if (r & 0x20)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    if (r & 0x10)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    if (r & 0x8)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    if (r & 0x4)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
+    ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
 
-    if (r & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    if (g & 0x80)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (r & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (g & 0x40)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (r & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (g & 0x20)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (r & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (g & 0x10)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (r & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (g & 0x8)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (r & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (g & 0x4)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
     ST_SOFT_SCK(CLR);
     ST_SOFT_SCK(SET);
     ST_SOFT_SCK(CLR);
     ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
 
-    if (g & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    if (b & 0x80)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (g & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (b & 0x40)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (g & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (b & 0x20)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (g & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (b & 0x10)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (g & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (b & 0x8)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
-    if (g & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
+    ST_SOFT_SCK(CLR);
+    if (b & 0x4)  ST_SOFT_SDA(SET);
+    else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
     ST_SOFT_SCK(CLR);
     ST_SOFT_SCK(SET);
     ST_SOFT_SCK(CLR);
     ST_SOFT_SCK(SET);
-
-    if (b & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    if (b & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    if (b & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    if (b & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    if (b & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    if (b & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-    else ST_SOFT_SCK(OUTPUT) = d0;
-    ST_SOFT_SCK(SET);
-    ST_SOFT_SCK(CLR);
-    ST_SOFT_SCK(SET);
-    ST_SOFT_SCK(CLR);
-    ST_SOFT_SCK(SET);
-
     ST_SOFT_SCK(CLR);
   }
 
@@ -178,81 +191,95 @@ protected:
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-    reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-    reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
-
     // Дублирование кода намеренно, так как оптимизатор ускоряет тут выполнение в 2 раза
     while (len--) {
-      if (r & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      if (r & 0x80)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (r & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (r & 0x40)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (r & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (r & 0x20)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (r & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (r & 0x10)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (r & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (r & 0x8)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (r & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (r & 0x4)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
+      ST_SOFT_SCK(CLR);
 
-      if (g & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      if (g & 0x80)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (g & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (g & 0x40)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (g & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (g & 0x20)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (g & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (g & 0x10)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (g & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (g & 0x8)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (g & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (g & 0x4)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
+      ST_SOFT_SCK(CLR);
 
-      if (b & 0x80)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      if (b & 0x80)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (b & 0x40)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (b & 0x40)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (b & 0x20)  ST_SOFT_SCK(OUTPUT) = d1;
-      else ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (b & 0x20)  ST_SOFT_SDA(SET);
+      else ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (b & 0x10)  ST_SOFT_SCK(OUTPUT) = d1;
-      else  ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (b & 0x10)  ST_SOFT_SDA(SET);
+      else  ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (b & 0x8)  ST_SOFT_SCK(OUTPUT) = d1;
-      else  ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (b & 0x8)  ST_SOFT_SDA(SET);
+      else  ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
-      if (b & 0x4)  ST_SOFT_SCK(OUTPUT) = d1;
-      else  ST_SOFT_SCK(OUTPUT) = d0;
+      ST_SOFT_SCK(CLR);
+      if (b & 0x4)  ST_SOFT_SDA(SET);
+      else  ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
       ST_SOFT_SCK(CLR);
       ST_SOFT_SCK(SET);
+      ST_SOFT_SCK(CLR);
     }
-    ST_SOFT_SCK(CLR);
     ST_SOFT_CS(SET);
   }
 
@@ -262,7 +289,7 @@ private:
 };
 
 template<>
-ATTR_NOINLINE void ST7735_SOFT<RGB16>::send_rgb(RGB16 color)
+ATTR_NOINLINE void ST7735_SOFT<RGB16,0>::send_rgb(RGB16 color)
 {
   uint16_t rgb = color.rgb;
 
@@ -307,14 +334,13 @@ ATTR_NOINLINE void ST7735_SOFT<RGB16>::send_rgb(RGB16 color)
   ST_SOFT_SCK(OUTPUT) = rgb & 0x1 ? d1 : d0;
   ST_SOFT_SCK(OUTPUT) = s0;
 #else
-  reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-  reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
 
   reg mask = 0x8000;
   while (mask) {
-    if (rgb & mask)  ST_SOFT_SCK(OUTPUT) = d1;
-    else  ST_SOFT_SCK(OUTPUT) = d0;
+    if (rgb & mask)  ST_SOFT_SDA(SET);
+    else  ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
     mask >>= 1;
   }
 #endif
@@ -327,14 +353,12 @@ ATTR_NOINLINE void ST7735_SOFT<RGB12>::send_rgb(RGB12 color)
 {
   uint16_t rgb = color.rgb;
 
-  reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-  reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
-
   int mask = 0x800;
   while (mask) {
-    if (rgb & mask)  ST_SOFT_SCK(OUTPUT) = d1;
-    else  ST_SOFT_SCK(OUTPUT) = d0;
+    if (rgb & mask)  ST_SOFT_SDA(SET);
+    else  ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);
+    ST_SOFT_SCK(CLR);
     mask >>= 1;
   }
 
@@ -394,15 +418,14 @@ ATTR_NOINLINE void ST7735_SOFT<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x
     ST_SOFT_SCK(OUTPUT) = s0;
   }
 #else
-  reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-  reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
 
   while (len--) {
     reg mask = 0x8000;
     while (mask) {
-      if (rgb & mask)  ST_SOFT_SCK(OUTPUT) = d1;
-      else  ST_SOFT_SCK(OUTPUT) = d0;
+      if (rgb & mask)  ST_SOFT_SDA(SET);
+      else  ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
+      ST_SOFT_SCK(CLR);
       mask >>= 1;
     }
   }
@@ -456,15 +479,14 @@ ATTR_NOINLINE void ST7735_SOFT<RGB12>::area(uint16_t x0, uint16_t y0, uint16_t x
     ST_SOFT_SCK(OUTPUT) = s0;
   }
 #else
-  reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-  reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
 
   while (len--) {
     reg mask = 0x800;
     while (mask) {
-      if (rgb & mask)  ST_SOFT_SCK(OUTPUT) = d1;
-      else  ST_SOFT_SCK(OUTPUT) = d0;
+      if (rgb & mask)  ST_SOFT_SDA(SET);
+      else  ST_SOFT_SDA(CLR);
       ST_SOFT_SCK(SET);
+      ST_SOFT_SCK(CLR);
       mask >>= 1;
     }
   }

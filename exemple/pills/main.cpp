@@ -16,7 +16,6 @@
 
 Fix16 balls[COUNT][4]; // Q 32.16
 RGB colors[COUNT];
-SPI spi;
 LCD lcd;
 Rect view(1, TOP + 1, lcd.max_x() - 1, lcd.max_y() - BOTTOM - 1);
 

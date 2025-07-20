@@ -1,18 +1,18 @@
 #pragma once
-#include "type/include.h"
 #include "printf.h"
 #include "gfx/gfx.h"
-#include "ST7735_SOFT/driver.h"      // RGB12, RGB16, RGB32
-#include "ST7735_SPI/driver.h"       // RGB12, RGB16, RGB32
-#include "ST7789/driver.h"           // RGB32
-#include "ILI9486_8_BIT/driver.h"    // RGB16, RGB32
+#include "ST7735_SOFT/driver.h"  
+#include "ILI9225_SOFT/driver.h"     
+#include "ST7735_SPI/driver.h" 
+#include "ST7789/driver.h"  
+#include "ILI9486_8_BIT/driver.h" 
 #ifdef MIK32V2
-#include "ILI9486_16_BIT/driver.h"   // RGB16, RGB32
+#include "ILI9486_16_BIT/driver.h" 
 #endif
 
 #define FONT_TAB_FACTOR     2
 
-template<typename Driver, typename C = RGB16, const int R = R_0>
+template<typename Driver>
 class Display : public Driver, public PrintF, public GFX {
 
 #ifdef __AVR__
@@ -27,7 +27,7 @@ public:
   void init()
     // Display()
   {
-    Driver::init(R);
+    Driver::init();
     color(0xFFFFFF);
     background(0);
     viewport();
@@ -55,9 +55,9 @@ public:
   }
 
 private:
-  C _color;         // Цвет
-  C _color2;        // Цвет 2
-  C _background;    // Фон
+  typename Driver::RGB _color;         // Цвет
+  typename Driver::RGB _color2;        // Цвет 2
+  typename Driver::RGB _background;    // Фон
   Rect *_viewport;  // Область вывода
   Rect _didplay = Rect(0, 0, max_x(), max_y());
 
@@ -83,17 +83,16 @@ private:
 
 public:
   using Driver::area;
+  using Driver::max_x;
+  using Driver::max_y;
 
-  ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
-  ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
-
-  ATTR_INLINE  void color(C c) { _color = c; }
-  ATTR_INLINE  void color2(C c) { _color2 = c; }
-  ATTR_INLINE  void background(C b) { _background = b; }
+  ATTR_INLINE  void color(typename Driver::RGB c) { _color = c; }
+  ATTR_INLINE  void color2(typename Driver::RGB c) { _color2 = c; }
+  ATTR_INLINE  void background(typename Driver::RGB b) { _background = b; }
   ATTR_INLINE  void clear() { area(0, 0, max_x(), max_y(), _background); }
-  ATTR_INLINE  void fill(C color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
+  ATTR_INLINE  void fill(typename Driver::RGB color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
   ATTR_INLINE  void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
-  ATTR_INLINE  void fill(Rect view, C color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
+  ATTR_INLINE  void fill(Rect view, typename Driver::RGB color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
   ATTR_INLINE  void viewport(Rect *view) { _viewport = view; }
   ATTR_INLINE  void viewport() { _viewport = &_didplay; }
 
@@ -114,7 +113,7 @@ public:
     release();
   }
 
-  void pixel(int16_t x, int16_t y, C color)
+  void pixel(int16_t x, int16_t y, typename Driver::RGB color)
   {
     if (!_viewport->is(x, y)) return;
     select();
@@ -197,7 +196,7 @@ public:
       case '\e':
         break;
       case '\1':
-        { C tmp = _color; _color = _color2; _color2 = tmp; }
+        { typename Driver::RGB tmp = _color; _color = _color2; _color2 = tmp; }
         break;
 
       default:
@@ -260,10 +259,10 @@ public:
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    int16_t yy = 0;
+    uint16_t yy = 0;
     for (int16_t y = 0; y < max_y() + 1; y++) {
-      int16_t xx = 0;
-      int16_t xy = 0;
+      uint16_t xx = 0;
+      uint16_t xy = 0;
       for (int16_t x = 0; x < max_x() + 1; x++) {
 
         int8_t e = d << 2;
@@ -274,7 +273,7 @@ public:
         xy += y;  // Заменяем умножение сложением
         xx += x;
 
-        send_rgb(C(r, g, b));
+        send_rgb(typename Driver::RGB(r, g, b));
       }
       yy += y;
     }
