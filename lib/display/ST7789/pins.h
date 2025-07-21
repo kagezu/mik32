@@ -33,6 +33,6 @@
 #define ST_8_WR(x)   x ( 0, 9 )     // A4
 #define ST_8_RS(x)   x ( 0, 10)     // D2
 #define ST_8_CS(x)   x ( 1, 15)
-#define ST_8_RST(x)  x ( 0, 16)
+#define ST_8_RST(x)  x ( 2, 8 )
 #define ST_8_PORT(x) x ( 0, 0 )
 #endif

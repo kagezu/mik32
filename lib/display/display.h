@@ -38,8 +38,7 @@ public:
   {
     select();
     send_command(VSCRSADD);
-    send_byte(sl >> 8);
-    send_byte(sl);
+    send_word(sl);
     release();
   }
 
@@ -47,10 +46,8 @@ public:
   {
     select();
     send_command(PVSCRDEF);
-    send_byte(top >> 8);
-    send_byte(top);
-    send_byte(bottom >> 8);
-    send_byte(bottom);
+    send_word(top);
+    send_word(bottom);
     release();
   }
 
@@ -64,20 +61,9 @@ private:
   using Driver::set_addr;
   using Driver::send_rgb;
   using Driver::send_command;
-  using Driver::send_byte;
+  using Driver::send_word;
   using Driver::select;
   using Driver::release;
-
-  // void send_config(const uint8_t *config, uint8_t size)
-  // {
-  //   while (size) {
-  //     uint8_t count = pgm_read_byte(config++);
-  //     uint8_t comand = pgm_read_byte(config++);
-  //     size -= 2 + count;
-  //     send_command(comand);
-  //     while (count--) send_byte(pgm_read_byte(config++));
-  //   }
-  // }
 
   // gfx ================================================================================
 

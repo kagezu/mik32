@@ -14,7 +14,7 @@ public:
   ATTR_INLINE constexpr int16_t max_y() { return 319; }
   using RGB = C;
 
-  void init(uint8_t position = 0)
+  void init(uint8_t rotation = 0)
   {
     ST_8_RD(GPIO); ST_8_WR(GPIO); ST_8_RS(GPIO); ST_8_CS(GPIO); ST_8_RST(GPIO);
     ST_8_RD(OUT); ST_8_WR(OUT); ST_8_RS(OUT); ST_8_CS(OUT); ST_8_RST(OUT);
@@ -28,7 +28,7 @@ public:
     delay_ms(25);
 
     send_config(ST7789_CONFIG, sizeof(ST7789_CONFIG));
-    send_command(MADCTL); send_byte(position);
+    send_command(MADCTL); send_byte(rotation);
     set_rgb_format();
     send_command(SLPOUT);
     send_command(NORON);
