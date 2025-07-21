@@ -19,7 +19,7 @@ public:
 
   ATTR_INLINE constexpr int16_t max_x() { return 127; }
   ATTR_INLINE constexpr int16_t max_y() { return 159; }
-  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); flag = 0; }
+  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); }
   ATTR_INLINE void release() { spi.end(); ST_SPI_CS(SET); }
   ATTR_INLINE void send_rgb(C color, uint8_t len) { while (len--)send_rgb(color); }
   ATTR_INLINE void send_byte(uint8_t data) { spi.send(data); spi.wait_idle(); }

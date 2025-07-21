@@ -2,12 +2,13 @@
 #include "printf.h"
 #include "gfx/gfx.h"
 #include "ST7735_SOFT/driver.h"  
-#include "ILI9225_SOFT/driver.h"     
-#include "ST7735_SPI/driver.h" 
+#include "ILI9225_SOFT/driver.h"  
+#include "ILI9225/driver.h"     
+#include "ST7735/driver.h" 
 #include "ST7789/driver.h"  
-#include "ILI9486_8_BIT/driver.h" 
+#include "ILI9486_8/driver.h" 
 #ifdef MIK32V2
-#include "ILI9486_16_BIT/driver.h" 
+#include "ILI9486_16/driver.h" 
 #endif
 
 #define FONT_TAB_FACTOR     2

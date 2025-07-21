@@ -5,7 +5,7 @@
 #define TOP     0
 #define BOTTOM  28
 
-#define RADIUS  8
+#define RADIUS  6
 #define COUNT   10
 #define PRECIS  10
 

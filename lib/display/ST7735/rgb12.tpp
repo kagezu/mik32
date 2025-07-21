@@ -9,6 +9,9 @@ void ST7735<SPI0, RGB12>::set_rgb_format()
 }
 
 template<>
+ATTR_INLINE void ST7735<SPI0, RGB12>::select() { spi.begin(spi_conf); ST_SPI_CS(CLR); flag = 0; }
+
+template<>
 ATTR_INLINE  void ST7735<SPI0, RGB12>::send_rgb(RGB12 color)
 {
   static uint8_t half;
@@ -58,6 +61,9 @@ void ST7735<SPI1, RGB12>::set_rgb_format()
   send_byte(0x03); // 4x4x4 bit
   spi_conf.thr(SPI_THR_3);
 }
+
+template<>
+ATTR_INLINE void ST7735<SPI1, RGB12>::select() { spi.begin(spi_conf); ST_SPI_CS(CLR); flag = 0; }
 
 template<>
 ATTR_INLINE void ST7735<SPI1, RGB12>::send_rgb(RGB12 color)

@@ -1,6 +1,6 @@
 #pragma once
 #include "pins.h"
-#include "const.h"
+#include "ILI9225/const.h"
 #include "comon/include.h"
 
 class ILI9225_SOFT {
