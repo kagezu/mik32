@@ -1,6 +1,6 @@
 #pragma once
 #include "pins.h"
-#include "type/include.h"
+#include "comon/include.h"
 
 // #define ILI_8_WRITE  ILI_8_RD(SET); ILI_8_PORT(OUT) | 0xFF;
 // #define ILI_8_READ   ILI_8_PORT(IN) & 0x00; ILI_8_RD(CLR);
@@ -152,12 +152,12 @@ protected:
       }
 
     release();
-  }
+    }
 
 private:
   ATTR_INLINE void set_rgb_format();
   virtual void send_config(const uint8_t * config, uint8_t size) = 0;
-};
+  };
 
 template<>
 ATTR_INLINE void ILI9486_8<RGB16>::send_rgb(RGB16 color)

@@ -12,7 +12,7 @@
 
 #define FONT_TAB_FACTOR     2
 
-template<typename Driver>
+template<typename Driver, const int R = R_0>
 class Display : public Driver, public PrintF, public GFX {
 
 #ifdef __AVR__
@@ -27,7 +27,7 @@ public:
   void init()
     // Display()
   {
-    Driver::init();
+    Driver::init(R);
     color(0xFFFFFF);
     background(0);
     viewport();
@@ -68,23 +68,24 @@ private:
   using Driver::select;
   using Driver::release;
 
-  void send_config(const uint8_t *config, uint8_t size)
-  {
-    while (size) {
-      uint8_t count = pgm_read_byte(config++);
-      uint8_t comand = pgm_read_byte(config++);
-      size -= 2 + count;
-      send_command(comand);
-      while (count--) send_byte(pgm_read_byte(config++));
-    }
-  }
+  // void send_config(const uint8_t *config, uint8_t size)
+  // {
+  //   while (size) {
+  //     uint8_t count = pgm_read_byte(config++);
+  //     uint8_t comand = pgm_read_byte(config++);
+  //     size -= 2 + count;
+  //     send_command(comand);
+  //     while (count--) send_byte(pgm_read_byte(config++));
+  //   }
+  // }
 
   // gfx ================================================================================
 
 public:
   using Driver::area;
-  using Driver::max_x;
-  using Driver::max_y;
+
+  ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
+  ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
 
   ATTR_INLINE  void color(typename Driver::RGB c) { _color = c; }
   ATTR_INLINE  void color2(typename Driver::RGB c) { _color2 = c; }

@@ -1,6 +1,6 @@
 #pragma once
 #include "pins.h"
-#include "type/include.h"
+#include "comon/include.h"
 
 template<typename C = RGB16, const int R = R_0>
 class ST7735_SOFT {
@@ -289,7 +289,7 @@ private:
 };
 
 template<>
-ATTR_NOINLINE void ST7735_SOFT<RGB16,0>::send_rgb(RGB16 color)
+ATTR_NOINLINE void ST7735_SOFT<RGB16, 0>::send_rgb(RGB16 color)
 {
   uint16_t rgb = color.rgb;
 

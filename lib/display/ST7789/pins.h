@@ -14,7 +14,8 @@
 #define ST_8_WR(x)   x ( C, 1 )
 #define ST_8_RS(x)   x ( C, 2 )
 #define ST_8_CS(x)   x ( C, 3 )
-#define ST_8_RST(x)  x ( C, 8 )
+#define ST_8_RST(x)  x ( C, 4 )
+// #define ST_8_RST(x)  x ( C, 8 )
 #define ST_8_PORT(x) x ( D, 8 )
 #endif
 

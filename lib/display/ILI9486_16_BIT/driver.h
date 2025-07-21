@@ -1,5 +1,5 @@
 #pragma once
-#include "type/include.h"
+#include "comon/include.h"
 #include "pins.h"
 
 template<typename C = RGB16>

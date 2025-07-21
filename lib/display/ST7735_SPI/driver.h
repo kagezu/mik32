@@ -1,7 +1,7 @@
 #pragma once
 #include "SPI.h"
 #include "pins.h"
-#include "type/include.h"
+#include "comon/include.h"
 
 #define SPI_THR_2     7
 #define SPI_THR_3     6
