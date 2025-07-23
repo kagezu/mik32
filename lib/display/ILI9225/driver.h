@@ -49,6 +49,8 @@ public:
     spi_conf.mode(SPI_MODE0); // Настройка для инициализации
 
     select();
+    send_config(ILI9225_CONFIG_STEP0, sizeof(ILI9225_CONFIG_STEP0));
+    delay_ms(10);
     send_config(ILI9225_CONFIG_STEP1, sizeof(ILI9225_CONFIG_STEP1));
     delay_ms(10);
 

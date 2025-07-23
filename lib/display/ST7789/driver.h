@@ -75,12 +75,12 @@ protected:
   #endif
   }
 
-  void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  {
-    send_command(CASET); send_word(x0); send_word(x1);
-    send_command(RASET); send_word(y0); send_word(y1);
-    send_command(RAMWR);
-  }
+  // void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+  // {
+  //   send_command(CASET); send_word(x0); send_word(x1);
+  //   send_command(RASET); send_word(y0); send_word(y1);
+  //   send_command(RAMWR);
+  // }
 
   ATTR_INLINE void send_rgb(C color, int32_t len) { while (len--) send_rgb(color); }
   ATTR_INLINE void send_rgb(C color);

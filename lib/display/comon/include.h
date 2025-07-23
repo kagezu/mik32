@@ -3,7 +3,7 @@
 #include "rgb12.h"
 #include "rgb16.h"
 #include "rgb18.h"
-#include "rgb32.h"
+#include "rgb24.h"
 #include "font.h"
 #include "const.h"
 #include "rect.h"

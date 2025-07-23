@@ -60,22 +60,22 @@ protected:
     ST_SPI_RS(SET); // Запись данных
   }
 
-  void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  {
-    send_command(CASET);
-    spi.send16(x0);
-    spi.wait();
-    spi.send16(x1);
-    spi.wait_idle();
+  //   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+  //   {
+  //     send_command(CASET);
+  //     spi.send16(x0);
+  //     spi.wait();
+  //     spi.send16(x1);
+  //     spi.wait_idle();
 
-    send_command(RASET);
-    spi.send16(y0);
-    spi.wait();
-    spi.send16(y1);
-    spi.wait_idle();
+  //     send_command(RASET);
+  //     spi.send16(y0);
+  //     spi.wait();
+  //     spi.send16(y1);
+  //     spi.wait_idle();
 
-    send_command(RAMWR);
-  }
+  //     send_command(RAMWR);
+  //   }
 };
 
 #include "rgb12.tpp"

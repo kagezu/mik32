@@ -3,7 +3,7 @@
 #include "fixmath.h"
 
 #define TOP     0
-#define BOTTOM  28
+#define BOTTOM  32
 
 #define RADIUS  6
 #define COUNT   10
@@ -39,7 +39,7 @@ int main(void)
 
   for (int i = 0; i < COUNT; i++) {
     // Задание начальных значений
-    constexpr fix16_t mask = 0x7ffff;
+    constexpr fix16_t mask = 0xfffff;
     balls[i][X] = Fix16((int16_t)(lcd.max_x() >> 1));
     balls[i][Y] = Fix16((int16_t)(lcd.max_y() >> 1));
     balls[i][VX] = ((rnd() & 0x1) ? (fix16_t)(-(rnd() & mask)) : (fix16_t)(rnd() & mask)) / PRECIS;

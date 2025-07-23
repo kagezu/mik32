@@ -31,7 +31,8 @@
     "font.h": "c",
     "rgb12.h": "c",
     "const.h": "c",
-    "stdint-gcc.h": "c"
+    "stdint-gcc.h": "c",
+    "*.tpp": "cpp"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

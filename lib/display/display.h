@@ -9,6 +9,7 @@
 #include "ILI9486_8/driver.h" 
 #ifdef MIK32V2
 #include "ILI9486_16/driver.h" 
+#include "NT35510/driver.h" 
 #endif
 
 #define FONT_TAB_FACTOR     2
@@ -249,6 +250,33 @@ public:
     set_addr(0, 0, max_x(), max_y());
     uint16_t yy = 0;
     for (int16_t y = 0; y < max_y() + 1; y++) {
+      uint16_t xx = 0;
+      uint16_t xy = 0;
+      for (int16_t x = 0; x < max_x() + 1; x++) {
+
+        int8_t e = d << 2;
+        int8_t r = ((xx + yy) >> div) + e;
+        int8_t g = ((yy - xx) >> div) + e;
+        int8_t b = (xy >> div) - e;
+
+        xy += y;  // Заменяем умножение сложением
+        xx += x;
+
+        send_rgb(typename Driver::RGB(r, g, b));
+      }
+      yy += y;
+    }
+    release();
+  }
+
+  void demo2(uint8_t d)
+  {
+    static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
+
+    select();
+    uint16_t yy = 0;
+    for (int16_t y = 0; y < max_y() + 1; y++) {
+      set_addr(0, y, max_x(), y);
       uint16_t xx = 0;
       uint16_t xy = 0;
       for (int16_t x = 0; x < max_x() + 1; x++) {

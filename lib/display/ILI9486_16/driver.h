@@ -64,12 +64,12 @@ public:
     L_WR(CLR);
   }
 
-  void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  {
-    send_command(CASET); send_word(x0); send_word(x1);
-    send_command(RASET); send_word(y0); send_word(y1);
-    send_command(RAMWR);
-  }
+  // void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+  // {
+  //   send_command(CASET); send_word(x0); send_word(x1);
+  //   send_command(RASET); send_word(y0); send_word(y1);
+  //   send_command(RAMWR);
+  // }
 };
 
 #include "rgb16.tpp"

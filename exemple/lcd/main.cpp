@@ -17,6 +17,7 @@ int main(void)
 
   lcd.init();
   lcd.font(sans_24, 0, 0);
+  lcd.background(0x07071F);
 
   int x = 0;
 
@@ -27,11 +28,12 @@ int main(void)
       lcd.background(~color[x++ & 0x7F]);
       lcd.clear();
     }
-    else
+    else {
       lcd.demo(x++);
+    }
 
     uint16_t fps = (F_CPU << 4) / T32_0;
     lcd.at(10, lcd.max_y() - lcd.get_height());
-    lcd.printf(P("FPS: %.2.4q"), fps);
+    lcd.printf(P("FPS: %.2.4q "), fps);
   }
 }

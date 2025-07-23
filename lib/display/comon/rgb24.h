@@ -2,7 +2,7 @@
 #include "convert.h"
 #include "inttypes.h"
 
-class RGB32 {
+class RGB24 {
 public:
   union {
     uint32_t rgb;
@@ -15,9 +15,9 @@ public:
   };
 
 public:
-  RGB32() {}
-  RGB32(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r) {}
-  RGB32(uint32_t c) : rgb(c) {}
+  RGB24() {}
+  RGB24(uint8_t r, uint8_t g, uint8_t b) : blue(b), green(g), red(r) {}
+  RGB24(uint32_t c) : rgb(c) {}
 
   void rgb12(uint16_t c) { rgb = RGB_32_TO_12(c); }
   void rgb16(uint16_t c) { rgb = RGB_32_TO_16(c); }
