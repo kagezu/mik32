@@ -7,6 +7,7 @@
 #include "ST7735/driver.h" 
 #include "ST7789/driver.h"  
 #include "ILI9486_8/driver.h" 
+#include "SSD1306/driver.h" 
 #ifdef MIK32V2
 #include "ILI9486_16/driver.h" 
 #include "NT35510/driver.h" 
@@ -53,6 +54,8 @@ public:
     release();
   }
 
+  // using Driver::pixel;
+
 private:
   typename Driver::RGB _color;         // Цвет
   typename Driver::RGB _color2;        // Цвет 2
@@ -88,7 +91,7 @@ public:
   void fill(int16_t x, int16_t y, int16_t x1, int16_t y1)
   {
     if (!_viewport->cut(x, y, x1, y1)) return;
-    if (x == x1 && y == y1) pixel(x, y);
+    if (x == x1 && y == y1) pixel(x, y, _color);
     else area(x, y, x1, y1, _color);
   }
 

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=MIK32 GIT
+Comment=Отправить коммит
+Exec=/home/hinto/project/mik32/tools/auto-commit/commit.sh /home/hinto/project/mik32
+Icon=web-github
+Path=
+Terminal=true
+StartupNotify=true
