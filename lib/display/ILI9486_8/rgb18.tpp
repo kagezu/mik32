@@ -46,7 +46,7 @@ ATTR_INLINE void ILI9486_8<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, u
     ILI_8_PORT(OUTPUT) = blue;
     ILI_8_WR(SET);
   #else
-  RGB18 rgb = color.rgb32();
+  RGB18 rgb = color.rgb24();
   uint16_t x = x1 - x0;
   uint16_t y = y1 - y0;
   for (uint16_t i = 0; i <= x; i++)
@@ -60,4 +60,4 @@ ATTR_INLINE void ILI9486_8<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, u
     #endif
     }
   release();
-}
+  }

@@ -5,8 +5,8 @@
 #define TOP     0
 #define BOTTOM  32
 
-#define RADIUS  6
-#define COUNT   10
+#define RADIUS  8
+#define COUNT   16
 #define PRECIS  10
 
 #define X       0
@@ -125,10 +125,12 @@ loop:
     // Стираем устаревший объект с экрана
     lcd.color(Black);
     lcd.circle_fill(Xold, Yold, RADIUS);
+    // lcd.circle(Xold, Yold, RADIUS);
 
     // Отображаем объект в новом месте
     lcd.color(colors[i]);
     lcd.circle_fill(X0, Y0, RADIUS);
+    // lcd.circle(X0, Y0, RADIUS);
   }
 
   uint32_t fps = (F_CPU << 4) / T32_0;

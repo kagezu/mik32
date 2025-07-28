@@ -25,7 +25,7 @@ constexpr int MIDLE_AXIS = (lcd.max_y() - BORDER_BOTTOM - (HEIGHT >> 1));// Ра
 Rect view = Rect(0, BORDER_TOP, lcd.max_x(), lcd.max_y() - BORDER_BOTTOM);// Графическая область
 
 Lagrange<Lp, SEG, ADC::DEPTH> L;
-FFT <SAMPLES, ADC::DEPTH > fft;
+FFT < (SAMPLES >> 1), ADC::DEPTH > fft;
 Encoder enc;
 DMA<0, DMA_VH> dma;
 // SPI spi;
@@ -36,6 +36,7 @@ short points2[POINTES] = {};
 
 int fps = 20;
 int count = 0;
+int timer = 0;
 
 // Преобразование к координатам дисплея
 void transform_to_display(short in[], short out[], int32_t scale, int32_t offset)
@@ -160,7 +161,7 @@ void init()
   T32_1_PS; T32_1_EN;
 
   // Таймер для расчёта FPS
-  T32_2_PS; T32_2_EN;
+  // T32_2_PS; T32_2_EN;
 
   // Прерывания используются для сканирования энкодера
   set_csr(mie, MIE_MEIE);
@@ -199,13 +200,12 @@ int main(void)
 
   volatile int mode = -1;
   int sl = 0;
-  uint32_t time = 0;
 
   while (true) {
     const int32_t t_seg = (int32_t)FqScale.get_item<int>() << 5; // Умножаем микросекунды на 32 MHz. [такты на сегмент]
     int32_t scale = (ADC::AREF * SEG) / VScale.get_item<int>();// Масштабирование по напряжению [пикселей на весь диапазон]
-    fps = fps - (fps >> 2) + (F_CPU / (T32_2 - time));// Расчёт FPS
-    time = T32_2;
+    fps = fps - (fps >> 2) + (INT_FQ / timer);// Расчёт FPS
+    timer = 0;
 
     // Инициализация режимов работы при переключении
     if (mode != menu.value) {
@@ -320,6 +320,7 @@ ISR
   int inc = enc.scan();
   if (inc) menu.next(inc);
   count++;
+  timer++;
   T32_0_IC;
   EPIC_C;
 }

@@ -1,4 +1,5 @@
 #include "driver.h"
+#ifdef __AVR_ATmega328P__
 
 void SSD1306::init(uint8_t rotation)
 {
@@ -114,3 +115,5 @@ void SSD1306::update(void)
   i2c.write(buffer, sizeof(buffer));
   i2c.end();
 }
+
+#endif

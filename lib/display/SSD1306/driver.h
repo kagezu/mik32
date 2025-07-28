@@ -1,4 +1,7 @@
 #pragma once
+
+#ifdef __AVR_ATmega328P__
+
 #include "i2c.h"
 #include "comon/include.h"
 #include "const.h"
@@ -39,3 +42,5 @@ protected:
   void send_command(uint8_t, uint8_t);
   void send_command(uint8_t, uint8_t, uint8_t);
 };
+
+#endif

@@ -10,15 +10,15 @@ void NT35510<RGB18>::send_rgb(RGB18 color)
 {
   static uint16_t half;
   if (flag) {
-    L_PORT(OUTPUT) = color.red | half;
-    L_WR(CLR); L_WR(SET);
+    NT_PORT(OUTPUT) = color.red | half;
+    NT_WR(CLR); NT_WR(SET);
     flag = 0;
-    L_PORT(OUTPUT) = color.rgb;
-    L_WR(CLR); L_WR(SET);
+    NT_PORT(OUTPUT) = color.rgb;
+    NT_WR(CLR); NT_WR(SET);
   }
   else {
-    L_PORT(OUTPUT) = (color.rgb >> 8);
-    L_WR(CLR); L_WR(SET);
+    NT_PORT(OUTPUT) = (color.rgb >> 8);
+    NT_WR(CLR); NT_WR(SET);
     half = color.blue << 8;
     flag = 1;
   }
@@ -35,17 +35,17 @@ void NT35510<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RG
   uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
-    L_PORT(OUTPUT) = hword;
-    L_WR(CLR);
-    L_WR(SET);
+    NT_PORT(OUTPUT) = hword;
+    NT_WR(CLR);
+    NT_WR(SET);
 
-    L_PORT(OUTPUT) = mword;
-    L_WR(CLR);
-    L_WR(SET);
+    NT_PORT(OUTPUT) = mword;
+    NT_WR(CLR);
+    NT_WR(SET);
 
-    L_PORT(OUTPUT) = lword;
-    L_WR(CLR);
-    L_WR(SET);
+    NT_PORT(OUTPUT) = lword;
+    NT_WR(CLR);
+    NT_WR(SET);
   }
   release();
 }

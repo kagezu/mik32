@@ -145,6 +145,33 @@ void GFX::circle_fat(int16_t x, int16_t y, int16_t radius)
     w_line(x1 + dy, y + dx, x2 + dy);
   }
 }
+/*
+void GFX::circle_fill(int16_t x, int16_t y, int16_t radius)
+{
+  int16_t f = 1 - radius;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * radius;
+  int16_t dx = 0;
+  int16_t dy = radius;
+
+  while (dx < dy) {
+    if (f >= 0) {
+      dy--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    dx++;
+    ddF_x += 2;
+    f += ddF_x;
+
+    // w_line(x - dx, y - dy, x + dx);
+    // w_line(x - dx, y + dy, x + dx);
+    // h_line(x - dy, y - dx, y + dx);
+    // h_line(x + dy, y - dx, y + dx);
+  }
+  fill(x - dx, y - dy, x + dx, y + dy);
+}
+*/
 
 void GFX::circle_fill(int16_t x, int16_t y, int16_t radius)
 {

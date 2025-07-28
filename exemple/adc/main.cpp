@@ -8,7 +8,7 @@ LCD lcd;
 constexpr int ADC_CH = 0;         // Номер канала ADC
 constexpr int ADC_MAX = 1 << ADC::DEPTH;
 constexpr int ADC_DIV = ((ADC_MAX << 1) / lcd.max_x());
-constexpr int speed = 6;
+constexpr int speed = 3;
 
 int main(void)
 {
@@ -22,8 +22,7 @@ int main(void)
   ADC::delay(90);
   ADC::start();
 
-  uint16_t x = 1;
-  int speed = 4;
+  uint32_t x = 1;
   const uint16_t xx = (lcd.max_x() + 1) >> 1;
   uint16_t x2 = xx + (xx >> 1);
   uint16_t pix[lcd.max_y() + 1] = {};
@@ -45,12 +44,12 @@ int main(void)
       if (k2 > (xx >> 1) - 1) k2 = -k2;
       if (k2 > (xx >> 1) - 1) k2 = (xx >> 1) - 1;
       lcd.scroll(y2 + 1);
-      lcd.area(xx, y2, x2 - k2 - 1, y2, RGB(32, 32, 32));
+      lcd.area(xx, y2, x2 - k2 - 1, y2, Black);
       lcd.area(x2 - k2, y2, x2 + k2, y2, RGB(64, 255, 64));
-      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, RGB(32, 32, 32));
+      lcd.area(x2 + k2 + 1, y2, lcd.max_x(), y2, Black);
     }
 
-    lcd.color(RGB(32, 32, 32));
+    lcd.color(Black);
     lcd.w_line(pix[y] > old ? old : pix[y], y, pix[y] > old ? pix[y] : old);
     // lcd.pixel(pix[y], y);
     lcd.color(RGB(127, 255, 255));
