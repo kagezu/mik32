@@ -24,6 +24,7 @@ public:
     ST_8_RST(SET);
 
     select();
+    delay_ms(1);
     send_command(SWRESET);
     delay_ms(25);
 
@@ -50,8 +51,10 @@ protected:
   ATTR_INLINE void send_byte(uint8_t data)
   {
   #ifdef MIK32V2
-    ST_8_PORT(OUTPUT) = data | (ST_8_PORT(OUTPUT) & ~0xff);
-    ST_8_WR(CLR); ST_8_WR(SET);
+    ST_8_PORT(CLR) | 0xff;
+    ST_8_PORT(STATE) = data;
+    ST_8_WR(CLR);
+    ST_8_WR(SET);
   #else
     ST_8_PORT(OUTPUT) = data;
     ST_8_WR(SET); ST_8_WR(CLR);
@@ -68,19 +71,21 @@ protected:
     ST_8_PORT(STATE) = data & 0xff;
     ST_8_WR(SET);
   #else
-    ST_8_PORT(OUTPUT) = to_byte(data, 1);
+    ST_8_PORT(OUTPUT) = data >> 8;
     ST_8_WR(SET); ST_8_WR(CLR);
-    ST_8_PORT(OUTPUT) = to_byte(data, 0);
+    ST_8_PORT(OUTPUT) = data;
     ST_8_WR(SET); ST_8_WR(CLR);
   #endif
   }
 
-  // void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  // {
-  //   send_command(CASET); send_word(x0); send_word(x1);
-  //   send_command(RASET); send_word(y0); send_word(y1);
-  //   send_command(RAMWR);
-  // }
+  void pixel(int16_t x, int16_t y, C color)
+  {
+    select();
+    set_addr(x, y, x, y);
+    send_rgb(color);
+    send_rgb(color);
+    release();
+  }
 
   ATTR_INLINE void send_rgb(C color, int32_t len) { while (len--) send_rgb(color); }
   ATTR_INLINE void send_rgb(C color);

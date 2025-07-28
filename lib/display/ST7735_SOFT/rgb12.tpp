@@ -10,7 +10,7 @@ void ST7735_SOFT<RGB12>::send_rgb(RGB12 color)
 {
   uint16_t rgb = color.rgb;
 
-  for (uint16_t mask = 0x8000; mask; mask >>= 1) {
+  for (uint16_t mask = 0x800; mask; mask >>= 1) {
     if (rgb & mask) ST_SOFT_SDA(SET);
     else ST_SOFT_SDA(CLR);
     ST_SOFT_SCK(SET);

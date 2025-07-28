@@ -112,5 +112,14 @@ public:
     while (len--) { spi.wait_thr();  spi.send16(color.rgb); }
     release();
   }
+
+  void pixel(int16_t x, int16_t y, RGB16 color)
+  {
+    select();
+    set_addr(x, y, x, y);
+    send_rgb(color);
+    send_rgb(color);
+    release();
+  }
 };
 

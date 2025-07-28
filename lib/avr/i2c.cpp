@@ -10,6 +10,7 @@ volatile uint16_t I2C::_master_buffer_length;
 
 void I2C::init()
 {
+  // TCCR0B |= _BV(CS00);
   _state = TWI_IDLE;
   // установка частоты F = F_CPU/(( 4 ^ TWSR[0:1] ) * TWBR * 2 + 16 )
   TWSR &= ~3; // Предполагается частота выше 30 кГц

@@ -181,3 +181,12 @@ void ILI9225_SOFT::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB1
   ILI_SOFT_SCK(CLR);
   ILI_SOFT_CS(SET);
 }
+
+void ILI9225_SOFT::pixel(int16_t x, int16_t y, RGB16 color)
+{
+  select();
+  set_addr(x, y, x, y);
+  send_rgb(color);
+  send_rgb(color);
+  release();
+}

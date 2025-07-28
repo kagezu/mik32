@@ -11,7 +11,7 @@
 
 //test
 
-#define T32_0_PS
+#define T32_0_PS  TCCR0B |= _BV(CS00);
 #define T32_0_EN   T1_DIV_1024
 #define T32_0_C   TCNT1 = 0
 #define T32_0     ((uint32_t)TCNT1 << 10)

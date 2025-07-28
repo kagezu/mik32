@@ -22,4 +22,5 @@ public:
   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
   void send_word(uint16_t rgb);
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color);
+  void pixel(int16_t x, int16_t y, RGB16 color);
 };

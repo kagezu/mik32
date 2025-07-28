@@ -7,7 +7,7 @@
 #include "ST7735/driver.h" 
 #include "ST7789/driver.h"  
 #include "ILI9486_8/driver.h" 
-// #include "SSD1306/driver.h" 
+#include "SSD1306/driver.h" 
 #ifdef MIK32V2
 #include "ILI9486_16/driver.h" 
 #include "NT35510/driver.h" 
@@ -45,8 +45,6 @@ public:
     release();
   }
 
-  // using Driver::pixel;
-
 private:
   typename Driver::RGB _color;         // Цвет
   typename Driver::RGB _color2;        // Цвет 2
@@ -59,13 +57,13 @@ private:
   using Driver::send_command;
   using Driver::send_word;
   using Driver::select;
-  using Driver::release;
 
   // gfx ================================================================================
 
 public:
   using Driver::area;
   using Driver::pixel;
+  using Driver::release;
 
   ATTR_INLINE constexpr int16_t max_x() { return R & EX_X_Y ? Driver::max_y() : Driver::max_x(); }
   ATTR_INLINE constexpr int16_t max_y() { return R & EX_X_Y ? Driver::max_x() : Driver::max_y(); }
@@ -92,16 +90,6 @@ public:
     if (!_viewport->is(x, y)) return;
     pixel(x, y, _color);
   }
-
-  // void pixel(int16_t x, int16_t y, typename Driver::RGB color)
-  // {
-  //   if (!_viewport->is(x, y)) return;
-  //   select();
-  //   set_addr(x, y, x, y);
-  //   send_rgb(color);
-  //   send_rgb(color);
-  //   release();
-  // }
 
   // print ==============================================================================
 

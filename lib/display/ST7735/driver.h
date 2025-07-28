@@ -28,6 +28,15 @@ public:
   ATTR_INLINE void send_rgb(C color);
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color);
 
+  void pixel(int16_t x, int16_t y, C color)
+  {
+    select();
+    set_addr(x, y, x, y);
+    send_rgb(color);
+    send_rgb(color);
+    release();
+  }
+
   void init(uint8_t rotation = 0)
   {
     ST_SPI_RST(OUT); ST_SPI_RST(CLR);
@@ -60,22 +69,6 @@ protected:
     ST_SPI_RS(SET); // Запись данных
   }
 
-  //   void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  //   {
-  //     send_command(CASET);
-  //     spi.send16(x0);
-  //     spi.wait();
-  //     spi.send16(x1);
-  //     spi.wait_idle();
-
-  //     send_command(RASET);
-  //     spi.send16(y0);
-  //     spi.wait();
-  //     spi.send16(y1);
-  //     spi.wait_idle();
-
-  //     send_command(RAMWR);
-  //   }
 };
 
 #include "rgb12.tpp"

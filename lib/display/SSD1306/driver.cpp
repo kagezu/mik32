@@ -4,7 +4,7 @@
 void SSD1306::init(uint8_t rotation)
 {
   i2c.init();
-  i2c.set_freq(0);
+  i2c.set_freq(12);
   i2c.set_address(LCD_I2C_ADDR);
 
   sei();
@@ -64,7 +64,7 @@ void SSD1306::set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
   curent_y = 0;
 }
 
-void SSD1306::send_rgb(RGB color)
+void SSD1306::send_rgb(bool color)
 {
   uint8_t *pixel = &buffer[curent_x + (curent_y >> 3) * (max_x() + 1)];
   uint8_t bit = (1 << (curent_y & 7));
@@ -79,7 +79,7 @@ void SSD1306::send_rgb(RGB color)
   }
 }
 
-void SSD1306::pixel(uint8_t x, uint8_t y, RGB color)
+void SSD1306::pixel(uint8_t x, uint8_t y, bool color)
 {
   if (x > max_x() || y > max_y()) return;
   uint8_t *pixel = &buffer[x + (y >> 3) * (max_x() + 1)];
@@ -88,11 +88,11 @@ void SSD1306::pixel(uint8_t x, uint8_t y, RGB color)
   *pixel |= color ? bit : 0;
 }
 
-void SSD1306::area(uint8_t x, uint8_t y, uint8_t x1, uint8_t y1, RGB color)
+void SSD1306::area(uint8_t x, uint8_t y, uint8_t x1, uint8_t y1, bool color)
 {
-  for (uint8_t xx = x; xx <= x1; xx++)
-    for (uint8_t yy = x; yy <= y1; yy++)
-      pixel(xx, yy, color);
+  // for (uint8_t xx = x; xx <= x1; xx++)
+  //   for (uint8_t yy = x; yy <= y1; yy++)
+  //     pixel(xx, yy, color);
 }
 
 void SSD1306::update(void)

@@ -2,7 +2,7 @@
 #include "pins.h"
 #include "comon/include.h"
 
-template<typename C = RGB16>
+template<typename C>
 class ST7735_SOFT : public IDriver {
 private:
   void set_rgb_format();
@@ -17,6 +17,15 @@ public:
 
   void send_rgb(C color);
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color);
+
+  void pixel(int16_t x, int16_t y, C color)
+  {
+    select();
+    set_addr(x, y, x, y);
+    send_rgb(color);
+    send_rgb(color);
+    release();
+  }
 
   void init(uint8_t rotation = 0)
   {
@@ -44,13 +53,6 @@ public:
     send_byte(command);
     ST_SOFT_RS(SET); // Запись данных
   }
-
-  // void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
-  // {
-  //   send_command(CASET); send_word(x0); send_word(x1);
-  //   send_command(RASET); send_word(y0); send_word(y1);
-  //   send_command(RAMWR);
-  // }
 
   void send_byte(uint8_t data)
   {
@@ -104,6 +106,8 @@ public:
     ST_SOFT_SCK(OUTPUT) = s0;
     ST_SOFT_SCK(OUTPUT) = rgb & 0x1 ? d1 : d0;
     ST_SOFT_SCK(OUTPUT) = s0;
+
+    ST_SOFT_SCK(CLR);
   #else
 
     int mask = 0x8000;
@@ -116,6 +120,7 @@ public:
     }
   #endif
   }
+
 };
 
 #include "rgb12.tpp"
