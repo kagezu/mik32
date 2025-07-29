@@ -70,6 +70,6 @@ public:
   void begin();
 
 public:
-  void set_address(uint8_t address) { _address = address << 1; }
+  void set_address(uint8_t address) { _address = address; }// << 1; }
   void end(void);
 };

@@ -11,7 +11,7 @@ class SSD1306 {
 private:
   I2C i2c;
   uint8_t begin_x, begin_y, end_x, end_y, curent_x, curent_y;
-  uint8_t buffer[32 * 16] = { };
+  uint8_t buffer[512];
 
   void send_config(const uint8_t *, uint8_t);
 
@@ -34,7 +34,7 @@ public:
   void update();
 
 
-  void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+  void set_addr(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 
 protected:
 

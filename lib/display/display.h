@@ -208,8 +208,8 @@ private:
       #else
         if (bit == 0) { bit = 1; data = *source++; }
       #endif
-        if (data & bit) send_rgb(_color);
-        else send_rgb(_background);
+        if (data & bit)send_rgb(_color);//pixel(x + i, y + j, _color); 
+        else send_rgb(_background);//pixel(x + i, y + j, _background);
         bit <<= 1;
       }
       // for (reg i = 0; i < _interval; i++) send_rgb(_background);
