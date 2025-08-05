@@ -10,6 +10,7 @@
 #define SPI_DELAY_DEF     0x00
 #define SPI_INT_DISABLE   0x3F
 
+
 class SPIConf {
 public:
   uint32_t config;
@@ -59,71 +60,84 @@ public:
   }
 };
 
-#define SPI_N   ((SPI_TypeDef *)N)
+#define SPIx   ((SPI_TypeDef *)(SPI_0_BASE_ADDRESS + N*0x400))
 
-template<auto N>
+
+
+typedef struct {
+  uint32_t CONFIG;         // Конфигурация SPI
+  uint32_t INT_ENABLE;     // Прерывания
+  uint32_t DELAY;          // Задержки
+  uint32_t TX_THR;         // Порог буфера
+} SPI_Config;
+
+
+template<const int N>
 class SPI {
 public:
   SPI()
   {
     // Настройка порта ввода/вывода
-    if (N == SPI_0_BASE_ADDRESS) {
-      SPI0_MISO(SERIAL); SPI0_MOSI(SERIAL); SPI0_SCK(SERIAL); SPI0_NSS_IN(SERIAL);
-      SPI0_MISO(P_NC); SPI0_MOSI(P_NC); SPI0_SCK(P_NC); SPI0_NSS_IN(P_VCC);
-    }
-    else {
+    // if (N == SPI_0_BASE_ADDRESS) {
+    if (N) {
       SPI1_MISO(SERIAL); SPI1_MOSI(SERIAL); SPI1_SCK(SERIAL); SPI1_NSS_IN(SERIAL);
       SPI1_MISO(P_NC); SPI1_MOSI(P_NC); SPI1_SCK(P_NC); SPI1_NSS_IN(P_VCC);
     }
+    else {
+      SPI0_MISO(SERIAL); SPI0_MOSI(SERIAL); SPI0_SCK(SERIAL); SPI0_NSS_IN(SERIAL);
+      SPI0_MISO(P_NC); SPI0_MOSI(P_NC); SPI0_SCK(P_NC); SPI0_NSS_IN(P_VCC);
+    }
 
-    SPI_N->ENABLE = 0;                      // Отключение модуля
-    SPI_N->INT_DISABLE = SPI_INT_DISABLE;   // Сброс маски прерываний
-    SPI_N->DELAY = SPI_DELAY_DEF;           // Регистр задержек
-    SPI_N->TX_THR = SPI_TX_THR;             // Установка порога по умолчанию
+    SPIx->ENABLE = 0;                      // Отключение модуля
+    SPIx->INT_DISABLE = SPI_INT_DISABLE;   // Сброс маски прерываний
+    SPIx->DELAY = SPI_DELAY_DEF;           // Регистр задержек
+    SPIx->TX_THR = SPI_TX_THR;             // Установка порога по умолчанию
   }
 
-  void wait() {}
+  static void wait() {}
   // Очистить FIFO
-  ATTR_INLINE  void clear_fifo() { SPI_N->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
+  ATTR_INLINE static void clear_fifo() { SPIx->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
   // Очистить чтением RX_FIFO
-  ATTR_INLINE  void clear_rx() { while ((SPI_N->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPI_N->RXDATA; }
+  ATTR_INLINE static void clear_rx() { while ((SPIx->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPIx->RXDATA; }
   // Ждать TX_FIFO < TX_THR
-  ATTR_INLINE  void wait_thr() { while (!(SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
+  ATTR_INLINE static void wait_thr() { while (!(SPIx->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
   // Ждать TX_FIFO < 8
-  ATTR_INLINE  void wait_full() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
+  ATTR_INLINE static void wait_full() { while (SPIx->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
   // Ждать TX_FIFO = 0
-  ATTR_INLINE  void wait_idle() { while (SPI_N->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  ATTR_INLINE  void send(uint8_t data) { SPI_N->TXDATA = data; }
-  ATTR_INLINE  void send16(uint16_t data) { SPI_N->TXDATA = data >> 8; SPI_N->TXDATA = data; }
+  ATTR_INLINE static void wait_idle() { while (SPIx->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
+  ATTR_INLINE static void send(uint8_t data) { SPIx->TXDATA = data; }
+  ATTR_INLINE static void send16(uint16_t data) { SPIx->TXDATA = data >> 8; SPIx->TXDATA = data; }
 
-  void begin(SPIConf settings)
+  static void begin(SPIConf settings)
   {
     clear_fifo();
-    SPI_N->CONFIG = settings.config;
-    // SPI_N->TX_THR = settings.tx_thr;
-    SPI_N->ENABLE = SPI_ENABLE_M;           // Включение модуля
+    SPIx->CONFIG = settings.config;
+    // SPIx->TX_THR = settings.tx_thr;
+    SPIx->ENABLE = SPI_ENABLE_M;           // Включение модуля
   }
 
-  ATTR_INLINE void end() { wait_idle(); SPI_N->ENABLE = 0; }
+  ATTR_INLINE static void end() { wait_idle(); SPIx->ENABLE = 0; }
 
-  uint8_t transfer(uint8_t data)
+  static uint8_t transfer(uint8_t data)
   {
-    SPI_N->TXDATA = data;
+    SPIx->TXDATA = data;
     wait_idle();
-    return  SPI_N->RXDATA;
+    return  SPIx->RXDATA;
   }
 
-  uint16_t transfer16(uint16_t data)
+  static uint16_t transfer16(uint16_t data)
   {
     uint16_t rx_dbyte;
-    SPI_N->TXDATA = data >> 8;
-    SPI_N->TXDATA = data;
+    SPIx->TXDATA = data >> 8;
+    SPIx->TXDATA = data;
     wait_idle();
-    rx_dbyte = SPI_N->RXDATA << 8;
-    rx_dbyte |= SPI_N->RXDATA;
+    rx_dbyte = SPIx->RXDATA << 8;
+    rx_dbyte |= SPIx->RXDATA;
     return rx_dbyte;
   }
 };
 
-#define SPI0 SPI<SPI_0_BASE_ADDRESS>
-#define SPI1 SPI<SPI_1_BASE_ADDRESS>
+// #define SPI0 SPI<SPI_0_BASE_ADDRESS>
+// #define SPI1 SPI<SPI_1_BASE_ADDRESS>
+#define SPI0 SPI<0>
+#define SPI1 SPI<1>

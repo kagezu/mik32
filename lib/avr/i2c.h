@@ -1,10 +1,10 @@
 #pragma once
 #include "core.h"
+#include "pinout.h"
 
 #ifdef  __AVR_ATmega328P__
-#define TWI_SDA     _BV(PC4)
-#define TWI_SCL     _BV(PC5)
-#define TWI_DDR      DDRC
+#define TWI_SDA     I2C0_SDA
+#define TWI_SCL     I2C0_SCL
 #endif
 
 #define TWI_FREQ 400000
@@ -70,6 +70,6 @@ public:
   void begin();
 
 public:
-  void set_address(uint8_t address) { _address = address; }// << 1; }
+  void set_address(uint8_t address) { _address = address; }
   void end(void);
 };

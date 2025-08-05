@@ -15,6 +15,7 @@
 #define CLR(port, pin)        PORT(port) &=~ _BV(pin)
 #define INV(port, pin)        PORT(port) ^=  _BV(pin)
 #define GET(port, pin)        (PIN(port)  &  _BV(pin))
+
 #define MASK(port, pin)                      _BV(pin)
 #define OUTPUT(port, pin)     PORT(port)
 #define STATE(port, pin)      PIN(port)

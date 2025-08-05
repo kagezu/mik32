@@ -15,14 +15,14 @@ void I2C::init()
   // установка частоты F = F_CPU/(( 4 ^ TWSR[0:1] ) * TWBR * 2 + 16 )
   TWSR &= ~3; // Предполагается частота выше 30 кГц
   TWBR = ((F_CPU / TWI_FREQ) - 16) / 2;
-  TWI_DDR |= TWI_SDA | TWI_SCL; // Устанавливаем пины как output
+  TWI_SDA(OUT) | TWI_SCL(MASK); // Устанавливаем пины как output
   TWCR = TWI_ENABLE | TWI_ACK | TWI_ISR; // Включаем модуль TWI
 }
 
 void I2C::destroy(void)
 {
   TWCR &= ~(TWI_ENABLE | TWI_ISR | TWI_ACK); // Отключаем модуль TWI
-  TWI_DDR &= ~(TWI_SDA | TWI_SCL); // Устанавливаем пины как input
+  TWI_SDA(IN) & ~TWI_SCL(MASK);  // Устанавливаем пины как input
 }
 
 void I2C::set_freq(uint32_t div)

@@ -1,5 +1,5 @@
 #pragma once
-#include <avr/pgmspace.h>
+#include <macros/pgmspace.h>
 
 // Fundamental Command
 

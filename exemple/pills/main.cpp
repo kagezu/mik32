@@ -5,8 +5,8 @@
 #define TOP     0
 #define BOTTOM  32
 
-#define RADIUS  8
-#define COUNT   16
+#define RADIUS  3
+#define COUNT   12
 #define PRECIS  10
 
 #define X       0
@@ -39,7 +39,7 @@ int main(void)
 
   for (int i = 0; i < COUNT; i++) {
     // Задание начальных значений
-    constexpr fix16_t mask = 0xfffff;
+    constexpr fix16_t mask = 0x1ffff;
     balls[i][X] = Fix16((int16_t)(lcd.max_x() >> 1));
     balls[i][Y] = Fix16((int16_t)(lcd.max_y() >> 1));
     balls[i][VX] = ((rnd() & 0x1) ? (fix16_t)(-(rnd() & mask)) : (fix16_t)(rnd() & mask)) / PRECIS;
@@ -124,13 +124,13 @@ loop:
 
     // Стираем устаревший объект с экрана
     lcd.color(Black);
-    lcd.circle_fill(Xold, Yold, RADIUS);
-    // lcd.circle(Xold, Yold, RADIUS);
+    // lcd.circle_fill(Xold, Yold, RADIUS);
+    lcd.circle(Xold, Yold, RADIUS);
 
     // Отображаем объект в новом месте
     lcd.color(colors[i]);
-    lcd.circle_fill(X0, Y0, RADIUS);
-    // lcd.circle(X0, Y0, RADIUS);
+    // lcd.circle_fill(X0, Y0, RADIUS);
+    lcd.circle(X0, Y0, RADIUS);
   }
 
   uint32_t fps = (F_CPU << 4) / T32_0;

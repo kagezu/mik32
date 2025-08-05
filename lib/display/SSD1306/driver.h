@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __AVR_ATmega328P__
+// #ifdef __AVR_ATmega328P__
 
 #include "i2c.h"
 #include "comon/include.h"
@@ -9,7 +9,7 @@
 
 class SSD1306 {
 private:
-  I2C i2c;
+  I2C<> i2c;
   uint8_t begin_x, begin_y, end_x, end_y, curent_x, curent_y;
   uint8_t buffer[512];
 
@@ -43,4 +43,4 @@ protected:
   void send_command(uint8_t, uint8_t, uint8_t);
 };
 
-#endif
+// #endif
