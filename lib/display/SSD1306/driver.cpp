@@ -1,5 +1,5 @@
 #include "driver.h"
-#ifdef __AVR_ATmega328P__
+// #ifdef __AVR_ATmega328P__
 
 void SSD1306::init(uint8_t rotation)
 {
@@ -10,9 +10,10 @@ void SSD1306::init(uint8_t rotation)
   delay_ms(10);
   sei();
   send_config(SSD1306_CONFIG, sizeof(SSD1306_CONFIG));
-  send_command(SetPinsConfig, 0x02);
-  // send_command(SetPinsConfig, 0x22);
-
+  if (rotation & FLIP_X) send_command(SetSegmentMapFlip);
+  if (rotation & FLIP_Y) send_command(SetScanDirectionFlip);
+  if (rotation & FLIP_Y) send_command(SetPinsConfig, 0x22);
+  ex = rotation & EX_X_Y;
   send_command(SetDisplayON);
   update();
 }
@@ -76,6 +77,7 @@ void SSD1306::send_rgb(bool color)
 
 void SSD1306::pixel(uint8_t x, uint8_t y, bool color)
 {
+  if (ex) { uint8_t t = x; x = y; y = t; }
   if (x > max_x() || y > max_y()) return;
   uint8_t *pixel = &buffer[x + (y >> 3) * (max_x() + 1)];
   uint8_t bit = (1 << (y & 7));
@@ -101,4 +103,4 @@ void SSD1306::update(void)
   i2c.end();
 }
 
-#endif
+// #endif

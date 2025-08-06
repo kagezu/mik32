@@ -2,7 +2,7 @@
 
 // #ifdef __AVR_ATmega328P__
 
-#include "i2c.h"
+#include "inc/i2c.h"
 #include "comon/include.h"
 #include "const.h"
 #include "pins.h"
@@ -12,6 +12,7 @@ private:
   I2C<> i2c;
   uint8_t begin_x, begin_y, end_x, end_y, curent_x, curent_y;
   uint8_t buffer[512];
+  bool ex;
 
   void send_config(const uint8_t *, uint8_t);
 

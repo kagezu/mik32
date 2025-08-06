@@ -28,7 +28,7 @@
 // #define LCD Display<ILI9486_8<RGB>, LCD_ROT>     // RGB16, RGB18
 // #define LCD Display<ILI9486_16<RGB>, LCD_ROT>    // RGB16, RGB18
 // #define LCD Display<NT35510<RGB>, LCD_ROT>       // RGB16, RGB18, RBB24
-#define LCD Display<SSD1306>            // bool
+#define LCD Display<SSD1306, LCD_ROT>            // bool
 
 
 // Шрифты

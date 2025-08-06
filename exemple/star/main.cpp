@@ -25,17 +25,24 @@ int main(void)
   lcd.color(White);
 
   uint16_t i = 0;
+  uint16_t r = 0;
   while (true) {
-    lcd.at(28, 8);
+    lcd.at(24, 8);
     lcd.printf(P("Hello  World"));
-    // lcd.printf(P("     Hello  World\n"));
-    // lcd.printf(P("     Hello  World\n"));
-    // lcd.printf(P("Hello  World\n"));
 
     for (char j = 0; j < 5; j++) {
-      int16_t
-        x = rnd() % (lcd.max_x() + 1),
-        y = rnd() % (lcd.max_y() + 1);
+      int16_t x, y;
+      x = rnd() % (lcd.max_x() >> 3);
+      y = rnd() % (lcd.max_y() >> 1);
+
+      if (r & 8) {
+        x += (lcd.max_x() >> 3) * (7 - (r & 7));
+        y += lcd.max_y() >> 1;
+      }
+      else {
+        x += (lcd.max_x() >> 3) * (r & 7);
+      }
+
       lcd.pixel(cycle[i][0], cycle[i][1], Black);
       lcd.pixel(x, y, 1);
       cycle[i][0] = x;
@@ -43,6 +50,7 @@ int main(void)
       i++;
       if (i == COUNT_STAR) i = 0;
     }
+    r++;
     lcd.release();
     delay_ms(15);
   }

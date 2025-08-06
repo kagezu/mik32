@@ -56,7 +56,7 @@ static const uint8_t SSD1306_CONFIG[] PROGMEM = {
   0x20, 0x00,  // Memory mode (horizontal)
   0xA0,        // Segment remap
   0xC0,        // Scan direction
-  // 0xDA, 0x12,  // COM pins
+  0xDA, 0x02,  // COM pins
   0x81, 0xCF,  // Contrast control
   0xD9, 0xF1,  // Precharge
   0xDB, 0x40,  // Vcomh
