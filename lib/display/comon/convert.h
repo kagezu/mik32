@@ -2,7 +2,7 @@
 
 #define RGB_TO_24(r, g, b)  ((r) | (g << 8) |(b << 16))
 #define RGB_TO_16(r, g, b)  ((((r & 0xf8) << 8) | ((g & 0xfc) << 3) | ((b&0xf8) >> 3)))
-#define RGB_TO_12(r, g, b)  (((r & 0xf0) << 4) | (g & 0xf0) | (b >> 4))
+#define RGB_TO_12(r, g, b)  (((r & 0xf0) << 4) | (g & 0xf0) | ((b & 0xf0) >> 4))
 
 #define RGB_24_TO_24(c)     (c)
 #define RGB_24_TO_16(c)     (((c >> 8) & 0xf100) | ((c >> 5) & 0x7e0) | ((c >> 3) & 0x1f))

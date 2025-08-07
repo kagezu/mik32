@@ -20,4 +20,6 @@ public:
   uint32_t rgb24() { return RGB_12_TO_24(rgb); }
 
   operator uint32_t() { return rgb24(); }
+
+  static constexpr int len() { return 12; }
 };

@@ -28,4 +28,6 @@ public:
   ATTR_INLINE uint32_t rgb24() { return RGB_24_TO_24(rgb); }
 
   operator uint32_t() { return *(uint32_t *)this; }
+
+  static constexpr int len() { return 18; }
 };

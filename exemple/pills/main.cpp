@@ -3,7 +3,7 @@
 #include "fixmath.h"
 
 #define TOP     0
-#define BOTTOM  32
+#define BOTTOM  8
 
 #define RADIUS  3
 #define COUNT   12
@@ -34,8 +34,9 @@ int main(void)
 
   lcd.init();
   lcd.color(Blue);
-  lcd.font(sans_24, 0, 0);
-  lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
+  // lcd.font(sans_24, 0, 0);
+  lcd.font(micro_5x6, 0, 0);
+  // lcd.rect(view.min_x - 1, view.min_y - 1, view.width + 2, view.height + 2);
 
   for (int i = 0; i < COUNT; i++) {
     // Задание начальных значений
@@ -139,6 +140,8 @@ loop:
   lcd.at(10, lcd.max_y() - lcd.get_height());
   lcd.printf(P("FPS: %.1.4q  "), fps);
   lcd.viewport(&view);
+
+  lcd.release();
 
   goto loop;
 }

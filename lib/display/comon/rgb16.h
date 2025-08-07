@@ -20,4 +20,6 @@ public:
   ATTR_INLINE uint32_t rgb24() { return RGB_16_TO_24(rgb); }
 
   operator uint16_t() { return rgb24(); }
+
+  static constexpr int len() { return 16; }
 };

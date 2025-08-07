@@ -92,5 +92,125 @@ public:
   }
 };
 
-#include "rgb16.tpp"
-#include "rgb18.tpp"
+////////////////////////////////// RGB16 //////////////////////////////////////
+
+template<>
+class ILI9486_8<RGB16> : public IDriver {
+public:
+  using RGB = RGB16;
+
+#include "base.h"
+
+  ATTR_INLINE void set_rgb_format()
+  {
+    send_command(COLMOD);
+    send_byte(0x05); // 5x6x5 bit
+  }
+
+  ATTR_INLINE void send_rgb(RGB16 color)
+  {
+    send_word(color.rgb);
+  }
+
+  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+  {
+    select();
+    set_addr(x0, y0, x1, y1);
+    uint8_t h = color.rgb >> 8;
+    uint8_t l = color.rgb & 0xff;
+
+  #ifdef MIK32V2
+    uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
+    while (len--) {
+      ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);
+      ILI_8_PORT(STATE) = h;
+      ILI_8_WR(SET);
+      ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);
+      ILI_8_PORT(STATE) = l;
+      ILI_8_WR(SET);
+    }
+  #else
+    uint16_t x = x1 - x0;
+    uint16_t y = y1 - y0;
+    for (uint16_t i = 0; i <= x; i++)
+      for (uint16_t j = 0; j <= y; j++) {
+        ILI_8_PORT(OUTPUT) = h;
+        ILI_8_WR(SET); ILI_8_WR(CLR);
+        ILI_8_PORT(OUTPUT) = l;
+        ILI_8_WR(SET); ILI_8_WR(CLR);
+      }
+  #endif
+    release();
+  }
+};
+
+////////////////////////////////// RGB18 //////////////////////////////////////
+
+template<>
+class ILI9486_8<RGB18> : public IDriver {
+public:
+  using RGB = RGB18;
+
+#include "base.h"
+
+  ATTR_INLINE void set_rgb_format()
+  {
+    send_command(COLMOD);
+    send_byte(0x66); // 6x6x6 bit (24 bit transfer)
+  }
+
+  ATTR_INLINE void send_rgb(RGB18 color)
+  {
+  #ifdef MIK32V2
+    uint32_t mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
+    ILI_8_PORT(OUTPUT) = color.red | mask;
+    ILI_8_WR(SET);
+    ILI_8_PORT(OUTPUT) = color.green | mask;
+    ILI_8_WR(SET);
+    ILI_8_PORT(OUTPUT) = color.blue | mask;
+    ILI_8_WR(SET);
+  #else
+    ILI_8_PORT(OUTPUT) = color.red;
+    ILI_8_WR(SET); ILI_8_WR(CLR);
+    ILI_8_PORT(OUTPUT) = color.green;
+    ILI_8_WR(SET); ILI_8_WR(CLR);
+    ILI_8_PORT(OUTPUT) = color.blue;
+    ILI_8_WR(SET); ILI_8_WR(CLR);
+  #endif
+  }
+
+  ATTR_INLINE void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
+  {
+    select();
+    set_addr(x0, y0, x1, y1);
+
+  #ifdef MIK32V2
+    uint32_t red = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.red;
+    uint32_t green = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.green;
+    uint32_t blue = (ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK))) | color.blue;
+    uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
+
+    while (len--) {
+      ILI_8_PORT(OUTPUT) = red;
+      ILI_8_WR(SET);
+      ILI_8_PORT(OUTPUT) = green;
+      ILI_8_WR(SET);
+      ILI_8_PORT(OUTPUT) = blue;
+      ILI_8_WR(SET);
+    #else
+    RGB18 rgb = color.rgb24();
+    uint16_t x = x1 - x0;
+    uint16_t y = y1 - y0;
+    for (uint16_t i = 0; i <= x; i++)
+      for (uint16_t j = 0; j <= y; j++) {
+        ILI_8_PORT(OUTPUT) = rgb.red;
+        ILI_8_WR(SET); ILI_8_WR(CLR);
+        ILI_8_PORT(OUTPUT) = rgb.green;
+        ILI_8_WR(SET); ILI_8_WR(CLR);
+        ILI_8_PORT(OUTPUT) = rgb.blue;
+        ILI_8_WR(SET); ILI_8_WR(CLR);
+      #endif
+    }
+    release();
+  }
+};

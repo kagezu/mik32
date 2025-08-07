@@ -16,6 +16,7 @@ int main(void)
 
   lcd.init();
   lcd.font(sans_24, 0, 0);
+  // lcd.font(serif_18i, 0, 0);
   lcd.background(MidnightBlue);
 
   int x = 0;
@@ -31,9 +32,12 @@ int main(void)
     }
 
     uint16_t fps = (F_CPU << 4) / T32_0;
-    lcd.at(10, lcd.max_y() - lcd.get_height());
+    lcd.at(0, lcd.max_y() - 2 * lcd.get_height() + 1);
     lcd.color(White);
     lcd.background(MidnightBlue);
-    lcd.printf(P("FPS: %.2.4q "), fps);
+    lcd.printf(
+      P("FPS: %.2.4q\n%u X %u X %u"), fps,
+      lcd.max_x() + 1, lcd.max_y() + 1, RGB::len()
+    );
   }
 }

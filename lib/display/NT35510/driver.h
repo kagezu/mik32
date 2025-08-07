@@ -134,6 +134,73 @@ public:
   }
 };
 
-#include "rgb16.tpp"
-#include "rgb18.tpp"
-#include "rgb24.tpp"
+
+
+////////////////////////////////// RGB16 //////////////////////////////////////
+
+template<>
+class NT35510<RGB16> {
+public:
+  using RGB = RGB16;
+
+#include "base.h"
+
+  void set_rgb_format()
+  {
+    send_command(NT_COLMOD);
+    send_byte(0x05); // 5x6x5 bit
+  }
+
+  ATTR_INLINE void send_rgb(RGB16 color)
+  {
+    NT_PORT(OUTPUT) = color.rgb;
+    NT_WR(CLR);
+    NT_WR(SET);
+  }
+
+  ATTR_INLINE void send_rgb(RGB16 color, int32_t len)
+  {
+    NT_PORT(OUTPUT) = color.rgb;
+    while (len--) {
+      NT_WR(CLR);
+      NT_WR(SET);
+    }
+  }
+
+  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+  {
+    select();
+    set_addr(x0, y0, x1, y1);
+
+    uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
+    NT_PORT(OUTPUT) = color.rgb;
+    // while (len--) {
+    //   NT_WR(CLR);
+    //   NT_WR(SET);
+    // }
+
+    len <<= 1;
+    T32_1_TOP(0);
+    NT_WR(TIMER);
+    TIMER32_2->CHANNELS[0].CNTRL =
+      TIMER32_CH_CNTRL_MODE_PWM_M |
+      TIMER32_CH_CNTRL_ENABLE_M;
+    T32_1_C;
+    while (T32_1 < len);// NT_PORT(OUTPUT) = T32_1 * color.rgb;
+    TIMER32_2->CHANNELS[0].CNTRL = 0;
+    NT_WR(GPIO);
+
+    release();
+  }
+};
+
+////////////////////////////////// RGB18 //////////////////////////////////////
+
+
+////////////////////////////////// RGB24 //////////////////////////////////////
+
+
+
+// #include "rgb16.tpp"
+// #include "rgb18.tpp"
+// #include "rgb24.tpp"

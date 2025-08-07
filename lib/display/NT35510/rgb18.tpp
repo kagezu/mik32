@@ -1,4 +1,6 @@
 template<>
+
+ATTR_INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
 ATTR_INLINE void NT35510<RGB18>::set_rgb_format()
 {
   send_command(NT_COLMOD);

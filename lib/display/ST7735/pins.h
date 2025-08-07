@@ -22,9 +22,9 @@
 #endif
 
 #ifdef MIK32V2
-#define ST_SPI_RS(x)      x ( 0, 9 )
-#define ST_SPI_CS(x)      x ( 1, 15 ) // Низкий уровень => CS подтянут к 0, RS - активный / высокий => RS подтянут к 0, CS = RS
-#define ST_SPI_RST(x)     x ( 0, 16 ) // На самом деле сброс не подключён
+#define ST_SPI_CS(x)      x ( 1, 4 )
+#define ST_SPI_RS(x)      x ( 1, 9 )
+#define ST_SPI_RST(x)     x ( 1, 6 ) // На самом деле сброс не подключён
 #endif
 
 #endif
