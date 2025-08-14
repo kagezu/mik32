@@ -1,5 +1,5 @@
 // #include "lcd.h"
-// #include "SPI.h"
+// #include "inc/spi.h"
 // #include "adc.h"
 // #include "pinout.h"
 // #include "timer.h"

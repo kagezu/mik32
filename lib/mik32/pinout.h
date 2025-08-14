@@ -18,6 +18,10 @@
 #define DAC0(f)         f(1, 12)
 #define DAC1(f)         f(1, 13)
 
+// Aref
+
+#define AREF(f)         f (1, 11)
+
 // SPI
 
 #define SPI0_MISO(f)    f(0, 0)
@@ -65,10 +69,6 @@
 #define UART1_TXD(f)    f(1, 9)
 #define UART1_CTS(f)    f(1, 10)
 #define UART1_RTS(f)    f(1, 11)
-
-//
-
-#define AREF(f)         f (1, 11)
 
 
 // ACE-UNO

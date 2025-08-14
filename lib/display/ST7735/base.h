@@ -9,7 +9,6 @@ protected:
 
 public:
   S spi;
-  SPIConf spi_conf;
 
   ATTR_INLINE constexpr int16_t max_x() { return 127; }
   ATTR_INLINE constexpr int16_t max_y() { return 159; }
@@ -26,7 +25,7 @@ public:
     ST_SPI_RST(SET);
 
     // Настройка для инициализации
-    spi_conf.mode(SPI_MODE0);
+    spi.mode(SPI_MODE0);
 
     select();
     send_command(SWRESET);
@@ -38,7 +37,7 @@ public:
     send_command(DISPON);
     release();
 
-    spi_conf.mode(SPI_MODE3);// Ускоряет ещё на 11,7% для MIK32
+    spi.mode(SPI_MODE3);// Ускоряет ещё на 11,7% для MIK32
   }
 
   void pixel(int16_t x, int16_t y, RGB color)

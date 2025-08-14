@@ -189,7 +189,6 @@ void sample(uint32_t time)
 
 int main(void)
 {
-
   init();
   lcd.init();
   // lcd.font(system_5x7, 1, 3);

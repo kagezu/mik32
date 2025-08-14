@@ -1,5 +1,5 @@
 #pragma once
-#include "SPI.h"
+#include "inc/spi.h"
 #include "pins.h"
 #include "comon/include.h"
 
@@ -19,12 +19,12 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); flag = 0; }
+  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); flag = 0; }
   ATTR_INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x03); // 4x4x4 bit
-    spi_conf.thr(SPI_THR_3);
+    spi.thr(SPI_THR_3);
   }
 
   void send_rgb(RGB12 color)
@@ -76,12 +76,12 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); }
+  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
   ATTR_INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x05); // 5x6x5 bit
-    spi_conf.thr(SPI_THR_2);
+    spi.thr(SPI_THR_2);
   }
 
   ATTR_INLINE void send_rgb(RGB16 color)
@@ -110,12 +110,12 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(spi_conf); ST_SPI_CS(CLR); }
+  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
   ATTR_INLINE   void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x06); // 6x6x6 bit (24 bit transfer)
-    spi_conf.thr(SPI_THR_3);
+    spi.thr(SPI_THR_3);
   }
 
   ATTR_INLINE void send_rgb(RGB18 color)

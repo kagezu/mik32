@@ -32,6 +32,7 @@ public:
       case 7: ADC7(ANALOG); break;
     }
     chanel(ch);
+    AREF(ANALOG);
   }
 
 
@@ -54,10 +55,10 @@ public:
   ATTR_INLINE static void chanel(int ch)
   {
     ANALOG_REG->ADC_CONFIG =
-      (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M)
-      | (ch << ADC_CONFIG_SEL_S)  // Выбрать канал
-      | ADC_CONFIG_RN_M           // Сброс
-      | ADC_CONFIG_EN_M;          // Включить
+      (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M) |
+      (ch << ADC_CONFIG_SEL_S) |  // Выбрать канал
+      ADC_CONFIG_RN_M |           // Сброс
+      ADC_CONFIG_EN_M;            // Включить
     single();                     // Выполнить измерение
     wait();                       // Ждать завершения
   }

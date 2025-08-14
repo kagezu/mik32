@@ -1,5 +1,5 @@
 #pragma once
-#include "SPI.h"
+#include "inc/spi.h"
 #include "pins.h"
 #include "const.h"
 #include "comon/include.h"
@@ -9,7 +9,6 @@ class ILI9225 {
 private:
   uint8_t R;
   S spi;
-  SPIConf spi_conf;
 
   void send_config(const uint16_t *config, uint8_t size)
   {
@@ -24,7 +23,7 @@ public:
   using RGB = RGB16; // Только 16 бит
   ATTR_INLINE constexpr int16_t max_x() { return 175; }
   ATTR_INLINE constexpr int16_t max_y() { return 219; }
-  ATTR_INLINE void select() { spi.begin(spi_conf); ILI_SPI_CS(CLR); }
+  ATTR_INLINE void select() { spi.begin(); ILI_SPI_CS(CLR); }
   ATTR_INLINE void release() { spi.end(); ILI_SPI_CS(SET); }
   ATTR_INLINE void send_byte(uint8_t data) { spi.send(data); spi.wait_idle(); }
   ATTR_INLINE void send_word(uint16_t data) { spi.send16(data); spi.wait_idle(); }
@@ -45,8 +44,8 @@ public:
     constexpr int SPI_THR_2 = 7;
 
     // Установка порога для буфера
-    spi_conf.thr(SPI_THR_2);
-    spi_conf.mode(SPI_MODE0); // Настройка для инициализации
+    spi.thr(SPI_THR_2);
+    spi.mode(SPI_MODE0); // Настройка для инициализации
 
     select();
     send_config(ILI9225_CONFIG_STEP0, sizeof(ILI9225_CONFIG_STEP0));
@@ -70,7 +69,7 @@ public:
     send_config(ILI9225_CONFIG_STEP2, sizeof(ILI9225_CONFIG_STEP2));
     release();
 
-    spi_conf.mode(SPI_MODE3);// Ускоряет ещё на 11,7% для MIK32
+    spi.mode(SPI_MODE3);// Ускоряет ещё на 11,7% для MIK32
   }
 
   void send_command(uint16_t command)
