@@ -1,5 +1,5 @@
-.globl _start, main, SystemInit
-.weak SystemInit
+.globl _start, main, SystemInit, SmallSystemInit
+.weak SmallSystemInit, SystemInit
 
 .globl trap_handler
 .weak trap_handler
@@ -93,6 +93,7 @@ _start:
 
 // Действия перед main: по умолчанию отсутствуют
 // (SystemInit - может быть переопределена)
+SmallSystemInit:
 SystemInit:
     ret
 

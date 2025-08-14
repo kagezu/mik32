@@ -1,7 +1,5 @@
 ATTR_INLINE constexpr int16_t max_x() { return 479; }
 ATTR_INLINE constexpr int16_t max_y() { return 799; }
-ATTR_INLINE  void select() { NT_CS(CLR); }
-ATTR_INLINE  void release() { NT_CS(CLR); }
 
 void init(uint8_t rotation = 0)
 {

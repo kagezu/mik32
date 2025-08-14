@@ -11,5 +11,4 @@
 #### Установка
 
 * заменить файл `~.platformio/platforms/mik32/builder/frameworks/custom.py` на файл из проекта [custom.py](./builder/custom.py)
-* в `platformio.ini` добавить `board_custom = ./` или каталог относительно проекта в котором есть папки **ld** и **rt**
-* если опция `board_custom` не определена, будут использована папка по умолчанию: `~.platformio/packages/framework-mik32v2-sdk/shared`
+* в `platformio.ini` добавить `board_runtime` путь относительно проекта к папке с файлом `crt0.S`
