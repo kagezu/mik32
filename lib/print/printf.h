@@ -1,6 +1,6 @@
 // #include "printf.h"
 #pragma once
-#include "inttypes.h"
+#include "core.h"
 #include "accel.h"
 
 

@@ -15,9 +15,7 @@ void pixel(int16_t x, int16_t y, RGB color)
 
 void init(uint8_t rotation = 0)
 {
-  ST_SOFT_SCK(GPIO); ST_SOFT_SDA(GPIO); ST_SOFT_RST(GPIO); ST_SOFT_CS(GPIO); ST_SOFT_RS(GPIO);
-  ST_SOFT_SCK(OUT); ST_SOFT_SDA(OUT); ST_SOFT_RST(OUT); ST_SOFT_CS(OUT); ST_SOFT_RS(OUT);
-  ST_SOFT_CS(SET); ST_SOFT_RS(SET);
+  GPIO_ST_SOFT();
 
   ST_SOFT_RST(CLR);               // Аппаратный сброс
   delay_ms(2);

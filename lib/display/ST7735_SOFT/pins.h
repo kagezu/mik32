@@ -53,4 +53,46 @@
 // #define ST_SOFT_CS(x)      x ( 1, 15)
 #endif
 
+#ifdef CH32V20x_D6
+
+#define ST_SOFT_SCK(x)     x ( B, 13 )
+#define ST_SOFT_SDA(x)     x ( B, 15 )
+#define ST_SOFT_RS(x)      x ( A, 10 )
+#define ST_SOFT_RST(x)     x ( D, 0 )
+#define ST_SOFT_CS(x)      x ( A, 11 )
+
+#endif
+
+#endif
+
+
+#ifdef CH32V20x_D6
+
+static inline void GPIO_ST_SOFT()
+{
+  GPIO_InitTypeDef init;
+  init.GPIO_Speed = GPIO_Speed_10MHz;
+  init.GPIO_Mode = GPIO_Mode_Out_PP;
+
+  init.GPIO_Pin = ST_SOFT_SCK(MASK);
+   GPIO_Init(ST_SOFT_SCK(PORT), &init);
+  init.GPIO_Pin = ST_SOFT_SDA(MASK);
+   GPIO_Init(ST_SOFT_SDA(PORT), &init);
+  init.GPIO_Pin = ST_SOFT_RS(MASK);
+   GPIO_Init(ST_SOFT_RS(PORT), &init);
+  init.GPIO_Pin = ST_SOFT_RST(MASK);
+   GPIO_Init(ST_SOFT_RST(PORT), &init);
+  init.GPIO_Pin = ST_SOFT_CS(MASK);
+   GPIO_Init(ST_SOFT_CS(PORT), &init);
+}
+
+#else
+
+static inline void GPIO_ST_SOFT()
+{
+  ST_SOFT_SCK(GPIO); ST_SOFT_SDA(GPIO); ST_SOFT_RST(GPIO); ST_SOFT_CS(GPIO); ST_SOFT_RS(GPIO);
+  ST_SOFT_SCK(OUT); ST_SOFT_SDA(OUT); ST_SOFT_RST(OUT); ST_SOFT_CS(OUT); ST_SOFT_RS(OUT);
+  ST_SOFT_CS(SET); ST_SOFT_RS(SET);
+}
+
 #endif
