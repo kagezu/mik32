@@ -36,3 +36,12 @@
 #define ST_8_RST(x)  x ( 2, 8 )
 #define ST_8_PORT(x) x ( 0, 0 )
 #endif
+
+#ifdef CH32V20x_D6
+#define ST_8_RD(x)   x ( A, 9 )
+#define ST_8_WR(x)   x ( A, 8 )
+#define ST_8_RS(x)   x ( A, 10)
+#define ST_8_CS(x)   x ( A, 11)
+#define ST_8_RST(x)  x ( D, 0 )
+#define ST_8_PORT(x) x ( B, 0 )
+#endif
