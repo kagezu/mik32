@@ -87,7 +87,7 @@
 // ILI9486
 
 static const uint8_t ILI9486_CONFIG[] PROGMEM = {
-  0x00, SLPOUT,
+  // 0x00, SLPOUT,
   0x02, PWCTR1,  0x19, 0x1a,
   0x02, PWCTR2,  0x45, 0x00,
   0x01, PWCTR3,  0x33,
@@ -104,7 +104,7 @@ static const uint8_t ILI9486_CONFIG[] PROGMEM = {
 };
 
 static const uint8_t ILI9486_CONFIG_1[] PROGMEM = {
-  0x00, SLPOUT,
+  // 0x00, SLPOUT,
   0x02, PWCTR1,  0x0d, 0x0d,
   0x02, PWCTR2,  0x43, 0x00,
   0x01, PWCTR3,  0x00,

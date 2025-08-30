@@ -45,18 +45,15 @@ public:
   ATTR_INLINE void send_byte(uint8_t data) {
     L_PORT(OUTPUT) = data;
     L_WR(SET);
-    // delay_us(1);
     L_WR(CLR);
   }
 
   ATTR_INLINE void send_word(uint16_t data) {
     L_PORT(OUTPUT) = (data >> 8);
     L_WR(SET);
-    // delay_us(1);
     L_WR(CLR);
     L_PORT(OUTPUT) = data;
     L_WR(SET);
-    // delay_us(1);
     L_WR(CLR);
   }
 
@@ -69,5 +66,139 @@ public:
   }
 };
 
-#include "rgb16.tpp"
-#include "rgb18.tpp"
+////////////////////////////////// RGB16 //////////////////////////////////////
+
+template <>
+void ILI9486_16<RGB16>::set_rgb_format() {
+  send_command(COLMOD);
+  send_byte(0x55);  // 5x6x5 bit
+
+#ifdef CH32V20x_D6
+
+  #define WR_PSC_FACTOR 2
+
+  RCC->APB1PCENR |= RCC_TIM3EN;
+  RCC->APB2PCENR |= RCC_TIM1EN;
+
+  // TIM3->CTLR2 = TIM_MMS_0;  // Cчетчик включает сигнал CNT_EN
+  TIM3->PSC = (((F_CPU / 24000000) + 1) << WR_PSC_FACTOR) - 1;
+  TIM3->CTLR1 =
+    // TIM_ARPE |  // Включен регистр автоматической перезагрузки (ATRLR)
+    TIM_DIR |  // Обратное направление счётчика
+    TIM_OPM |  // Режим одиночного импульса
+    0;
+
+
+  TIM1->PSC = 0;  // Prescaler
+  TIM1->ATRLR = 1;
+  TIM1->CH1CVR = 1;
+  TIM1->SWEVGR |= TIM_UG;                               // Reload immediately
+  TIM1->CHCTLR1 = TIM_OC1M_0 | TIM_OC1M_1;              // Режим сравнения - инверсия
+  TIM1->CHCTLR1 = TIM_OC1M_1 | TIM_OC1M_2 | TIM_OC1PE;  // Режим PWM
+  TIM1->BDTR |= TIM_MOE;                                // Enable TIM1 outputs
+  TIM1->CCER |= TIM_CC1E;                               // Включить канал
+  TIM1->CTLR1 |= TIM_CEN;                               // Enable TIM1
+
+  // TIM1->SMCFGR |= TIM_TS_1 | TIM_MSM;                  //  Тригер TIM3
+
+#endif
+}
+
+template <>
+ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color) {
+  L_PORT(OUTPUT) = color.rgb;
+  L_WR(SET);
+  L_WR(CLR);
+}
+
+template <>
+ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color, int32_t len) {
+  L_PORT(OUTPUT) = color.rgb;
+  while (len--) {
+    L_WR(SET);
+    L_WR(CLR);
+  }
+}
+
+template <>
+void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color) {
+  select();
+  set_addr(x0, y0, x1, y1);
+
+  uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
+  L_PORT(OUTPUT) = color.rgb;
+
+#ifndef L_WR_FORSED
+  while (len--) {
+    L_WR(SET);
+    L_WR(CLR);
+  }
+#else
+  L_WR(TIMER);
+  TIM3->CNT = len >> WR_PSC_FACTOR;
+  TIM3->INTFR = 0;
+  TIM3->CTLR1 |= TIM_CEN;  // Включеие счётчика
+  while (!TIM3->INTFR);
+  L_WR(OUT);
+#endif
+  release();
+}
+
+////////////////////////////////// RGB18 //////////////////////////////////////
+
+template <>
+ATTR_INLINE void ILI9486_16<RGB18>::set_rgb_format() {
+  send_command(COLMOD);
+  send_byte(0x66);  // 6x6x6 bit (24 bit transfer)
+}
+
+template <>
+ATTR_INLINE void ILI9486_16<RGB18>::select() {
+  L_CS(CLR);
+  flag = 0;
+}
+
+template <>
+void ILI9486_16<RGB18>::send_rgb(RGB18 color) {
+  static uint16_t half;
+  if (flag) {
+    L_PORT(OUTPUT) = color.red | half;
+    L_WR(SET);
+    L_WR(CLR);
+    flag = 0;
+    L_PORT(OUTPUT) = color.rgb;
+    L_WR(SET);
+    L_WR(CLR);
+  } else {
+    L_PORT(OUTPUT) = color.rgb >> 8;
+    L_WR(SET);
+    L_WR(CLR);
+    half = color.blue << 8;
+    flag = 1;
+  }
+}
+
+template <>
+void ILI9486_16<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color) {
+  select();
+  set_addr(x0, y0, x1, y1);
+  uint32_t len = ((x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1)) >> 1;
+  uint16_t hword = *(uint16_t *)&color.green;
+  uint16_t mword = color.red | (color.blue << 8);
+  uint16_t lword = *(uint16_t *)&color.blue;
+
+  while (len--) {
+    L_PORT(OUTPUT) = hword;
+    L_WR(SET);
+    L_WR(CLR);
+
+    L_PORT(OUTPUT) = mword;
+    L_WR(SET);
+    L_WR(CLR);
+
+    L_PORT(OUTPUT) = lword;
+    L_WR(SET);
+    L_WR(CLR);
+  }
+  release();
+}
