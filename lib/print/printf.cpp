@@ -9,7 +9,7 @@
 // #define KEY_p
 
 #define NUM_16
-// #define NUM_32
+#define NUM_32
 // #define NUM_64
 
 #define LEFT_RIGHT   0x00

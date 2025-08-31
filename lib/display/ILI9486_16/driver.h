@@ -75,31 +75,33 @@ void ILI9486_16<RGB16>::set_rgb_format() {
 
 #ifdef CH32V20x_D6
 
-  #define WR_PSC_FACTOR 2
+  #define WR_PSC_FACTOR 3
+  #define WR_PSC_K      (F_CPU > 72000000 ? (F_CPU - 72000000) / 24000000 : 0)
 
   RCC->APB1PCENR |= RCC_TIM3EN;
   RCC->APB2PCENR |= RCC_TIM1EN;
 
-  // TIM3->CTLR2 = TIM_MMS_0;  // Cчетчик включает сигнал CNT_EN
-  TIM3->PSC = (((F_CPU / 24000000) + 1) << WR_PSC_FACTOR) - 1;
+  TIM3->PSC = ((4 + WR_PSC_K) << WR_PSC_FACTOR - 2) - 1 + WR_PSC_K / 2;  // Prescaler
+  TIM3->SMCFGR = TIM_SMS;                                                //  Тригер TIM1
   TIM3->CTLR1 =
-    // TIM_ARPE |  // Включен регистр автоматической перезагрузки (ATRLR)
+    // TIM_ARPE | // Загрузка из ATRLR
     TIM_DIR |  // Обратное направление счётчика
     TIM_OPM |  // Режим одиночного импульса
     0;
 
-
   TIM1->PSC = 0;  // Prescaler
   TIM1->ATRLR = 1;
   TIM1->CH1CVR = 1;
-  TIM1->SWEVGR |= TIM_UG;                               // Reload immediately
-  TIM1->CHCTLR1 = TIM_OC1M_0 | TIM_OC1M_1;              // Режим сравнения - инверсия
-  TIM1->CHCTLR1 = TIM_OC1M_1 | TIM_OC1M_2 | TIM_OC1PE;  // Режим PWM
-  TIM1->BDTR |= TIM_MOE;                                // Enable TIM1 outputs
-  TIM1->CCER |= TIM_CC1E;                               // Включить канал
-  TIM1->CTLR1 |= TIM_CEN;                               // Enable TIM1
-
-  // TIM1->SMCFGR |= TIM_TS_1 | TIM_MSM;                  //  Тригер TIM3
+  TIM1->SWEVGR = TIM_UG;  // Перезагружать
+  TIM1->CHCTLR1 =
+    TIM_OC1M_0 |          // Режим сравнения - инверсия
+    TIM_OC1M_1 |
+    // TIM_OC1M_2 |           // Режим PWM
+    0;
+  TIM1->BDTR = TIM_MOE;     // Включить TIM1 вывод
+  TIM1->CCER = TIM_CC1E;    // Включить канал 1
+  TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
+  TIM1->CTLR2 = TIM_MMS_2;  // Cчетчик отправляет сигнал OC1REF
 
 #endif
 }
@@ -134,11 +136,11 @@ void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
     L_WR(CLR);
   }
 #else
-  L_WR(TIMER);
   TIM3->CNT = len >> WR_PSC_FACTOR;
   TIM3->INTFR = 0;
+  L_WR(TIMER);
   TIM3->CTLR1 |= TIM_CEN;  // Включеие счётчика
-  while (!TIM3->INTFR);
+  while ((TIM3->INTFR & TIM_UIF) == 0);
   L_WR(OUT);
 #endif
   release();
