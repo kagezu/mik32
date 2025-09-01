@@ -21,4 +21,10 @@
 #define ILI_SPI_RST(x)     x ( 1, 6 )  // Переключаем на NSS1
 #endif
 
+#ifdef CH32V20x_D6
+#define ILI_SPI_CS(x)      x ( A, 11 )
+#define ILI_SPI_RS(x)      x ( A, 10 )
+#define ILI_SPI_RST(x)     x ( D, 0  ) // Не подключён
+#endif
+
 #endif

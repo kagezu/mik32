@@ -3,7 +3,7 @@
 #include "gfx/gfx.h"
 #include "ST7735_SOFT/driver.h"
 #include "ILI9225_SOFT/driver.h"
-// #include "ILI9225/driver.h"
+#include "ILI9225/driver.h"
 // #include "ST7735/driver.h"
 #ifndef CH32V20x_D6
   #include "ST7789/driver.h"
@@ -235,15 +235,15 @@ private:
 
 public:
   void demo(uint8_t d) {
-    static const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
+    const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    uint16_t yy = 0;
-    for (int16_t y = 0; y < max_y() + 1; y++) {
-      uint16_t xx = 0;
-      uint16_t xy = 0;
-      for (int16_t x = 0; x < max_x() + 1; x++) {
+    int32_t yy = 0;
+    for (int32_t y = 0; y < max_y() + 1; y++) {
+      int32_t xx = 0;
+      int32_t xy = 0;
+      for (int32_t x = 0; x < max_x() + 1; x++) {
 
         int8_t e = d << 2;
         int8_t r = ((xx + yy) >> div) + e;
@@ -261,72 +261,50 @@ public:
   }
 
   void demo2(uint8_t d) {
-    static const uint8_t div = 8;
+    const int32_t mx = (max_x() + 1) >> 1;
+    const int32_t my = (max_y() + 1) >> 1;
+    const uint8_t div = 12 + ((max_x() + max_y()) >> 8);
+
+    const int8_t e = d << 2;
+    const int8_t i = -e;
+    const int8_t j = e + 85;
+    const int8_t k = -e + 85;
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    uint32_t yy = 0;
-    for (int16_t y = 0; y < max_y() + 1; y++) {
-      uint32_t xx = 0;
-      uint32_t xy = 0;
-      for (int16_t x = 0; x < max_x() + 1; x++) {
+    for (int32_t y = -my; y < my; y++) {
+      int32_t yy = y * y;
+      for (int32_t x = -mx; x < mx; x++) {
+        int32_t xx = x * x;
 
-        uint32_t xy2 = (xx + yy) * (xx + yy);
-        int8_t g = (xy2 / xy >> div) - (d << 1);
-        int8_t r = (xy2 / xx >> div) + (d << 2);
-        int8_t b = (xy2 / yy >> div) + (d << 3);
-
-        xy += y;  // Заменяем умножение сложением
-        xx += x;
+        int32_t xy2 = (xx + yy);
+        int8_t r = (xy2 * x >> div) + i;
+        int8_t g = ((xy2) * (x + y) >> div) + j;
+        int8_t b = (xy2 * y >> div) + k;
 
         send_rgb(typename Driver::RGB(r, g, b));
       }
-      yy += y;
     }
     release();
   }
 
   void demo3(uint8_t d) {
-    static const int32_t mx = (max_x() + 1) >> 1;
-    static const int32_t my = (max_y() + 1) >> 1;
-    static const uint8_t div = 8;
+    const int32_t mx = (max_x() + 1) >> 1;
+    const int32_t my = (max_y() + 1) >> 1;
+    const uint8_t div = 4 + ((max_x() + max_y()) >> 8);
 
     select();
     set_addr(0, 0, max_x(), max_y());
-    for (int32_t y =-my; y < my; y++) {
-      int32_t yy = y * y;
-      for (int32_t x = -mx; x < mx; x++) {
-        int32_t xx = x * x;
-        int32_t xy = x * y;
-
-        int32_t xy2 = (xx + yy) * (xx + yy);
-        int8_t g = (xy2 / xy >> div) - (d << 1);
-        int8_t r = (xy2 / xx >> div) + (d << 2);
-        int8_t b = (xy2 / yy >> div) + (d << 3);
-
-        send_rgb(typename Driver::RGB(r, g, b));
-      }
-    }
-    release();
-  }
-
-  void demo4(uint8_t d) {
-    static const int32_t mx = (max_x() + 1) >> 1;
-    static const int32_t my = (max_y() + 1) >> 1;
-    static const uint8_t div = 8;
-
-    select();
-    set_addr(0, 0, max_x(), max_y());
-    for (int32_t y =-my; y < my; y++) {
+    for (int32_t y = -my; y < my; y++) {
       int32_t yy = y * y;
       for (int32_t x = -mx; x < mx; x++) {
         int32_t xx = x * x;
         int32_t xy = x * y;
 
         int8_t e = d << 2;
-        int8_t r = ((xx + yy) >> div) + e;
-        int8_t g = ((yy - xx) >> div) + e;
-        int8_t b = (xy >> div) - e;
+        int8_t r = (xy >> div) + e + 85;
+        int8_t g = ((yy - xx) >> div) + e + 170;
+        int8_t b = ((xx + yy) >> div) + e;
 
         send_rgb(typename Driver::RGB(r, g, b));
       }

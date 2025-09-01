@@ -44,17 +44,17 @@ public:
 
   ATTR_INLINE void send_byte(uint8_t data) {
     L_PORT(OUTPUT) = data;
-    L_WR(SET);
     L_WR(CLR);
+    L_WR(SET);
   }
 
   ATTR_INLINE void send_word(uint16_t data) {
     L_PORT(OUTPUT) = (data >> 8);
-    L_WR(SET);
     L_WR(CLR);
+    L_WR(SET);
     L_PORT(OUTPUT) = data;
-    L_WR(SET);
     L_WR(CLR);
+    L_WR(SET);
   }
 
   void pixel(int16_t x, int16_t y, C color) {
@@ -72,53 +72,21 @@ template <>
 void ILI9486_16<RGB16>::set_rgb_format() {
   send_command(COLMOD);
   send_byte(0x55);  // 5x6x5 bit
-
-#ifdef CH32V20x_D6
-
-  #define WR_PSC_FACTOR 3
-  #define WR_PSC_K      (F_CPU > 72000000 ? (F_CPU - 72000000) / 24000000 : 0)
-
-  RCC->APB1PCENR |= RCC_TIM3EN;
-  RCC->APB2PCENR |= RCC_TIM1EN;
-
-  TIM3->PSC = ((4 + WR_PSC_K) << WR_PSC_FACTOR - 2) - 1 + WR_PSC_K / 2;  // Prescaler
-  TIM3->SMCFGR = TIM_SMS;                                                //  Тригер TIM1
-  TIM3->CTLR1 =
-    // TIM_ARPE | // Загрузка из ATRLR
-    TIM_DIR |  // Обратное направление счётчика
-    TIM_OPM |  // Режим одиночного импульса
-    0;
-
-  TIM1->PSC = 0;  // Prescaler
-  TIM1->ATRLR = 1;
-  TIM1->CH1CVR = 1;
-  TIM1->SWEVGR = TIM_UG;  // Перезагружать
-  TIM1->CHCTLR1 =
-    TIM_OC1M_0 |          // Режим сравнения - инверсия
-    TIM_OC1M_1 |
-    // TIM_OC1M_2 |           // Режим PWM
-    0;
-  TIM1->BDTR = TIM_MOE;     // Включить TIM1 вывод
-  TIM1->CCER = TIM_CC1E;    // Включить канал 1
-  TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
-  TIM1->CTLR2 = TIM_MMS_2;  // Cчетчик отправляет сигнал OC1REF
-
-#endif
 }
 
 template <>
 ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color) {
   L_PORT(OUTPUT) = color.rgb;
-  L_WR(SET);
   L_WR(CLR);
+  L_WR(SET);
 }
 
 template <>
 ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color, int32_t len) {
   L_PORT(OUTPUT) = color.rgb;
   while (len--) {
-    L_WR(SET);
     L_WR(CLR);
+    L_WR(SET);
   }
 }
 
@@ -127,22 +95,60 @@ void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
   select();
   set_addr(x0, y0, x1, y1);
 
-  uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
+  uint32_t len = (uint32_t)(x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
   L_PORT(OUTPUT) = color.rgb;
 
-#ifndef L_WR_FORSED
+#ifndef WR_FORSED
   while (len--) {
-    L_WR(SET);
+  #ifdef SYSCLK_FREQ_144MHz_HSE
     L_WR(CLR);
+  #endif
+    L_WR(CLR);
+    L_WR(SET);
   }
 #else
-  TIM3->CNT = len >> WR_PSC_FACTOR;
-  TIM3->INTFR = 0;
-  L_WR(TIMER);
-  TIM3->CTLR1 |= TIM_CEN;  // Включеие счётчика
-  while ((TIM3->INTFR & TIM_UIF) == 0);
-  L_WR(OUT);
+
+  #ifdef CH32V20x_D6
+  if (len > 26) {  // Порог эффективности
+    L_WR(OUTA);
+
+    len--;
+    for (int i = len >> 16; i > 0; i--) {
+      TIM3->CNT = 0xFFFF;
+      TIM3->CTLR1 = TIM_DIR | TIM_OPM | TIM_CEN;  // Включеие счётчика
+      TIM3->INTFR = 0;
+      while ((TIM3->INTFR & TIM_UIF) == 0);
+    }
+
+    if (TIM3->CNT = len) {
+      TIM3->INTFR = 0;
+      TIM3->CTLR1 = TIM_DIR | TIM_OPM | TIM_CEN;  // Включеие счётчика
+      while ((TIM3->INTFR & TIM_UIF) == 0);
+    }
+
+    L_WR(OUT);
+  } else if (F_CPU > 120000000)
+    while (len--) {
+      L_WR(CLR);
+      L_WR(CLR);
+      L_WR(SET);
+    }
+  else
+    while (len--) {
+      L_WR(CLR);
+      L_WR(SET);
+    }
+  #endif
+
+  #ifdef MIK32V2
+  while (len--) {
+    L_WR(CLR);
+    L_WR(SET);
+  }
+  #endif
+
 #endif
+
   release();
 }
 

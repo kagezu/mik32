@@ -1,5 +1,5 @@
 #pragma once
-#include "inc/spi.h"
+#include "spi.h"
 #include "pins.h"
 #include "const.h"
 #include "comon/include.h"

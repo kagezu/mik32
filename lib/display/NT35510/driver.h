@@ -48,7 +48,7 @@ public:
     uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
     NT_PORT(OUTPUT) = color.rgb;
 
-#ifndef NT_WR_FORSED
+#ifndef WR_FORSED
     while (len--) {
       NT_WR(CLR);
       NT_WR(SET);
@@ -57,7 +57,7 @@ public:
 
   #ifdef CH32V20x_D6
     if (len > 26) { // Порог эффективности
-      L_WR(TIMER);
+      L_WR(OUTA);
 
       len -= 2;
       for (int i = len >> 16; i > 0; i--) {
@@ -84,7 +84,7 @@ public:
   #ifdef MIK32V2
     len <<= 1;
     T32_1_TOP(-1);
-    NT_WR(TIMER);
+    NT_WR(OUTA);
     TIMER32_2->CHANNELS[0].CNTRL =
       TIMER32_CH_CNTRL_MODE_PWM_M |
       TIMER32_CH_CNTRL_ENABLE_M;

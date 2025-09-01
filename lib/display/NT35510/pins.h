@@ -1,6 +1,8 @@
 #pragma once
 #include "core.h"
 
+// #define WR_FORSED
+
 //===================== Config =============================
 
 // NT_CS       Выбор дисплея
@@ -10,7 +12,6 @@
 
 
 #ifdef MIK32V2
-  #define NT_WR_FORSED
 
   #define NT_WR(x)   x(1, 0)
   #define NT_RS(x)   x(1, 9)
@@ -49,8 +50,6 @@ static inline void GPIO_NT35510() {
 
 #ifdef CH32V20x_D6
 
-  #define NT_WR_FORSED
-
   #define NT_WR(x)   x(A, 8)
   #define NT_RD(x)   x(A, 9)
   #define NT_RS(x)   x(A, 10)
@@ -60,7 +59,7 @@ static inline void GPIO_NT35510() {
 
 static inline void GPIO_NT35510() {
   GPIO_InitTypeDef init;
-  init.GPIO_Speed = GPIO_Speed_10MHz;
+  init.GPIO_Speed = GPIO_Speed_2MHz;
   init.GPIO_Mode = GPIO_Mode_Out_PP;
   init.GPIO_Pin = GPIO_Pin_All;
   GPIO_Init(L_PORT(PORT), &init);
@@ -75,7 +74,7 @@ static inline void GPIO_NT35510() {
   NT_CS(SET);
 
 
-  #ifndef NT_WR_FORSED
+  #ifdef WR_FORSEDX
     #define WR_PSC_FACTOR 3
 
   RCC->APB1PCENR |= RCC_TIM3EN;
@@ -104,15 +103,13 @@ static inline void GPIO_NT35510() {
   #endif
 
 
-  #ifdef NT_WR_FORSED
-    #define WR_PSC_FACTOR 3
-    #define WR_PSC_DIV    2
+  #ifdef WR_FORSED
+    #define NT_WR_PSC_DIV    2
 
   RCC->APB1PCENR |= RCC_TIM3EN;
   RCC->APB2PCENR |= RCC_TIM1EN;
 
-  // TIM3->PSC = (WR_PSC_DIV << WR_PSC_FACTOR) - 1;  // Prescaler
-  TIM3->PSC = WR_PSC_DIV - 1;  // Prescaler
+  TIM3->PSC = NT_WR_PSC_DIV - 1;  // Prescaler
   TIM3->CTLR2 = 0b001 << 4;                       // Cчетчик отправляет сигнал CNT_EN
   TIM3->CTLR1 =
     TIM_DIR |                                     // Обратное направление счётчика
@@ -120,8 +117,8 @@ static inline void GPIO_NT35510() {
     0;
 
   TIM1->PSC = 0;  // Prescaler
-  TIM1->ATRLR = WR_PSC_DIV - 1;
-  TIM1->CH1CVR = WR_PSC_DIV >> 1;
+  TIM1->ATRLR = NT_WR_PSC_DIV - 1;
+  TIM1->CH1CVR = NT_WR_PSC_DIV >> 1;
   TIM1->SWEVGR = TIM_UG;  // Перезагружать
   TIM1->SMCFGR =
     0b101 |        //  Тригер запускает и останавливает счётчик

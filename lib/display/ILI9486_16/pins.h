@@ -1,6 +1,8 @@
 #pragma once
 #include "core.h"
 
+#define WR_FORSED
+
 //===================== Config =============================
 
 // L_CS       Выбор дисплея
@@ -40,8 +42,6 @@ static inline void GPIO_ILI9486_16() {
 
 #ifdef CH32V20x_D6
 
-  #define L_WR_FORSED
-
   #define L_WR(x)   x(A, 8)
   #define L_RS(x)   x(A, 10)
   #define L_CS(x)   x(A, 11)
@@ -50,7 +50,7 @@ static inline void GPIO_ILI9486_16() {
 
 static inline void GPIO_ILI9486_16() {
   GPIO_InitTypeDef init;
-  init.GPIO_Speed = GPIO_Speed_10MHz;
+  init.GPIO_Speed = GPIO_Speed_2MHz;
   init.GPIO_Mode = GPIO_Mode_Out_PP;
   init.GPIO_Pin = GPIO_Pin_All;
   GPIO_Init(L_PORT(PORT), &init);
@@ -61,6 +61,38 @@ static inline void GPIO_ILI9486_16() {
   L_WR(CLR);
   L_RS(CLR);
   L_CS(SET);
+
+  #ifdef WR_FORSED
+  constexpr uint32_t WR_PSC_DIV_TAB[] = {2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8};
+  constexpr uint32_t L_WR_PSC_DIV = WR_PSC_DIV_TAB[F_CPU / 8000000 - 1];  // 18MHz max
+
+  RCC->APB1PCENR |= RCC_TIM3EN;
+  RCC->APB2PCENR |= RCC_TIM1EN;
+
+  TIM3->PSC = L_WR_PSC_DIV - 1;  // Prescaler
+  TIM3->CTLR2 = 0b001 << 4;      // Cчетчик отправляет сигнал CNT_EN
+  TIM3->CTLR1 =
+    TIM_DIR |                    // Обратное направление счётчика
+    TIM_OPM |                    // Режим одиночного импульса
+    0;
+
+  TIM1->PSC = 0;  // Prescaler
+  TIM1->ATRLR = L_WR_PSC_DIV - 1;
+  TIM1->CH1CVR = L_WR_PSC_DIV >> 1;
+  TIM1->SWEVGR = TIM_UG;  // Перезагружать
+  TIM1->SMCFGR =
+    0b101 |               //  Тригер запускает и останавливает счётчик
+    (0b010 << 4);         //  Тригер TIM3
+  TIM1->CHCTLR1 =
+    // TIM_OC1M_0 |          // Режим сравнения - инверсия
+    TIM_OC1M_1 |
+    TIM_OC1M_2 |          // Режим PWM
+    0;
+  TIM1->BDTR = TIM_MOE;   // Включить TIM1 вывод
+  TIM1->CCER = TIM_CC1E;  // Включить канал 1
+  TIM1->CTLR1 = TIM_CEN;  // Включить TIM1
+
+  #endif
 }
 
 #endif
