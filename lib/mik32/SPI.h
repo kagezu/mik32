@@ -29,7 +29,7 @@ public:
     fq(0x4000);
   }
 
-  void thr(uint8_t t) { tx_thr = t; }
+  void thr(uint8_t t) { tx_thr = 9 - t; }
   void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
   void master() { config = (config & ~SPI_CONFIG_MODE_SEL_M) | SPI_CONFIG_MASTER_M; }
   void slave() { config &= ~SPI_CONFIG_MODE_SEL_M; }

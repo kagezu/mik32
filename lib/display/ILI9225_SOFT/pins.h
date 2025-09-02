@@ -29,11 +29,11 @@
 
 #ifdef CH32V20x_D6
 
-#define ILI_SOFT_SCK(x)     x ( B, 13 )
-#define ILI_SOFT_SDA(x)     x ( B, 15 )
+#define ILI_SOFT_CS(x)      x ( A, 11 )
 #define ILI_SOFT_RS(x)      x ( A, 10 )
 #define ILI_SOFT_RST(x)     x ( D, 0  )
-#define ILI_SOFT_CS(x)      x ( A, 11 )
+#define ILI_SOFT_SCK(x)     x ( B, 13 )
+#define ILI_SOFT_SDA(x)     x ( B, 15 )
 
 #endif
 
