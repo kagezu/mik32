@@ -19,9 +19,23 @@ public:
     ENCODER_A(P_VCC);
     ENCODER_B(P_VCC);
     ENCODER_SW(P_VCC);
+
+  #ifdef ENCODER_GND
+    ENCODER_GND(GPIO);
+    ENCODER_GND(OUT);
+    ENCODER_GND(CLR);
+    ENCODER_SW(P_GND);
+  #endif
   }
 
-  bool is_push() { return !ENCODER_SW(GET); }
+  bool is_push()
+  {
+  #ifdef ENCODER_GND
+    return ENCODER_SW(GET);
+  #else
+    // return !ENCODER_SW(GET);
+  #endif
+  }
 
   int scan()
   {

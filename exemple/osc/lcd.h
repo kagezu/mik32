@@ -2,8 +2,8 @@
 
 // Цветовая модель
 
-// #define RGB         RGB12   // 4x4x4 bit
-#define RGB         RGB16   // 5x6x5 bit
+#define RGB         RGB12   // 4x4x4 bit
+// #define RGB         RGB16   // 5x6x5 bit
 // #define RGB         RGB18   // 6x6x6 bit
 // #define RGB         RGB32   // 8x8x8 bit
 

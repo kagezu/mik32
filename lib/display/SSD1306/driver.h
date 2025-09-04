@@ -2,7 +2,7 @@
 
 // #ifdef __AVR_ATmega328P__
 
-#include "inc/i2c.h"
+#include "i2c.h"
 #include "comon/include.h"
 #include "const.h"
 #include "pins.h"

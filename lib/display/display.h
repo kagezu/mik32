@@ -4,7 +4,7 @@
 #include "ST7735_SOFT/driver.h"
 #include "ILI9225_SOFT/driver.h"
 #include "ILI9225/driver.h"
-// #include "ST7735/driver.h"
+#include "ST7735/driver.h"
 #ifndef CH32V20x_D6
   #include "ST7789/driver.h"
   #include "ILI9486_8/driver.h"

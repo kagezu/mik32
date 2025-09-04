@@ -1,101 +1,167 @@
-#pragma once
-#include "core.h"
-#include "pinout.h"
-
-extern "C" {
-#include "mik32_hal_i2c.h"
-}
-
-#define I2C_IDLE    0x00
-#define I2C_ENABLE  0x01
+#ifndef I2C_H_INCLUDED
+#define I2C_H_INCLUDED
 
 
-#define I2C_BUFFER_LENGTH 600
-
-#define I2C_N (( I2C_TypeDef *)( I2C_0_BASE_ADDRESS + I2CN * 0x400 ))
-
-template<const uint32_t I2CN = 1>
-class I2C {
-private:
-  uint8_t state;
-  uint8_t address;
-  uint16_t index;
-  uint8_t buffer[I2C_BUFFER_LENGTH];
-
-  I2C_HandleTypeDef hi2c;
-
-public:
-  void set_address(uint8_t adr) { address = adr; }
-  void set_freq(uint32_t freq)
-  {
-    hi2c.Clock.PRESC = freq;
-    HAL_I2C_Init(&hi2c);
-  }
-
-  void init()
-  {
-    PM->CLK_APB_P_SET =
-      PM_CLOCK_APB_P_I2C_0_M |
-      PM_CLOCK_APB_P_I2C_1_M;
-
-    /* Общие настройки */
-    hi2c.Instance = I2C_1;
-    hi2c.Init.Mode = HAL_I2C_MODE_MASTER;
-    hi2c.Init.DigitalFilter = I2C_DIGITALFILTER_OFF;
-    hi2c.Init.AnalogFilter = I2C_ANALOGFILTER_DISABLE;
-    hi2c.Init.AutoEnd = I2C_AUTOEND_ENABLE;
-
-    /* Настройка частоты */
-    hi2c.Clock.PRESC = 0;
-    hi2c.Clock.SCLDEL = 1;
-    hi2c.Clock.SDADEL = 1;
-    hi2c.Clock.SCLH = 0;
-    hi2c.Clock.SCLL = 0;
-
-    HAL_I2C_Init(&hi2c);
-
-    // state = I2C_IDLE;
-  }
+#define I2C_CR1_PE_S                    0
+#define I2C_CR1_PE_M                    (1 << I2C_CR1_PE_S)
+#define I2C_CR1_TXIE_S                  1
+#define I2C_CR1_TXIE_M                  (1 << I2C_CR1_TXIE_S)
+#define I2C_CR1_RXIE_S                  2
+#define I2C_CR1_RXIE_M                  (1 << I2C_CR1_RXIE_S)
+#define I2C_CR1_ADDRIE_S                3
+#define I2C_CR1_ADDRIE_M                (1 << I2C_CR1_ADDRIE_S)
+#define I2C_CR1_NACKIE_S                4
+#define I2C_CR1_NACKIE_M                (1 << I2C_CR1_NACKIE_S)
+#define I2C_CR1_STOPIE_S                5
+#define I2C_CR1_STOPIE_M                (1 << I2C_CR1_STOPIE_S)
+#define I2C_CR1_TCIE_S                  6
+#define I2C_CR1_TCIE_M                  (1 << I2C_CR1_TCIE_S)
+#define I2C_CR1_ERRIE_S                 7
+#define I2C_CR1_ERRIE_M                 (1 << I2C_CR1_ERRIE_S)
+#define I2C_CR1_DNF_S                   8
+#define I2C_CR1_DNF_M                   (0xF << I2C_CR1_DNF_S)
+#define I2C_CR1_DNF(v)                  (((v) << I2C_CR1_DNF_S) & I2C_CR1_DNF_M)
+#define I2C_CR1_ANFOFF_S                12
+#define I2C_CR1_ANFOFF_M                (1 << I2C_CR1_ANFOFF_S)
+//
+#define I2C_CR1_TXDMAEN_S               14
+#define I2C_CR1_TXDMAEN_M               (1 << I2C_CR1_TXDMAEN_S)
+#define I2C_CR1_RXDMAEN_S               15
+#define I2C_CR1_RXDMAEN_M               (1 << I2C_CR1_RXDMAEN_S)
+#define I2C_CR1_SBC_S                   16
+#define I2C_CR1_SBC_M                   (1 << I2C_CR1_SBC_S)
+#define I2C_CR1_NOSTRETCH_S             17
+#define I2C_CR1_NOSTRETCH_M             (1 << I2C_CR1_NOSTRETCH_S)
+//
+#define I2C_CR1_GCEN_S                  19
+#define I2C_CR1_GCEN_M                  (1 << I2C_CR1_GCEN_S)
 
 
-  void begin()
-  {
-    // state = I2C_ENABLE;
-    index = 0;
-  }
+#define I2C_CR2_SADD_S                  0
+#define I2C_CR2_SADD_M                  (0x3FF << I2C_CR2_SADD_S)
+#define I2C_CR2_SADD(v)                 (((v) << I2C_CR2_SADD_S) &I2C_CR2_SADD_M)
+#define I2C_CR2_RD_WRN_S                10    
+#define I2C_CR2_RD_WRN_M                (1 << I2C_CR2_RD_WRN_S)
+#define I2C_CR2_RD_M                    (1 << I2C_CR2_RD_WRN_S)
+#define I2C_CR2_WR_M                    (0 << I2C_CR2_RD_WRN_S)
+#define I2C_CR2_ADD10_S                 11
+#define I2C_CR2_ADD10_M                 (1 << I2C_CR2_ADD10_S)
+#define I2C_CR2_HEAD10R_S               12
+#define I2C_CR2_HEAD10R_M               (1 << I2C_CR2_HEAD10R_S)
+#define I2C_CR2_START_S                 13
+#define I2C_CR2_START_M                 (1 << I2C_CR2_START_S)
+#define I2C_CR2_STOP_S                  14
+#define I2C_CR2_STOP_M                  (1 << I2C_CR2_STOP_S)
+#define I2C_CR2_NACK_S                  15
+#define I2C_CR2_NACK_M                  (1 << I2C_CR2_NACK_S)
+#define I2C_CR2_NBYTES_S                16  
+#define I2C_CR2_NBYTES_M                (0xFF << I2C_CR2_NBYTES_S)
+#define I2C_CR2_NBYTES(v)               (((v) << I2C_CR2_NBYTES_S) & I2C_CR2_NBYTES_M)
+#define I2C_CR2_RELOAD_S                24
+#define I2C_CR2_RELOAD_M                (1 << I2C_CR2_RELOAD_S)
+#define I2C_CR2_AUTOEND_S               25
+#define I2C_CR2_AUTOEND_M               (1 << I2C_CR2_AUTOEND_S)
 
-  void write(uint8_t data) { buffer[index++] = data; }
 
-  void write(uint8_t *data, uint16_t len)
-  {
-    // if (index) HAL_I2C_Master_Transmit(&hi2c, address >> 1, buffer, index, I2C_TIMEOUT_DEFAULT);
+#define I2C_OAR1_OA1_S                  0
+#define I2C_OAR1_OA1_M                  (0x3FF << I2C_OAR1_OA1_S)
+#define I2C_OAR1_OA1MODE_S              10
+#define I2C_OAR1_OA1MODE_M              (1 << I2C_OAR1_OA1MODE_S)
+//
+#define I2C_OAR1_OA1EN_S                15
+#define I2C_OAR1_OA1EN_M                (1 << I2C_OAR1_OA1EN_S)
 
-    // HAL_I2C_Master_Transmit(&hi2c, address >> 1, data, len, I2C_TIMEOUT_DEFAULT);
 
-    // index = 0;
+#define I2C_OAR2_OA2_S                  1
+#define I2C_OAR2_OA2_M                  (0x7F << I2C_OAR2_OA2_S)
+#define I2C_OAR2_OA2MSK_S              8
+#define I2C_OAR2_OA2MSK_M              (0x7 << I2C_OAR2_OA2MSK_S)
+//
+#define I2C_OAR2_OA2EN_S                15
+#define I2C_OAR2_OA2EN_M                (1 << I2C_OAR2_OA2EN_S)
 
 
-    while (len--) buffer[index++] = *data++;
-  }
+#define I2C_TIMINGR_SCLL_S              0
+#define I2C_TIMINGR_SCLL_M              (0xFF << I2C_TIMINGR_SCLL_S)
+#define I2C_TIMINGR_SCLL(v)             (((v) << I2C_TIMINGR_SCLL_S) & I2C_TIMINGR_SCLL_M)
+#define I2C_TIMINGR_SCLH_S              8
+#define I2C_TIMINGR_SCLH_M              (0xFF << I2C_TIMINGR_SCLH_S)
+#define I2C_TIMINGR_SCLH(v)             (((v) << I2C_TIMINGR_SCLH_S) & I2C_TIMINGR_SCLH_M)
+#define I2C_TIMINGR_SDADEL_S            16
+#define I2C_TIMINGR_SDADEL_M            (0xF << I2C_TIMINGR_SDADEL_S)
+#define I2C_TIMINGR_SDADEL(v)           (((v) << I2C_TIMINGR_SDADEL_S) & I2C_TIMINGR_SDADEL_M)
+#define I2C_TIMINGR_SCLDEL_S            20
+#define I2C_TIMINGR_SCLDEL_M            (0xF << I2C_TIMINGR_SCLDEL_S)
+#define I2C_TIMINGR_SCLDEL(v)           (((v) << I2C_TIMINGR_SCLDEL_S) & I2C_TIMINGR_SCLDEL_M)
+#define I2C_TIMINGR_PRESC_S             28
+#define I2C_TIMINGR_PRESC_M             (0xF << I2C_TIMINGR_PRESC_S)
+#define I2C_TIMINGR_PRESC(v)            (((v) << I2C_TIMINGR_PRESC_S) & I2C_TIMINGR_PRESC_M)
 
-  void end()
-  {
 
-    HAL_I2C_Master_Transmit(&hi2c, address >> 1, buffer, index, I2C_TIMEOUT_DEFAULT);
+#define I2C_ISR_TXE_S                   0
+#define I2C_ISR_TXE_M                   (1 << I2C_ISR_TXE_S)
+#define I2C_ISR_TXIS_S                  1
+#define I2C_ISR_TXIS_M                  (1 << I2C_ISR_TXIS_S)
+#define I2C_ISR_RXNE_S                  2
+#define I2C_ISR_RXNE_M                  (1 << I2C_ISR_RXNE_S)
+#define I2C_ISR_ADDR_S                  3
+#define I2C_ISR_ADDR_M                  (1 << I2C_ISR_ADDR_S)
+#define I2C_ISR_NACKF_S                 4
+#define I2C_ISR_NACKF_M                 (1 << I2C_ISR_NACKF_S)
+#define I2C_ISR_STOPF_S                 5
+#define I2C_ISR_STOPF_M                 (1 << I2C_ISR_STOPF_S)
+#define I2C_ISR_TC_S                    6
+#define I2C_ISR_TC_M                    (1 << I2C_ISR_TC_S)
+#define I2C_ISR_TCR_S                   7
+#define I2C_ISR_TCR_M                   (1 << I2C_ISR_TCR_S)
+#define I2C_ISR_BERR_S                  8
+#define I2C_ISR_BERR_M                  (1 << I2C_ISR_BERR_S)
+#define I2C_ISR_ARLO_S                  9
+#define I2C_ISR_ARLO_M                  (1 << I2C_ISR_ARLO_S)
+#define I2C_ISR_OVR_S                   10
+#define I2C_ISR_OVR_M                   (1 << I2C_ISR_OVR_S)
+//
+#define I2C_ISR_BUSY_S                  15
+#define I2C_ISR_BUSY_M                  (1 << I2C_ISR_BUSY_S)
+#define I2C_ISR_DIR_S                   16
+#define I2C_ISR_DIR_M                   (1 << I2C_ISR_DIR_S)
+#define I2C_ISR_ADDCODE_S               17
+#define I2C_ISR_ADDCODE_M               (0x7F << I2C_ISR_ADDCODE_S)
 
-    if (hi2c.Init.AutoEnd == I2C_AUTOEND_DISABLE) {
-      hi2c.Instance->CR2 |= I2C_CR2_STOP_M;
-    }
 
-    index = 0;
+#define I2C_ICR_ADDRCF_S                3
+#define I2C_ICR_ADDRCF_M                (1 << I2C_ICR_ADDRCF_S)
+#define I2C_ICR_NACKCF_S                4
+#define I2C_ICR_NACKCF_M                (1 << I2C_ICR_NACKCF_S)
+#define I2C_ICR_STOPCF_S                5
+#define I2C_ICR_STOPCF_M                (1 << I2C_ICR_STOPCF_S)
+//
+#define I2C_ICR_BERRCF_S                8
+#define I2C_ICR_BERRCF_M                (1 << I2C_ICR_BERRCF_S)
+#define I2C_ICR_ARLOCF_S                9
+#define I2C_ICR_ARLOCF_M                (1 << I2C_ICR_ARLOCF_S)
+#define I2C_ICR_OVRCF_S                 10
+#define I2C_ICR_OVRCF_M                 (1 << I2C_ICR_OVRCF_S)
 
-    // state = I2C_IDLE;
-  }
 
-  // static void send_address();
-  // static void stop(void);
-  // static void send_next_byte(void);
+#ifndef __ASSEMBLER__
+    #include <inttypes.h>
 
-  // void destroy();
+    typedef struct
+    {
+        volatile uint32_t CR1;
+        volatile uint32_t CR2;
+        volatile uint32_t OAR1;
+        volatile uint32_t OAR2;
+        volatile uint32_t TIMINGR;
+        volatile uint32_t reserved0;
+        volatile uint32_t ISR;
+        volatile uint32_t ICR;
+        volatile uint32_t reserved1;
+        volatile uint32_t RXDR;
+        volatile uint32_t TXDR;
+    } I2C_TypeDef;
+#endif
 
-};
+#endif // I2C_H_INCLUDED
+

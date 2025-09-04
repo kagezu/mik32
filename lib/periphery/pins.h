@@ -10,8 +10,9 @@
 
 #ifdef MIK32V2
 #define ENCODER_A   D2
+#define ENCODER_GND D3
 #define ENCODER_B   D4
-#define ENCODER_SW  D3
+#define ENCODER_SW  USER_B
 #endif
 
 // #ifdef MIK32V2

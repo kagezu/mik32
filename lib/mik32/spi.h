@@ -10,70 +10,15 @@
 #define SPI_DELAY_DEF     0x00
 #define SPI_INT_DISABLE   0x3F
 
+#define SPIx   ((SPI_TypeDef *)(SPI_0_BASE_ADDRESS + N*0x400))
 
-class SPIConf {
-public:
+template<const int N>
+class SPI {
+protected:
   uint32_t config;
   uint32_t delay_clk;
   uint32_t tx_thr;
 
-  SPIConf()
-  {
-    config = 0
-      | SPI_CONFIG_MANUAL_CS_M    // Ручной режим
-      | SPI_CONFIG_CS_NONE_M      // Устройства не выбраны
-      | SPI_CONFIG_MASTER_M;      // Мастер
-
-    delay_clk = SPI_DELAY_DEF;
-    tx_thr = SPI_TX_THR;
-    fq(0x4000);
-  }
-
-  void thr(uint8_t t) { tx_thr = 9 - t; }
-  void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
-  void master() { config = (config & ~SPI_CONFIG_MODE_SEL_M) | SPI_CONFIG_MASTER_M; }
-  void slave() { config &= ~SPI_CONFIG_MODE_SEL_M; }
-  void select_cs(uint8_t ss_n)
-  {
-    config =
-      (config & ~(SPI_CONFIG_CS_NONE_M | SPI_CONFIG_MANUAL_CS_M))
-      | (SPI_CONFIG_CS_NONE_M ^ (1 << (SPI_CONFIG_CS_S + ss_n)));
-  }
-
-  void fq(uint16_t f)
-  {
-    uint8_t baud_rate_div = 0;
-    uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
-    while (f < max_fq && baud_rate_div++ < 0x07)
-      max_fq >>= 1;
-
-    config = (config & ~SPI_CONFIG_BAUD_RATE_DIV_M)
-      | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S); // Делитель частоты
-  }
-
-  void delay(uint32_t btwn = 0, uint32_t after = 0, uint32_t ini = 0)
-  {
-    delay_clk =
-      (ini << SPI_DELAY_INIT_S)
-      | (after << SPI_DELAY_AFTER_S)
-      | (btwn << SPI_DELAY_BTWN_S);
-  }
-};
-
-#define SPIx   ((SPI_TypeDef *)(SPI_0_BASE_ADDRESS + N*0x400))
-
-
-
-typedef struct {
-  uint32_t CONFIG;         // Конфигурация SPI
-  uint32_t INT_ENABLE;     // Прерывания
-  uint32_t DELAY;          // Задержки
-  uint32_t TX_THR;         // Порог буфера
-} SPI_Config;
-
-
-template<const int N>
-class SPI {
 public:
   SPI()
   {
@@ -88,10 +33,49 @@ public:
       SPI0_MISO(P_NC); SPI0_MOSI(P_NC); SPI0_SCK(P_NC); SPI0_NSS_IN(P_VCC);
     }
 
-    SPIx->ENABLE = 0;                      // Отключение модуля
-    SPIx->INT_DISABLE = SPI_INT_DISABLE;   // Сброс маски прерываний
-    SPIx->DELAY = SPI_DELAY_DEF;           // Регистр задержек
-    SPIx->TX_THR = SPI_TX_THR;             // Установка порога по умолчанию
+    config = 0
+      | SPI_CONFIG_MANUAL_CS_M    // Ручной режим
+      | SPI_CONFIG_CS_NONE_M      // Устройства не выбраны
+      | SPI_CONFIG_MASTER_M;      // Мастер
+
+    fq(0x4000); // 16 MHz
+
+    delay_clk = SPI_DELAY_DEF;
+    tx_thr = SPI_TX_THR;
+
+    SPIx->ENABLE = 0;                     // Отключение модуля
+    SPIx->INT_DISABLE = SPI_INT_DISABLE;  // Сброс маски прерываний
+    SPIx->DELAY = delay_clk;              // Регистр задержек
+    SPIx->TX_THR = tx_thr;                // Установка порога по умолчанию
+  }
+
+  // Частота в килогерцах
+  void fq(uint16_t f)
+  {
+    uint8_t baud_rate_div = 0;
+    uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
+    while (f < max_fq && baud_rate_div++ < 0x07)
+      max_fq >>= 1;
+
+    config = (config & ~SPI_CONFIG_BAUD_RATE_DIV_M)
+      | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S); // Делитель частоты
+  }
+  void thr(uint8_t t) { tx_thr = 9 - t; }
+  void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
+  void master() { config = (config & ~SPI_CONFIG_MODE_SEL_M) | SPI_CONFIG_MASTER_M; }
+  void slave() { config &= ~SPI_CONFIG_MODE_SEL_M; }
+  void select_cs(uint8_t ss_n)
+  {
+    config =
+      (config & ~(SPI_CONFIG_CS_NONE_M | SPI_CONFIG_MANUAL_CS_M))
+      | (SPI_CONFIG_CS_NONE_M ^ (1 << (SPI_CONFIG_CS_S + ss_n)));
+  }
+  void delay(uint32_t btwn = 0, uint32_t after = 0, uint32_t ini = 0)
+  {
+    delay_clk =
+      (ini << SPI_DELAY_INIT_S)
+      | (after << SPI_DELAY_AFTER_S)
+      | (btwn << SPI_DELAY_BTWN_S);
   }
 
   static void wait() {}
@@ -108,11 +92,12 @@ public:
   ATTR_INLINE static void send(uint8_t data) { SPIx->TXDATA = data; }
   ATTR_INLINE static void send16(uint16_t data) { SPIx->TXDATA = data >> 8; SPIx->TXDATA = data; }
 
-  static void begin(SPIConf settings)
+  ATTR_INLINE void begin()
   {
     clear_fifo();
-    SPIx->CONFIG = settings.config;
-    // SPIx->TX_THR = settings.tx_thr;
+    SPIx->CONFIG = config;
+    // SPIx->TX_THR = tx_thr;
+    // SPIx->DELAY = delay_clk;
     SPIx->ENABLE = SPI_ENABLE_M;           // Включение модуля
   }
 

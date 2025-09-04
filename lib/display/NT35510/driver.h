@@ -82,16 +82,12 @@ public:
   #endif
 
   #ifdef MIK32V2
-    len <<= 1;
-    T32_1_TOP(-1);
-    NT_WR(OUTA);
-    TIMER32_2->CHANNELS[0].CNTRL =
-      TIMER32_CH_CNTRL_MODE_PWM_M |
-      TIMER32_CH_CNTRL_ENABLE_M;
-    T32_1_C;
-    while (T32_1 < len);  // NT_PORT(OUTPUT) = T32_1 * color.rgb;
-    TIMER32_2->CHANNELS[0].CNTRL = 0;
-    NT_WR(GPIO);
+
+  while (len--) {
+    NT_WR(CLR);
+    NT_WR(SET);
+  }
+  
   #endif
 #endif
 

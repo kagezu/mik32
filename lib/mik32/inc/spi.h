@@ -1,128 +1,116 @@
-#pragma once
-#include "mik32.h"
+#ifndef SPI_H_INCLUDED
+#define SPI_H_INCLUDED
 
-#define SPI_MODE0         0x00
-#define SPI_MODE1         0x01
-#define SPI_MODE2         0x02
-#define SPI_MODE3         0x03
+#define SPI_CONFIG        	0X00
+#define SPI_STATUS        	0X04
+#define SPI_IEN           	0X08 
+#define SPI_IDIS          	0X0C 
+#define SPI_IMASK         	0X10 
+#define SPI_ENABLE        	0X14
+#define SPI_DELAY         	0X18
+#define SPI_TXD           	0X1C
+#define SPI_RXD           	0X20
+#define SPI_SIC           	0X24
+#define SPI_THRESHOLD     	0X28
+#define SPI_MODULE_ID     	0XFC
 
-#define SPI_TX_THR        0x07
-#define SPI_DELAY_DEF     0x00
-#define SPI_INT_DISABLE   0x3F
 
-#define SPIx   ((SPI_TypeDef *)(SPI_0_BASE_ADDRESS + N*0x400))
+#define SPI_CONFIG_MANUAL_CS_S		              14
+#define SPI_CONFIG_MANUAL_CS_M		              (1 << SPI_CONFIG_MANUAL_CS_S)
+//
+#define SPI_CONFIG_CS_S				                  10
+#define SPI_CONFIG_CS_M				                  (0XF << SPI_CONFIG_CS_S)
+#define SPI_CONFIG_CS_0_M			                  (0XE << SPI_CONFIG_CS_S)
+#define SPI_CONFIG_CS_1_M			                  (0XD << SPI_CONFIG_CS_S)
+#define SPI_CONFIG_CS_2_M			                  (0XB << SPI_CONFIG_CS_S)
+#define SPI_CONFIG_CS_3_M			                  (0X7 << SPI_CONFIG_CS_S)
+#define SPI_CONFIG_CS_NONE_M		                (0XF << SPI_CONFIG_CS_S)
+//
+#define SPI_CONFIG_PERI_SEL_S		                9
+#define SPI_CONFIG_PERI_SEL_M		                (1 << SPI_CONFIG_PERI_SEL_S)
+#define SPI_CONFIG_REF_CLK_S		                8
+#define SPI_CONFIG_REF_CLK_M		                (1 << SPI_CONFIG_REF_CLK_S)
+//
+#define SPI_CONFIG_BAUD_RATE_DIV_S		          3
+#define SPI_CONFIG_BAUD_RATE_DIV_M		          (0X7 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_2_M	          (0X0 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_4_M	          (0X1 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_8_M	          (0X2 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_16_M	          (0X3 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_32_M	          (0X4 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_64_M	          (0X5 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_128_M	        (0X6 << SPI_CONFIG_BAUD_RATE_DIV_S)
+#define SPI_CONFIG_BAUD_RATE_DIV_256_M	        (0X7 << SPI_CONFIG_BAUD_RATE_DIV_S)
+//
+#define SPI_MAXIMUM_BAUD_RATE_DIV		            256
+//
+#define SPI_CONFIG_CLK_PH_S				              2
+#define SPI_CONFIG_CLK_PH_M				              (1 << SPI_CONFIG_CLK_PH_S)
+#define SPI_CONFIG_CLK_POL_S			              1
+#define SPI_CONFIG_CLK_POL_M			              (1 << SPI_CONFIG_CLK_POL_S)
+#define SPI_CONFIG_MODE_SEL_S			              0
+#define SPI_CONFIG_MODE_SEL_M			              (1 << SPI_CONFIG_MODE_SEL_S)
+#define SPI_CONFIG_MASTER_M				              (1 << SPI_CONFIG_MODE_SEL_S)
+#define SPI_CONFIG_SLAVE_M				              (0 << SPI_CONFIG_MODE_SEL_S)
 
-template<const int N>
-class SPI {
-protected:
-  uint32_t config;
-  uint32_t delay_clk;
-  uint32_t tx_thr;
 
-public:
-  SPI()
-  {
-    // Настройка порта ввода/вывода
-    // if (N == SPI_0_BASE_ADDRESS) {
-    if (N) {
-      SPI1_MISO(SERIAL); SPI1_MOSI(SERIAL); SPI1_SCK(SERIAL); SPI1_NSS_IN(SERIAL);
-      SPI1_MISO(P_NC); SPI1_MOSI(P_NC); SPI1_SCK(P_NC); SPI1_NSS_IN(P_VCC);
-    }
-    else {
-      SPI0_MISO(SERIAL); SPI0_MOSI(SERIAL); SPI0_SCK(SERIAL); SPI0_NSS_IN(SERIAL);
-      SPI0_MISO(P_NC); SPI0_MOSI(P_NC); SPI0_SCK(P_NC); SPI0_NSS_IN(P_VCC);
-    }
+#define SPI_ENABLE_CLEAR_RX_FIFO_S              3
+#define SPI_ENABLE_CLEAR_RX_FIFO_M              (1 << SPI_ENABLE_CLEAR_RX_FIFO_S)
+#define SPI_ENABLE_CLEAR_TX_FIFO_S              2
+#define SPI_ENABLE_CLEAR_TX_FIFO_M              (1 << SPI_ENABLE_CLEAR_TX_FIFO_S)
+#define SPI_ENABLE_S		                        0
+#define SPI_ENABLE_M		                        (1 << SPI_ENABLE_S)
 
-    config = 0
-      | SPI_CONFIG_MANUAL_CS_M    // Ручной режим
-      | SPI_CONFIG_CS_NONE_M      // Устройства не выбраны
-      | SPI_CONFIG_MASTER_M;      // Мастер
 
-    fq(0x4000); // 16 MHz
+#define SPI_DELAY_BTWN_S                        16
+#define SPI_DELAY_BTWN_M                        (0XFF << SPI_DELAY_BTWN_S)
+#define SPI_DELAY_BTWN(V)                       (((V) << SPI_DELAY_BTWN_S) & SPI_DELAY_BTWN_M)
+#define SPI_DELAY_AFTER_S                       8
+#define SPI_DELAY_AFTER_M                       (0XFF << SPI_DELAY_AFTER_S)
+#define SPI_DELAY_AFTER(V)                      (((V) << SPI_DELAY_AFTER_S) & SPI_DELAY_AFTER_M)
+#define SPI_DELAY_INIT_S                        0
+#define SPI_DELAY_INIT_M                        (0XFF << SPI_DELAY_INIT_S)
+#define SPI_DELAY_INIT(V)                       (((V) << SPI_DELAY_INIT_S) & SPI_DELAY_INIT_M)
 
-    delay_clk = SPI_DELAY_DEF;
-    tx_thr = SPI_TX_THR;
 
-    SPIx->ENABLE = 0;                     // Отключение модуля
-    SPIx->INT_DISABLE = SPI_INT_DISABLE;  // Сброс маски прерываний
-    SPIx->DELAY = delay_clk;              // Регистр задержек
-    SPIx->TX_THR = tx_thr;                // Установка порога по умолчанию
-  }
+#define SPI_INT_STATUS_SPI_ACTIVE_S             15
+#define SPI_INT_STATUS_SPI_ACTIVE_M             (1 << SPI_INT_STATUS_SPI_ACTIVE_S)
+#define SPI_INT_STATUS_TX_FIFO_UNDERFLOW_S      6
+#define SPI_INT_STATUS_TX_FIFO_UNDERFLOW_M      (1 << SPI_INT_STATUS_TX_FIFO_UNDERFLOW_S)
+#define SPI_INT_STATUS_RX_OVERFLOW_S		        0
+#define SPI_INT_STATUS_RX_OVERFLOW_M		        (1 << SPI_INT_STATUS_RX_OVERFLOW_S)
+#define SPI_INT_STATUS_MODE_FAIL_S			        1
+#define SPI_INT_STATUS_MODE_FAIL_M			        (1 << SPI_INT_STATUS_MODE_FAIL_S)
+#define SPI_INT_STATUS_TX_FIFO_NOT_FULL_S	      2
+#define SPI_INT_STATUS_TX_FIFO_NOT_FULL_M	      (1 << SPI_INT_STATUS_TX_FIFO_NOT_FULL_S)
+#define SPI_INT_STATUS_TX_FIFO_FULL_S		        3
+#define SPI_INT_STATUS_TX_FIFO_FULL_M		        (1 << SPI_INT_STATUS_TX_FIFO_FULL_S)
+#define SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_S	    4
+#define SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M	    (1 << SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_S)
+#define SPI_INT_STATUS_RX_FIFO_FULL_S		        5
+#define SPI_INT_STATUS_RX_FIFO_FULL_M		        (1 << SPI_INT_STATUS_RX_FIFO_FULL_S)
 
-  // Частота в килогерцах
-  void fq(uint16_t f)
-  {
-    uint8_t baud_rate_div = 0;
-    uint16_t max_fq = OSC_SYSTEM_VALUE / 2000;
-    while (f < max_fq && baud_rate_div++ < 0x07)
-      max_fq >>= 1;
 
-    config = (config & ~SPI_CONFIG_BAUD_RATE_DIV_M)
-      | (baud_rate_div << SPI_CONFIG_BAUD_RATE_DIV_S); // Делитель частоты
-  }
-  void thr(uint8_t t) { tx_thr = 9 - t; }
-  void mode(uint8_t m = SPI_MODE0) { config = (config & ~(SPI_CONFIG_CLK_PH_M | SPI_CONFIG_CLK_POL_M)) | (m << SPI_CONFIG_CLK_POL_S); }
-  void master() { config = (config & ~SPI_CONFIG_MODE_SEL_M) | SPI_CONFIG_MASTER_M; }
-  void slave() { config &= ~SPI_CONFIG_MODE_SEL_M; }
-  void select_cs(uint8_t ss_n)
-  {
-    config =
-      (config & ~(SPI_CONFIG_CS_NONE_M | SPI_CONFIG_MANUAL_CS_M))
-      | (SPI_CONFIG_CS_NONE_M ^ (1 << (SPI_CONFIG_CS_S + ss_n)));
-  }
-  void delay(uint32_t btwn = 0, uint32_t after = 0, uint32_t ini = 0)
-  {
-    delay_clk =
-      (ini << SPI_DELAY_INIT_S)
-      | (after << SPI_DELAY_AFTER_S)
-      | (btwn << SPI_DELAY_BTWN_S);
-  }
 
-  static void wait() {}
-  // Очистить FIFO
-  ATTR_INLINE static void clear_fifo() { SPIx->ENABLE = SPI_ENABLE_CLEAR_RX_FIFO_M | SPI_ENABLE_CLEAR_TX_FIFO_M; }
-  // Очистить чтением RX_FIFO
-  ATTR_INLINE static void clear_rx() { while ((SPIx->INT_STATUS & SPI_INT_STATUS_RX_FIFO_NOT_EMPTY_M)) SPIx->RXDATA; }
-  // Ждать TX_FIFO < TX_THR
-  ATTR_INLINE static void wait_thr() { while (!(SPIx->INT_STATUS & SPI_INT_STATUS_TX_FIFO_NOT_FULL_M)); }
-  // Ждать TX_FIFO < 8
-  ATTR_INLINE static void wait_full() { while (SPIx->INT_STATUS & SPI_INT_STATUS_TX_FIFO_FULL_M); }
-  // Ждать TX_FIFO = 0
-  ATTR_INLINE static void wait_idle() { while (SPIx->INT_STATUS & SPI_INT_STATUS_SPI_ACTIVE_M); }
-  ATTR_INLINE static void send(uint8_t data) { SPIx->TXDATA = data; }
-  ATTR_INLINE static void send16(uint16_t data) { SPIx->TXDATA = data >> 8; SPIx->TXDATA = data; }
+#ifndef __ASSEMBLER__
+    #include <inttypes.h> 
+    typedef struct
+    {
+      volatile uint32_t CONFIG;             /* Offset: 0x000 (R/W)    */
+      volatile uint32_t INT_STATUS;         /* Offset: 0x004 (R/RC)  */
+      volatile uint32_t INT_ENABLE;         /* Offset: 0x008 (WO) */
+      volatile uint32_t INT_DISABLE;        /* Offset: 0x00C (WO)  */
+      volatile uint32_t INT_MASK;           /* Offset: 0x010 (R)  */
+      volatile uint32_t ENABLE;             /* Offset: 0x014 (R/W)  */
+      volatile uint32_t DELAY;              /* Offset: 0x018 (R/W)  */
+      volatile uint32_t TXDATA;             /* Offset: 0x01C (WO)  */
+      volatile uint32_t RXDATA;             /* Offset: 0x020 (RO)  */
+      volatile uint32_t SIC;                /* Offset: 0x024 (R/W)  Slave_Idle_Count */
+      volatile uint32_t TX_THR;             /* Offset: 0x028 (R/W)  TX threshold */
+      volatile uint32_t reserved[0X34];     /* Empty array to fill the space*/
+      volatile uint32_t ID;                 /* Offset: 0x0FC (RO)  Module ID 0x01090100 */
+    }SPI_TypeDef;
+#endif
 
-  ATTR_INLINE void begin()
-  {
-    clear_fifo();
-    SPIx->CONFIG = config;
-    // SPIx->TX_THR = tx_thr;
-    // SPIx->DELAY = delay_clk;
-    SPIx->ENABLE = SPI_ENABLE_M;           // Включение модуля
-  }
 
-  ATTR_INLINE static void end() { wait_idle(); SPIx->ENABLE = 0; }
-
-  static uint8_t transfer(uint8_t data)
-  {
-    SPIx->TXDATA = data;
-    wait_idle();
-    return  SPIx->RXDATA;
-  }
-
-  static uint16_t transfer16(uint16_t data)
-  {
-    uint16_t rx_dbyte;
-    SPIx->TXDATA = data >> 8;
-    SPIx->TXDATA = data;
-    wait_idle();
-    rx_dbyte = SPIx->RXDATA << 8;
-    rx_dbyte |= SPIx->RXDATA;
-    return rx_dbyte;
-  }
-};
-
-// #define SPI0 SPI<SPI_0_BASE_ADDRESS>
-// #define SPI1 SPI<SPI_1_BASE_ADDRESS>
-#define SPI0 SPI<0>
-#define SPI1 SPI<1>
+#endif // SPI_H_INCLUDED

@@ -7,28 +7,28 @@
 #include "encoder.h"
 #include "fft.h"
 
-constexpr int ADC_CH = 0;         // Номер канала ADC
+constexpr int ADC_CH = 2;         // Номер канала ADC
 constexpr int INT_FQ = 200;       // Hz опрос энкодера
-constexpr int INFO_FQ = 2;        // Hz обновление текста
+constexpr int INFO_FQ = 3;        // Hz обновление текста
 constexpr int Lp = 8;             // Узловых точек для интерполяции Лагранжа (чётная)
 
 // Дисплей
 LCD lcd;
 constexpr int BORDER_TOP = 32;    // Отступ от верха экрана
 constexpr int BORDER_BOTTOM = 1;  // Отступ от низа экрана
-constexpr int SEG = 30;           // Шаг сетки
-constexpr int POINTES = ((lcd.max_x() + 2));         // Количество точек для отображения
-constexpr int SAMPLES = POINTES << 1;                // Количество измерений для анализа
-constexpr int END_POINT = SAMPLES - POINTES - Lp - 2;// Последняя точка, с которой может начаться отображение
+constexpr int SEG = 16;           // Шаг сетки
+constexpr int POINTES = ((lcd.max_x() + 2));  // Количество точек для отображения
+constexpr int SAMPLES = POINTES * 3;          // Количество измерений для анализа
+constexpr int END_LEN = Lp + 2;               // Резерв для интерполятора
+constexpr int END_POINT = SAMPLES - POINTES - END_LEN;// Последняя точка, с которой может начаться отображение
 constexpr int HEIGHT = lcd.max_y() - BORDER_BOTTOM - BORDER_TOP;// Высота области для граф. данных
 constexpr int MIDLE_AXIS = (lcd.max_y() - BORDER_BOTTOM - (HEIGHT >> 1));// Расположение оси X
 Rect view = Rect(0, BORDER_TOP, lcd.max_x(), lcd.max_y() - BORDER_BOTTOM);// Графическая область
 
 Lagrange<Lp, SEG, ADC::DEPTH> L;
-FFT < (SAMPLES >> 1), ADC::DEPTH > fft;
+FFT < SAMPLES, ADC::DEPTH > fft;
 Encoder enc;
 DMA<0, DMA_VH> dma;
-// SPI spi;
 
 short buffer[SAMPLES];
 short points[POINTES];
@@ -73,7 +73,7 @@ void osc_window(int &offset, int &median)
   int min = 1 << ADC::DEPTH;
   int max = 0;
   offset = 0;
-  for (int i = POINTES >> 1; i < END_POINT + (POINTES >> 1); i++) {
+  for (int i = (POINTES >> 1); i < END_POINT + (POINTES >> 1); i++) {
     const int val = buffer[i];
     if (min > val) min = val;
     else if (max < val) { max = val; offset = i; }
@@ -178,7 +178,7 @@ void sample(uint32_t time)
   T32_1_C;              // Обнуляем таймер, на случай если он уже выше TOP
   ADC::delay(samp);     // Устанавливаем время выборки АЦП
   ADC::start();         // Запускаем непрерывное преобразование АЦП
-  if (time < 64) cli(); // Если между выборками меньше 2х секунд, отключаем прерывания
+  if (time < 64) cli(); // Если между выборками меньше 2х микросекунд, отключаем прерывания
   dma.start();          // Запускаем передачу данных из АЦП в буфер
   dma.wait();           // Ожидаем завершения работы DMA
   ADC::stop();          // Останавливаем преобразование АЦП
@@ -191,8 +191,8 @@ int main(void)
 {
   init();
   lcd.init();
-  // lcd.font(system_5x7, 1, 3);
-  lcd.font(arial_14, 1, 3);
+  lcd.font(system_5x7, 1, 3);
+  // lcd.font(arial_14, 1, 3);
   fft.init();
   ADC::init(ADC_CH);
   dma.adc(DMA_TIMER1, buffer, sizeof(buffer));
@@ -259,7 +259,7 @@ int main(void)
           if (p_samp > 1) { // Использовать интерполяцию
             L.init(p_samp);// Инициализация коэффициентов Лагранжа
             // Чтоб немного сэкономить память, пишем в тот же буфер
-            L.interpolate(buffer + SAMPLES - SAMPLES / p_samp, buffer, SAMPLES - Lp);
+            L.interpolate(buffer + SAMPLES - SAMPLES / p_samp - END_LEN / 2, buffer, SAMPLES);
           }
           int median, offset;
           osc_window(offset, median); // Поиск окна по триггеру и среднего напряжения

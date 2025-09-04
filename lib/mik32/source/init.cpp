@@ -18,8 +18,8 @@ extern "C" {
 
     // Системный домен
     WU->CLOCKS_SYS = 0
-      | WU_CLOCKS_SYS_HSI32M_EN_M               // Отключить внутренний HSI32M (0 - включение)
-      // | WU_CLOCKS_SYS_OSC32M_EN_M            // Отключить внешний OSC32M (0 - включение)
+      | WU_CLOCKS_SYS_HSI32M_EN_M              // Отключить внутренний HSI32M (0 - включение)
+      // | WU_CLOCKS_SYS_OSC32M_EN_M              // Отключить внешний OSC32M (0 - включение)
       | WU_CLOCKS_SYS_FORCE_32K_CLK_OSC32K_M    // Принудительно выбрать OSC32K
       ;
 

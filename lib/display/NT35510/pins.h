@@ -1,5 +1,6 @@
 #pragma once
 #include "core.h"
+#include "timer.h"
 
 // #define WR_FORSED
 
@@ -13,15 +14,16 @@
 
 #ifdef MIK32V2
 
-  #define NT_WR(x)   x(1, 0)
-  #define NT_RS(x)   x(1, 9)
-  #define NT_CS(x)   x(1, 15)
-  #define NT_RST(x)  x(0, 0)  // Не используется
-  #define NT_PORT(x) x(0, 0)
+#define NT_WR(x)   x(1, 0)
+#define NT_RS(x)   x(1, 9)
+#define NT_CS(x)   x(1, 15)
+#define NT_RST(x)  x(0, 0)  // Не используется
+#define NT_PORT(x) x(0, 0)
 
-  #define SEL_0(x)   x(1, 10)
+#define SEL_0(x)   x(1, 10)
 
-static inline void GPIO_NT35510() {
+static inline void GPIO_NT35510()
+{
   SEL_0(GPIO);
   SEL_0(OUT);
   SEL_0(CLR);  // PORT 0.3 -> D9
@@ -50,14 +52,15 @@ static inline void GPIO_NT35510() {
 
 #ifdef CH32V20x_D6
 
-  #define NT_WR(x)   x(A, 8)
-  #define NT_RD(x)   x(A, 9)
-  #define NT_RS(x)   x(A, 10)
-  #define NT_CS(x)   x(A, 11)
-  #define NT_RST(x)  x(D, 0)  // Не используется
-  #define NT_PORT(x) x(B, 0)
+#define NT_WR(x)   x(A, 8)
+#define NT_RD(x)   x(A, 9)
+#define NT_RS(x)   x(A, 10)
+#define NT_CS(x)   x(A, 11)
+#define NT_RST(x)  x(D, 0)  // Не используется
+#define NT_PORT(x) x(B, 0)
 
-static inline void GPIO_NT35510() {
+static inline void GPIO_NT35510()
+{
   GPIO_InitTypeDef init;
   init.GPIO_Speed = GPIO_Speed_2MHz;
   init.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -74,8 +77,8 @@ static inline void GPIO_NT35510() {
   NT_CS(SET);
 
 
-  #ifdef WR_FORSEDX
-    #define WR_PSC_FACTOR 3
+#ifdef WR_FORSEDX
+#define WR_PSC_FACTOR 3
 
   RCC->APB1PCENR |= RCC_TIM3EN;
   RCC->APB2PCENR |= RCC_TIM1EN;
@@ -100,11 +103,11 @@ static inline void GPIO_NT35510() {
   TIM1->CCER = TIM_CC1E;  // Включить канал 1
   // TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
   TIM1->CTLR2 = TIM_MMS_2;  // Cчетчик отправляет сигнал OC1REF
-  #endif
+#endif
 
 
-  #ifdef WR_FORSED
-    #define NT_WR_PSC_DIV    2
+#ifdef WR_FORSED
+#define NT_WR_PSC_DIV    2
 
   RCC->APB1PCENR |= RCC_TIM3EN;
   RCC->APB2PCENR |= RCC_TIM1EN;
@@ -132,7 +135,7 @@ static inline void GPIO_NT35510() {
   TIM1->CCER = TIM_CC1E;  // Включить канал 1
   TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
 
-  #endif
+#endif
 }
 
 #endif
