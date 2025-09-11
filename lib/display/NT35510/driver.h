@@ -3,7 +3,7 @@
 #include "const.h"
 #include "pins.h"
 #ifdef MIK32V2
-  #include "timer.h"
+#include "timer.h"
 #endif
 
 template <typename C>
@@ -22,18 +22,21 @@ public:
   ATTR_INLINE void select() { NT_CS(CLR); }
   ATTR_INLINE void release() { NT_CS(SET); }
 
-  void set_rgb_format() {
+  void set_rgb_format()
+  {
     send_command(NT_COLMOD);
     send_byte(0x05);  // 5x6x5 bit
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color) {
+  ATTR_INLINE void send_rgb(RGB16 color)
+  {
     NT_PORT(OUTPUT) = color.rgb;
     NT_WR(CLR);
     NT_WR(SET);
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color, int32_t len) {
+  ATTR_INLINE void send_rgb(RGB16 color, int32_t len)
+  {
     NT_PORT(OUTPUT) = color.rgb;
     while (len--) {
       NT_WR(CLR);
@@ -41,19 +44,20 @@ public:
     }
   }
 
-  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color) {
+  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
+  {
     select();
     set_addr(x0, y0, x1, y1);
 
     uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
     NT_PORT(OUTPUT) = color.rgb;
 
-#ifndef WR_FORSED
+  #ifndef WR_FORSED
     while (len--) {
       NT_WR(CLR);
       NT_WR(SET);
     }
-#else
+  #else
 
   #ifdef CH32V20x_D6
     if (len > 26) { // Порог эффективности
@@ -74,7 +78,8 @@ public:
       }
 
       L_WR(OUT);
-    } else
+    }
+    else
       while (len--) {
         NT_WR(CLR);
         NT_WR(SET);
@@ -83,13 +88,13 @@ public:
 
   #ifdef MIK32V2
 
-  while (len--) {
-    NT_WR(CLR);
-    NT_WR(SET);
-  }
-  
+    while (len--) {
+      NT_WR(CLR);
+      NT_WR(SET);
+    }
+
   #endif
-#endif
+  #endif
 
     release();
   }
@@ -107,22 +112,27 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() {
+  ATTR_INLINE void select()
+  {
     NT_CS(CLR);
     flag = 0;
   }
-  ATTR_INLINE void release() {
+  ATTR_INLINE void release()
+  {
     NT_CS(CLR);
   }
-  ATTR_INLINE void send_rgb(RGB color, int32_t len) {
+  ATTR_INLINE void send_rgb(RGB color, int32_t len)
+  {
     while (len--) send_rgb(color);
   }
-  ATTR_INLINE void set_rgb_format() {
+  ATTR_INLINE void set_rgb_format()
+  {
     send_command(NT_COLMOD);
     send_byte(0x06);  // 6x6x6 bit
   }
 
-  void send_rgb(RGB18 color) {
+  void send_rgb(RGB18 color)
+  {
     static uint16_t half;
     if (flag) {
       NT_PORT(OUTPUT) = color.red | half;
@@ -132,7 +142,8 @@ public:
       NT_PORT(OUTPUT) = color.rgb;
       NT_WR(CLR);
       NT_WR(SET);
-    } else {
+    }
+    else {
       NT_PORT(OUTPUT) = (color.rgb >> 8);
       NT_WR(CLR);
       NT_WR(SET);
@@ -141,7 +152,8 @@ public:
     }
   }
 
-  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color) {
+  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
+  {
     select();
     set_addr(x0, y0, x1, y1);
     uint32_t len = ((x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1) + 1) >> 1;
@@ -178,23 +190,28 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() {
+  ATTR_INLINE void select()
+  {
     NT_CS(CLR);
     flag = 0;
   }
-  ATTR_INLINE void release() {
+  ATTR_INLINE void release()
+  {
     NT_CS(CLR);
   }
-  ATTR_INLINE void send_rgb(RGB color, int32_t len) {
+  ATTR_INLINE void send_rgb(RGB color, int32_t len)
+  {
     while (len--) send_rgb(color);
   }
 
-  ATTR_INLINE void set_rgb_format() {
+  ATTR_INLINE void set_rgb_format()
+  {
     send_command(NT_COLMOD);
     send_byte(0x07);  // 8x8x8 bit
   }
 
-  void send_rgb(RGB24 color) {
+  void send_rgb(RGB24 color)
+  {
     static uint16_t half;
     if (flag) {
       NT_PORT(OUTPUT) = color.red | half;
@@ -204,7 +221,8 @@ public:
       NT_PORT(OUTPUT) = color.rgb;
       NT_WR(CLR);
       NT_WR(SET);
-    } else {
+    }
+    else {
       NT_PORT(OUTPUT) = (color.rgb >> 8);
       NT_WR(CLR);
       NT_WR(SET);
@@ -213,7 +231,8 @@ public:
     }
   }
 
-  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB24 color) {
+  void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB24 color)
+  {
     select();
     set_addr(x0, y0, x1, y1);
     uint32_t len = ((x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1) + 1) >> 1;

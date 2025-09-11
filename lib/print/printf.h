@@ -19,37 +19,45 @@ public:
 
   ///////////////////////////////
 
-  template<typename T, typename I>
-  char *sprint(char *ptr, T number, I digit, I fix)
-  {
+  template <typename T, typename I>
+  char *sprint(char *ptr, T number, I digit, I fix) {
+    bool neg = number < 0;
+    if (neg) number = -number;
     T hi = number >> fix;
     T mod = hi;
+    ptr -= digit;
 
     for (auto i = 0; i < digit; i++) {
       number = number - (mod << fix);
       number *= 10;
       mod = number >> fix;
-      *--ptr = mod + '0';
+      ptr[i] = mod + '0';
     }
     *--ptr = '.';
-    return sprint(ptr, hi);
+    while (hi > 9) {
+      mod = hi % 10;
+      hi /= 10;
+      *--ptr = mod + '0';
+    }
+    *--ptr = hi + '0';
+    if (neg) *--ptr = '-';
+    return ptr;
   }
 
-  template<typename T>
-  char *sprint(char *ptr, T number)
-  {
+  template <typename T>
+  char *sprint(char *ptr, T number) {
     bool neg = number < 0;
     number = neg ? -number : number;
 
     while (number > 9) {
       char mod;
-    #ifdef __AVR__
+#ifdef __AVR__
       uint8_t tmp;
       div10_16bit(number, mod, tmp);
-    #else
+#else
       mod = number % 10;
       number /= 10;
-    #endif
+#endif
       *--ptr = mod + '0';
     }
     *--ptr = number + '0';
@@ -58,9 +66,8 @@ public:
     return ptr;
   }
 
-  template<typename T, typename I>
-  char *sprint(char *ptr, T number, I lng)
-  {
+  template <typename T, typename I>
+  char *sprint(char *ptr, T number, I lng) {
     while (lng--) {
       ptr -= 2;
       *(uint16_t *)ptr = h_print(number);

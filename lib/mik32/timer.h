@@ -1,9 +1,5 @@
 #pragma once
-#include <mik32_memory_map.h>
-#include <power_manager.h>
-#include <timer16.h>
-#include <timer32.h>
-#include <epic.h>
+#include <mik32.h>
 
 #define T16_0_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M
 #define T16_1_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M
@@ -45,7 +41,7 @@
   + T32_[0, 1, 2]_IM Int Mask маски прерываний
   + T32_[0, 1, 2]_IC Int Clear сброс флагов прерываний
 */
-#define T32
+// #define T32
 
 #define T32_0_PS          PM->CLK_APB_M_SET = PM_CLOCK_APB_M_TIMER32_0_M
 #define T32_1_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER32_1_M

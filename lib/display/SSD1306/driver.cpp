@@ -7,8 +7,8 @@ void SSD1306::init(uint8_t rotation)
   i2c.set_freq(0);
   i2c.set_address(LCD_I2C_ADDR);
 
-  delay_ms(10);
-  sei();
+  delay_ms(100);
+
   send_config(SSD1306_CONFIG, sizeof(SSD1306_CONFIG));
   if (rotation & FLIP_X) send_command(SetSegmentMapFlip);
   if (rotation & FLIP_Y) send_command(SetScanDirectionFlip);

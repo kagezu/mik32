@@ -1,6 +1,5 @@
 #pragma once
 #include "core.h"
-#include "timer.h"
 
 // #define WR_FORSED
 
@@ -13,6 +12,7 @@
 
 
 #ifdef MIK32V2
+#include "timer.h"
 
 #define NT_WR(x)   x(1, 0)
 #define NT_RS(x)   x(1, 9)

@@ -20,8 +20,8 @@
 // #define LCD_ROT     R_EX_XY
 
 
-// #define LCD Display<ST7735_SOFT<RGB>, LCD_ROT>   // RGB12, RGB16, RGB18
-#define LCD Display<ST7735<SPI1, RGB>, LCD_ROT>  // RGB12, RGB16, RGB18
+#define LCD Display<ST7735_SOFT<RGB>, LCD_ROT>   // RGB12, RGB16, RGB18
+// #define LCD Display<ST7735<SPI1, RGB>, LCD_ROT>  // RGB12, RGB16, RGB18
 // #define LCD Display<ILI9225_SOFT, LCD_ROT>       // RGB16
 // #define LCD Display<ILI9225<SPI1>, LCD_ROT>      // RGB16
 // #define LCD Display<ST7789<RGB>, LCD_ROT>        // RGB12, RGB16, RGB18

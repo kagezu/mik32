@@ -52,6 +52,13 @@ public:
     hi2c.Clock.SCLH = 0;
     hi2c.Clock.SCLL = 0;
 
+    /* Настройка частоты */
+    // hi2c.Clock.PRESC = 0;
+    // hi2c.Clock.SCLDEL = 1;
+    // hi2c.Clock.SDADEL = 1;
+    // hi2c.Clock.SCLH = 5;
+    // hi2c.Clock.SCLL = 5;
+
     HAL_I2C_Init(&hi2c);
 
     // state = I2C_IDLE;
@@ -90,6 +97,14 @@ public:
     index = 0;
 
     // state = I2C_IDLE;
+  }
+
+  void test()
+  {
+    uint8_t b = 0;
+    while (HAL_OK != HAL_I2C_Master_Transmit(&hi2c, address >> 1, &b, 1, I2C_TIMEOUT_DEFAULT))
+      hi2c.Instance->CR2 |= I2C_CR2_STOP_M;
+
   }
 
   // static void send_address();

@@ -311,4 +311,28 @@ public:
     }
     release();
   }
+
+  void demo4(Rect *rect, uint8_t d) {
+    const int32_t mx = (rect->width) >> 1;
+    const int32_t my = (rect->height) >> 1;
+    const uint8_t div = 4 + ((rect->width+rect->height) >> 8);
+
+    select();
+    set_addr(rect->min_x, rect->min_y, rect->max_x, rect->max_y);
+    for (int32_t y = -my; y < my+1; y++) {
+      int32_t yy = y * y;
+      for (int32_t x = -mx; x < mx+1; x++) {
+        int32_t xx = x * x;
+        int32_t xy = x * y;
+
+        int8_t e = d << 2;
+        int8_t r = (xy >> div) + e + 85;
+        int8_t g = ((yy - xx) >> div) + e + 170;
+        int8_t b = ((xx + yy) >> div) + e;
+
+        send_rgb(typename Driver::RGB(r, g, b));
+      }
+    }
+    release();
+  }
 };
