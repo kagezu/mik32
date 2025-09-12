@@ -101,8 +101,7 @@ int main(void)
   lcd.color(White);
   lcd.background(MidnightBlue);
 
-  timer.init();
-  timer.enable();
+  timer.start();
   // T32_0_PS;
   // T32_0_EN;
   // T32_0_C;
@@ -127,7 +126,7 @@ int main(void)
       default: mode = 0;
     }
 
-    uint32_t fps = (F_CPU << 4) / timer.count();
+    uint32_t fps = (F_CPU << 4) / timer.cnt();
     lcd.at(0, lcd.max_y() - 2 * lcd.get_height() + 1);
     lcd.color(White);
     lcd.background(MidnightBlue);

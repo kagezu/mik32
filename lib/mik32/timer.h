@@ -1,28 +1,10 @@
 #pragma once
-#include <mik32.h>
+#include "timer16.h"
+#include "timer32.h"
 
-#define T16_0_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M
-#define T16_1_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M
-#define T16_2_PS          PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_2_M
-#define T16_0_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_0_M
-#define T16_1_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_1_M
-#define T16_2_PC          PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_2_M
-
-#define T16_0_EN          TIMER16_0->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_1_EN          TIMER16_1->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_2_EN          TIMER16_2->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M
-#define T16_0_D           TIMER16_0->CR = 0
-#define T16_1_D           TIMER16_1->CR = 0
-#define T16_2_D           TIMER16_2->CR = 0
-
-#define T16_0_FQ(div, fq) TIMER16_0->CR = TIMER16_0->CFGR = div << TIMER16_PRESCALER_S; \
-                          TIMER16_0->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
-#define T16_1_FQ(div, fq) TIMER16_1->CR = TIMER16_1->CFGR = div << TIMER16_PRESCALER_S; \
-                          TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
-#define T16_2_FQ(div, fq) TIMER16_2->CR = TIMER16_2->CFGR = div << TIMER16_PRESCALER_S; \
-                          TIMER16_1->ARR = OSC_SYSTEM_VALUE / (1 << div) / fq - 1;
-
-
+#define TIM_MODE_DIR  0b00
+#define TIM_MODE_REV  0b01
+#define TIM_MODE_BI   0b10
 
 /*
   #### 32х битный таймер:
