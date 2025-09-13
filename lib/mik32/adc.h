@@ -1,8 +1,8 @@
 #pragma once
-#include <mik32_memory_map.h>
-#include <power_manager.h>
-#include <analog_reg.h>
-#include "macros/attribute.h"
+#include "sdk/mik32_memory_map.h"
+#include "sdk/power_manager.h"
+#include "sdk/analog_reg.h"
+#include "attribute.h"
 #include "pinout.h"
 
 class ADC {

@@ -148,7 +148,7 @@ public:
         break;
 
       case TIMER32_CONTROL_CLOCK_TIM2_M:
-        if_in = F_CPU;
+        f_in = F_CPU;
         break;
     }
 

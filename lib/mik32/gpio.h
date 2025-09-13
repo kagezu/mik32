@@ -1,7 +1,7 @@
 #pragma once
-#include <mik32_memory_map.h>
-#include <pad_config.h>
-#include <gpio.h>
+#include "sdk/mik32_memory_map.h"
+#include "sdk/pad_config.h"
+#include "sdk/gpio.h"
 
 #define GPIO(port, pin)     PAD_CONFIG->PORT_ ## port ## _CFG &= ~(0b11 << ( pin << 1))
 #define SERIAL(port, pin)   PAD_CONFIG->PORT_ ## port ## _CFG |= (0b01 << ( pin << 1))

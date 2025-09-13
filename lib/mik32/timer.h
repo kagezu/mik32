@@ -1,6 +1,7 @@
 #pragma once
 #include "timer16.h"
 #include "timer32.h"
+#include "timer64.h"
 
 #define TIM_MODE_DIR  0b00
 #define TIM_MODE_REV  0b01

@@ -14,15 +14,12 @@ constexpr static TIMER16_TypeDef *T_16(u32 N)
 /*
   ### 16х битный таймер
   #### Регистры:
-  + cnt() top() div() osr([ch]) isr([ch])
-  + счётчик предел делитель сравнение захват
+  + cnt() top() div() osr()
+  + счётчик предел делитель сравнение
   #### Управление:
   + start() stop() single() clear()
-  + en([ch]) dis([ch]) включить/выключить канал
   #### Настройка:
-  + direct(TIM_MODE_DIR) направление счёта
-  + [oc, ic, pwm][(ch)] [выбрать режим работы канала]
-  + [ic, pwm]_inv(ch) [инвертировать вход/выход канала]
+  + [oc, pwm] () [выбрать режим работы канала]
   #### Прерывания:
   + int_[ovf, udf, oc, ic)][(ch)] [установить прерывание]
   + [переполнение, обнуление, сравнение, захват]
@@ -41,7 +38,7 @@ public:
   T16()
   {
     switch (N) {
-      case 0: PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M break;
+      case 0: PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_0_M; break;
       case 1: PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_1_M; break;
       case 2: PM->CLK_APB_P_SET = PM_CLOCK_APB_P_TIMER16_2_M; break;
     }
@@ -51,7 +48,7 @@ public:
   ~T16()
   {
     switch (N) {
-      case 0: PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_0_M break;
+      case 0: PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_0_M; break;
       case 1: PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_1_M; break;
       case 2: PM->CLK_APB_P_CLEAR = PM_CLOCK_APB_P_TIMER16_2_M; break;
     }
@@ -80,8 +77,6 @@ public:
   ATTR_INLINE void ic() {}
   ATTR_INLINE void encoder(u32 arg = 0b11) { T_16(N)->CFGR = TIMER16_CFGR_ENC_M | (arg << TIMER16_CFGR_CKPOL_S); }
   ATTR_INLINE void pwm() { T_16(N)->CFGR = 0; }
-  ATTR_INLINE void ic_inv() {}
-  ATTR_INLINE void pwm_inv() {}
 
   // Прерывания
 
