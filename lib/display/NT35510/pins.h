@@ -108,7 +108,7 @@ static inline void GPIO_NT35510()
 #endif
 
 
-#ifdef WR_FORSED
+// #ifdef WR_FORSED
 #define NT_WR_PSC_DIV    2
 
   RCC->APB1PCENR |= RCC_TIM3EN;
@@ -137,7 +137,7 @@ static inline void GPIO_NT35510()
   TIM1->CCER = TIM_CC1E;  // Включить канал 1
   TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
 
-#endif
+// #endif
 }
 
 #endif

@@ -5,6 +5,9 @@
 #ifdef MIK32V2
 #include "timer.h"
 #endif
+#ifdef CH32V20x_D6
+#include "timer16.h"
+#endif
 
 template <typename C>
 class NT35510 {};
@@ -15,8 +18,10 @@ class NT35510 {};
 template <>
 class NT35510<RGB16> {
 protected:
+#ifdef MIK32V2
   T32<1> tim1;
   T32<2> tim2;
+#endif
 
 public:
   using RGB = RGB16;
@@ -30,6 +35,7 @@ public:
   {
     send_command(NT_COLMOD);
     send_byte(0x05);  // 5x6x5 bit
+
     /*
     tim1.start();
     tim2.top(1);
