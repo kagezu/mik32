@@ -1,5 +1,6 @@
 #pragma once
 #include "mik32.h"
+#include "timer-def.h"
 
 /*
   ### 64х битный таймер
@@ -39,15 +40,15 @@ public:
   ATTR_INLINE void cnt(u64 val)
   {
     SCR1_TIMER->MTIME = 0;
-    SCR1_TIMER->MTIMEH = ((uint32_t *)&val)[1];
-    SCR1_TIMER->MTIME = ((uint32_t *)&val)[0];
+    SCR1_TIMER->MTIMEH = ((uint32_t)(val >> 32));
+    SCR1_TIMER->MTIME = (uint32_t)val;
   }
 
   ATTR_INLINE void cmp(u64 val)
   {
     SCR1_TIMER->MTIMECMP = 0xFFFFFFFF;
-    SCR1_TIMER->MTIMECMPH = ((uint32_t *)&val)[1];
-    SCR1_TIMER->MTIMECMP = ((uint32_t *)&val)[0];
+    SCR1_TIMER->MTIMECMPH = ((uint32_t)(val >> 32));
+    SCR1_TIMER->MTIMECMP = (uint32_t)val;
   }
 
   ATTR_INLINE void div(u32 val) { SCR1_TIMER->TIMER_DIV = val; }

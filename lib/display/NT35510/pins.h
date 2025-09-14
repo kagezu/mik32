@@ -41,12 +41,14 @@ static inline void GPIO_NT35510()
   GPIO_0->CLEAR = 0xFFFF;
   GPIO_0->SET = 0xFFFF;
 
+  /*
   T32_2_PS;
   TIMER32_2->TOP = 1;
   TIMER32_2->CHANNELS[0].OCR = 1;
   T32_2_EN;
   T32_1_PS;
   T32_1_EN;
+  */
 }
 #endif
 

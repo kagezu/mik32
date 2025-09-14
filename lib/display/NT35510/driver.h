@@ -14,6 +14,10 @@ class NT35510 {};
 
 template <>
 class NT35510<RGB16> {
+protected:
+  T32<1> tim1;
+  T32<2> tim2;
+
 public:
   using RGB = RGB16;
 
@@ -26,6 +30,13 @@ public:
   {
     send_command(NT_COLMOD);
     send_byte(0x05);  // 5x6x5 bit
+    /*
+    tim1.start();
+    tim2.top(1);
+    tim2.ocr(1);
+    tim2.start();
+    tim1.start();
+     */
   }
 
   ATTR_INLINE void send_rgb(RGB16 color)

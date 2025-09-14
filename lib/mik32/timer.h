@@ -3,10 +3,6 @@
 #include "timer32.h"
 #include "timer64.h"
 
-#define TIM_MODE_DIR  0b00
-#define TIM_MODE_REV  0b01
-#define TIM_MODE_BI   0b10
-
 /*
   #### 32х битный таймер:
 
