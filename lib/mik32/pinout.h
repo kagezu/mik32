@@ -1,7 +1,6 @@
 // #include "pinout.h"
 #pragma once
 
-
 // ADC
 
 #define ADC0(f)         f(1, 5)
@@ -73,7 +72,7 @@
 
 // ACE-UNO
 
-#define USER_B(f)       f(2, 6)
+// #define USER_B(f)       f(2, 6)
 #define USER_L(f)       f(2, 7)
 
 #define D0(f)           f(0, 5)

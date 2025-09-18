@@ -1,8 +1,8 @@
-ATTR_INLINE constexpr int16_t max_x() { return 127; }
-ATTR_INLINE constexpr int16_t max_y() { return 159; }
-ATTR_INLINE void select() { ST_SOFT_CS(CLR); }
-ATTR_INLINE void release() { ST_SOFT_SCK(CLR); ST_SOFT_CS(SET); }
-ATTR_INLINE void send_rgb(RGB color, uint8_t len) { while (len--)send_rgb(color); }
+INLINE constexpr int16_t max_x() { return 127; }
+INLINE constexpr int16_t max_y() { return 159; }
+INLINE void select() { ST_SOFT_CS(CLR); }
+INLINE void release() { ST_SOFT_SCK(CLR); ST_SOFT_CS(SET); }
+INLINE void send_rgb(RGB color, uint8_t len) { while (len--)send_rgb(color); }
 
 void pixel(int16_t x, int16_t y, RGB color)
 {

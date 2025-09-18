@@ -5,17 +5,17 @@
 template<typename C>
 class ILI9486_8 : public IDriver {
 private:
-  ATTR_INLINE void set_rgb_format();
+  INLINE void set_rgb_format();
 
 public:
   using RGB = C;
-  ATTR_INLINE constexpr int16_t max_x() { return 319; }
-  ATTR_INLINE constexpr int16_t max_y() { return 479; }
-  ATTR_INLINE  void select() { ILI_8_CS(CLR); }
-  ATTR_INLINE  void release() { ILI_8_CS(SET); }
-  ATTR_INLINE void send_rgb(C color, int32_t len) { while (len--) send_rgb(color); }
+  INLINE constexpr int16_t max_x() { return 319; }
+  INLINE constexpr int16_t max_y() { return 479; }
+  INLINE  void select() { ILI_8_CS(CLR); }
+  INLINE  void release() { ILI_8_CS(SET); }
+  INLINE void send_rgb(C color, int32_t len) { while (len--) send_rgb(color); }
 
-  ATTR_INLINE void send_rgb(C color);
+  INLINE void send_rgb(C color);
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, C color);
 
   void init(uint8_t rotation = 0)
@@ -46,14 +46,14 @@ public:
     release();
   }
 
-  ATTR_INLINE void send_command(uint8_t command)
+  INLINE void send_command(uint8_t command)
   {
     ILI_8_RS(CLR);
     send_byte(command);
     ILI_8_RS(SET);
   }
 
-  ATTR_INLINE void send_byte(uint8_t data)
+  INLINE void send_byte(uint8_t data)
   {
   #ifdef MIK32V2
     ILI_8_WR(CLR) | 0xff;
@@ -65,7 +65,7 @@ public:
   #endif
   }
 
-  ATTR_INLINE void send_word(uint16_t data)
+  INLINE void send_word(uint16_t data)
   {
   #ifdef MIK32V2
     ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);
@@ -101,13 +101,13 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x05); // 5x6x5 bit
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color)
+  INLINE void send_rgb(RGB16 color)
   {
     send_word(color.rgb);
   }
@@ -153,13 +153,13 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x66); // 6x6x6 bit (24 bit transfer)
   }
 
-  ATTR_INLINE void send_rgb(RGB18 color)
+  INLINE void send_rgb(RGB18 color)
   {
   #ifdef MIK32V2
     uint32_t mask = ILI_8_PORT(OUTPUT) & ~(0xff | ILI_8_WR(MASK));
@@ -179,7 +179,7 @@ public:
   #endif
   }
 
-  ATTR_INLINE void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
+  INLINE void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
   {
     select();
     set_addr(x0, y0, x1, y1);

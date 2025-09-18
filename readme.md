@@ -1,10 +1,6 @@
-# Песочница для ATmega и MIK32 AMUR
+# Песочница для MIK32 AMUR
 
 ## ![alt text](./tools/img/ace-uno.jpg)
-
-### MK / Платы
-
-+ **MIK32 AMUR / ACE UNO**
 
 ### Дисплеи
 
@@ -21,6 +17,8 @@
   + 16 bit
 + **NT35510**
   + 16 bit
++ **SSD1306**
+  + I2C
 
 ### Используемые библиотеки
 
@@ -36,7 +34,7 @@
 
 ### PlatformIO
 
-Репозитории для развёртывание <https://gitflic.ru/company/mikron-mik32>
+Репозитории для развёртывания <https://gitflic.ru/company/mikron-mik32>
 
 ### Предупреждение
 

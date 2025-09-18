@@ -1,8 +1,8 @@
 // Разрешение дисплея
-ATTR_INLINE constexpr int16_t max_x() { return 239; }
-ATTR_INLINE constexpr int16_t max_y() { return 319; }
-ATTR_INLINE  void release() { ST_8_CS(SET); }
-ATTR_INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
+INLINE constexpr int16_t max_x() { return 239; }
+INLINE constexpr int16_t max_y() { return 319; }
+INLINE  void release() { ST_8_CS(SET); }
+INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
 
 void init(uint8_t rotation = 0)
 {
@@ -27,14 +27,14 @@ void init(uint8_t rotation = 0)
   release();
 }
 
-ATTR_INLINE void send_command(uint8_t command)
+INLINE void send_command(uint8_t command)
 {
   ST_8_RS(CLR);
   send_byte(command);
   ST_8_RS(SET);
 }
 
-ATTR_INLINE void send_byte(uint8_t data)
+INLINE void send_byte(uint8_t data)
 {
 #ifdef MIK32V2
   ST_8_PORT(CLR) | 0xff;
@@ -47,7 +47,7 @@ ATTR_INLINE void send_byte(uint8_t data)
 #endif
 }
 
-ATTR_INLINE void send_word(uint16_t data)
+INLINE void send_word(uint16_t data)
 {
 #ifdef MIK32V2
   ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);

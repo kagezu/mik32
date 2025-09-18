@@ -18,14 +18,14 @@ private:
 
 public:
   using RGB = bool; // Только 1 бит
-  ATTR_INLINE constexpr int8_t max_x() { return 127; }
-  ATTR_INLINE constexpr int8_t max_y() { return 31; }
+  INLINE constexpr int8_t max_x() { return 127; }
+  INLINE constexpr int8_t max_y() { return 31; }
 
-  ATTR_INLINE void select() {} // { i2c.begin(); }
-  ATTR_INLINE void release() { update(); }
-  ATTR_INLINE void send_byte(uint8_t data) { i2c.write(data); }
-  ATTR_INLINE void send_word(uint16_t data) { i2c.write(data >> 8); i2c.write(data); }
-  ATTR_INLINE void send_rgb(bool color, uint8_t len) { while (len--)send_rgb(color); }
+  INLINE void select() {} // { i2c.begin(); }
+  INLINE void release() { update(); }
+  INLINE void send_byte(uint8_t data) { i2c.write(data); }
+  INLINE void send_word(uint16_t data) { i2c.write(data >> 8); i2c.write(data); }
+  INLINE void send_rgb(bool color, uint8_t len) { while (len--)send_rgb(color); }
   void send_rgb(bool color);
 
   void pixel(uint8_t x, uint8_t y, bool color);

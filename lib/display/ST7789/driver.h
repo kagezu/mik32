@@ -18,15 +18,15 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { ST_8_CS(CLR); flag = 0; }
+  INLINE void select() { ST_8_CS(CLR); flag = 0; }
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x53); // 4x4x4 bit
   }
 
-  ATTR_INLINE void send_rgb(RGB12 color)
+  INLINE void send_rgb(RGB12 color)
   {
     static uint8_t half;
 
@@ -111,15 +111,15 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { ST_8_CS(CLR); }
+  INLINE void select() { ST_8_CS(CLR); }
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x55); // 5x6x5 bit
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color)
+  INLINE void send_rgb(RGB16 color)
   {
     send_word(color.rgb);
   }
@@ -165,15 +165,15 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { ST_8_CS(CLR); }
+  INLINE void select() { ST_8_CS(CLR); }
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x66); // 6x6x6 bit (24 bit transfer)
   }
 
-  ATTR_INLINE void send_rgb(RGB18 color)
+  INLINE void send_rgb(RGB18 color)
   {
   #ifdef MIK32V2
     ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);

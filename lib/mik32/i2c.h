@@ -1,6 +1,7 @@
 #pragma once
 #include "core.h"
-#include "pinout.h"
+// #include "pinout.h"
+// #include "mik32_hal_i2c.h"
 
 extern "C" {
 #include "mik32_hal_i2c.h"

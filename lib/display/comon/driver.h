@@ -1,6 +1,7 @@
 #pragma once
 #include "inttypes.h"
 #include "const.h"
+#include "pgmspace.h"
 
 class IDriver {
 protected:

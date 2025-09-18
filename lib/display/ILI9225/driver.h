@@ -20,28 +20,28 @@ private:
 
 public:
   using RGB = RGB16;  // Только 16 бит
-  ATTR_INLINE constexpr int16_t max_x() { return 175; }
-  ATTR_INLINE constexpr int16_t max_y() { return 219; }
-  ATTR_INLINE void select() {
+  INLINE constexpr int16_t max_x() { return 175; }
+  INLINE constexpr int16_t max_y() { return 219; }
+  INLINE void select() {
     spi.begin();
     ILI_SPI_CS(CLR);
   }
-  ATTR_INLINE void release() {
+  INLINE void release() {
     spi.end();
     ILI_SPI_CS(SET);
   }
-  ATTR_INLINE void send_byte(uint8_t data) {
+  INLINE void send_byte(uint8_t data) {
     spi.send(data);
     spi.wait_idle();
   }
-  ATTR_INLINE void send_word(uint16_t data) {
+  INLINE void send_word(uint16_t data) {
     spi.send16(data);
     spi.wait_idle();
   }
-  ATTR_INLINE void send_rgb(RGB16 color, uint8_t len) {
+  INLINE void send_rgb(RGB16 color, uint8_t len) {
     while (len--) send_rgb(color);
   }
-  ATTR_INLINE void send_rgb(RGB16 color) {
+  INLINE void send_rgb(RGB16 color) {
     spi.wait_thr();
     spi.send16(color.rgb);
   }

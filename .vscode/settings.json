@@ -32,7 +32,14 @@
     "rgb12.h": "c",
     "const.h": "c",
     "stdint-gcc.h": "c",
-    "*.tpp": "cpp"
+    "*.tpp": "cpp",
+    "array": "cpp",
+    "executor": "cpp",
+    "memory": "cpp",
+    "future": "cpp",
+    "functional": "cpp",
+    "tuple": "cpp",
+    "utility": "cpp"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

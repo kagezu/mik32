@@ -1,8 +1,8 @@
-ATTR_INLINE constexpr int16_t max_x() { return 319; }
-ATTR_INLINE constexpr int16_t max_y() { return 479; }
-ATTR_INLINE  void select() { ILI_8_CS(CLR); }
-ATTR_INLINE  void release() { ILI_8_CS(SET); }
-ATTR_INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
+INLINE constexpr int16_t max_x() { return 319; }
+INLINE constexpr int16_t max_y() { return 479; }
+INLINE  void select() { ILI_8_CS(CLR); }
+INLINE  void release() { ILI_8_CS(SET); }
+INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
 
 void init(uint8_t rotation = 0)
 {
@@ -24,7 +24,7 @@ void init(uint8_t rotation = 0)
   release();
 }
 
-ATTR_INLINE void scroll(uint16_t sl)
+INLINE void scroll(uint16_t sl)
 {
   select();
   send_command(VSCRSADD);
@@ -32,14 +32,14 @@ ATTR_INLINE void scroll(uint16_t sl)
   release();
 }
 
-ATTR_INLINE void send_command(uint8_t command)
+INLINE void send_command(uint8_t command)
 {
   ILI_8_RS(CLR);
   send_byte(command);
   ILI_8_RS(SET);
 }
 
-ATTR_INLINE void send_byte(uint8_t data)
+INLINE void send_byte(uint8_t data)
 {
 #ifdef MIK32V2
   ILI_8_WR(CLR) | 0xff;
@@ -51,7 +51,7 @@ ATTR_INLINE void send_byte(uint8_t data)
 #endif
 }
 
-ATTR_INLINE void send_word(uint16_t data)
+INLINE void send_word(uint16_t data)
 {
 #ifdef MIK32V2
   ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);

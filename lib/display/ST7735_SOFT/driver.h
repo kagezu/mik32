@@ -15,7 +15,7 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void set_rgb_format()
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x03); // 4x4x4 bit
@@ -107,7 +107,7 @@ public:
     send_byte(0x05); // 5x6x5 bit
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color)
+  INLINE void send_rgb(RGB16 color)
   {
     send_word(color.rgb);
   }

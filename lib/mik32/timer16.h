@@ -56,24 +56,24 @@ public:
 
   // Управление
 
-  ATTR_INLINE void start() { T_16(N)->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M; }
-  ATTR_INLINE void single() { T_16(N)->CR = TIMER16_CR_SNGSTRT_M | TIMER16_CR_ENABLE_M; }
-  ATTR_INLINE void stop() { T_16(N)->CR = 0; T_16(N)->CR = TIMER16_CR_ENABLE_M; }
-  ATTR_INLINE void clear() { T_16(N)->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M; } // mode(CNT)
+  INLINE void start() { T_16(N)->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M; }
+  INLINE void single() { T_16(N)->CR = TIMER16_CR_SNGSTRT_M | TIMER16_CR_ENABLE_M; }
+  INLINE void stop() { T_16(N)->CR = 0; T_16(N)->CR = TIMER16_CR_ENABLE_M; }
+  INLINE void clear() { T_16(N)->CR = TIMER16_CR_CNTSTRT_M | TIMER16_CR_ENABLE_M; } // mode(CNT)
 
   // Регистры
 
-  ATTR_INLINE u16 cnt() { return T_16(N)->CNT; }
-  // ATTR_INLINE void cnt(u16 val) { return 0; }
-  ATTR_INLINE void div(u16 val) { T_16(N)->CFGR = (T_16(N)->CFGR & ~TIMER16_CFGR_PRESC_M) | ((val & TIMER16_CFGR_PRESC_M) << TIMER16_CFGR_PRESC_S); }
-  ATTR_INLINE void top(u16 val) { T_16(N)->ARR = val; }
-  ATTR_INLINE void ocr(u16 val) { T_16(N)->CMP = val; }
-  // ATTR_INLINE u16 isr() { return 0; }
+  INLINE u16 cnt() { return T_16(N)->CNT; }
+  // INLINE void cnt(u16 val) { return 0; }
+  INLINE void div(u16 val) { T_16(N)->CFGR = (T_16(N)->CFGR & ~TIMER16_CFGR_PRESC_M) | ((val & TIMER16_CFGR_PRESC_M) << TIMER16_CFGR_PRESC_S); }
+  INLINE void top(u16 val) { T_16(N)->ARR = val; }
+  INLINE void ocr(u16 val) { T_16(N)->CMP = val; }
+  // INLINE u16 isr() { return 0; }
 
   // Режимы (пред-настройки)
 
   // TIM_MODE::[CMP, PWM, ENC]
-  ATTR_INLINE void mode(TIM_MODE mod)
+  INLINE void mode(TIM_MODE mod)
   {
     u32 cfgr = T_16(N)->CFGR & ~(TIMER16_CFGR_ENC_M | TIMER16_CFGR_TIMOUT_M);
     switch (mod) {
@@ -83,7 +83,7 @@ public:
     }
     T_16(N)->CFGR = cfgr;
   }
-  ATTR_INLINE void inv(const bool mod = true)
+  INLINE void inv(const bool mod = true)
   {
     if (mod) T_16(N)->CFGR |= TIMER16_CFGR_WAVPOL_M;
     else T_16(N)->CFGR &= ~TIMER16_CFGR_WAVPOL_M;
@@ -91,27 +91,27 @@ public:
 
   // Прерывания
 
-  ATTR_INLINE void int_ovf(const bool on = true)
+  INLINE void int_ovf(const bool on = true)
   {
     T_32(N)->IER = on ?
       T_32(N)->IER |= TIMER16_IER_ARRMIE_M :
       T_32(N)->IER &= ~TIMER16_IER_ARRMIE_M;
   }
-  ATTR_INLINE void int_udf(const bool on = true)
+  INLINE void int_udf(const bool on = true)
   {
     T_32(N)->IER = on ?
       T_32(N)->IER |= TIMER16_IER_ARRMIE_M :
       T_32(N)->IER &= ~TIMER16_IER_ARRMIE_M;
   }
-  ATTR_INLINE void int_cmp(uc32 ch, const bool on = true)
+  INLINE void int_cmp(uc32 ch, const bool on = true)
   {
     T_32(N)->IER = on ?
       T_32(N)->IER |= TIMER16_IER_CMPMIE_M :
       T_32(N)->IER &= ~TIMER16_IER_CMPMIE_M;
   }
 
-  ATTR_INLINE void int_clr() { T_16(N)->INT_CLEAR = -1; }
-  ATTR_INLINE void int_en()
+  INLINE void int_clr() { T_16(N)->INT_CLEAR = -1; }
+  INLINE void int_en()
   {
     switch (N) {
       case 0: EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_0_S); break;
@@ -119,7 +119,7 @@ public:
       case 2: EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_2_S); break;
     }
   }
-  ATTR_INLINE void int_dis()
+  INLINE void int_dis()
   {
     switch (N) {
       case 0: EPIC->MASK_LEVEL_CLEAR = EPIC_LINE_M(EPIC_LINE_TIMER32_0_S); break;

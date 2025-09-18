@@ -59,15 +59,18 @@ static inline void GPIO_NT35510()
 #define NT_RS(x)   x(A, 10)
 #define NT_CS(x)   x(A, 11)
 #define NT_RST(x)  x(D, 0)  // Не используется
-#define NT_PORT(x) x(B, 0)
+// #define NT_PORT(x) x(B, 0)
+Port<PB, 0xFFFF> NT_PORT;
 
 static inline void GPIO_NT35510()
 {
-  GPIO_InitTypeDef init;
-  init.GPIO_Speed = GPIO_Speed_2MHz;
-  init.GPIO_Mode = GPIO_Mode_Out_PP;
-  init.GPIO_Pin = GPIO_Pin_All;
-  GPIO_Init(L_PORT(PORT), &init);
+  // GPIO_InitTypeDef init;
+  // init.GPIO_Speed = GPIO_Speed_2MHz;
+  // init.GPIO_Mode = GPIO_Mode_Out_PP;
+  // init.GPIO_Pin = GPIO_Pin_All;
+  // GPIO_Init(L_PORT(PORT), &init);
+
+  NT_PORT.init(GPIO_2MHz);
 
   NT_WR(OUT);
   NT_RD(OUT);
@@ -108,7 +111,7 @@ static inline void GPIO_NT35510()
 #endif
 
 
-// #ifdef WR_FORSED
+#ifdef WR_FORSED
 #define NT_WR_PSC_DIV    2
 
   RCC->APB1PCENR |= RCC_TIM3EN;
@@ -137,7 +140,7 @@ static inline void GPIO_NT35510()
   TIM1->CCER = TIM_CC1E;  // Включить канал 1
   TIM1->CTLR1 = TIM_CEN;    // Включить TIM1
 
-// #endif
+#endif
 }
 
 #endif

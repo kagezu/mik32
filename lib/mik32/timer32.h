@@ -62,11 +62,11 @@ public:
 
   // Управление
 
-  ATTR_INLINE void start() { T_32(N)->ENABLE = TIMER32_ENABLE_TIM_EN_M; }
-  ATTR_INLINE void single() {}
-  ATTR_INLINE void stop() { T_32(N)->ENABLE = 0; }
-  ATTR_INLINE void clear() { T_32(N)->ENABLE |= TIMER32_ENABLE_TIM_CLR_M; }
-  ATTR_INLINE void direct(uc32 mod)
+  INLINE void start() { T_32(N)->ENABLE = TIMER32_ENABLE_TIM_EN_M; }
+  INLINE void single() {}
+  INLINE void stop() { T_32(N)->ENABLE = 0; }
+  INLINE void clear() { T_32(N)->ENABLE |= TIMER32_ENABLE_TIM_CLR_M; }
+  INLINE void direct(uc32 mod)
   {
     u32 control = T_32(N)->CONTROL & ~TIMER32_CONTROL_MODE_M;
     switch (mod) {
@@ -79,23 +79,23 @@ public:
 
   // Регистры
 
-  ATTR_INLINE u32 cnt() { return T_32(N)->VALUE; }
-  ATTR_INLINE void cnt(u32 val) { T_32(N)->VALUE = val; }
-  ATTR_INLINE void div(u32 val) { T_32(N)->PRESCALER = val; }
-  ATTR_INLINE void top(u32 val) { T_32(N)->TOP = val; }
-  ATTR_INLINE void ocr(u32 val, uc32 ch = 0) { T_32(N)->CHANNELS[ch].OCR = val; }
-  ATTR_INLINE u32 icr(uc32 ch = 0) { return T_32(N)->CHANNELS[ch].ICR; }
+  INLINE u32 cnt() { return T_32(N)->VALUE; }
+  INLINE void cnt(u32 val) { T_32(N)->VALUE = val; }
+  INLINE void div(u32 val) { T_32(N)->PRESCALER = val; }
+  INLINE void top(u32 val) { T_32(N)->TOP = val; }
+  INLINE void ocr(u32 val, uc32 ch = 0) { T_32(N)->CHANNELS[ch].OCR = val; }
+  INLINE u32 icr(uc32 ch = 0) { return T_32(N)->CHANNELS[ch].ICR; }
 
   // Каналы
 
-  ATTR_INLINE void en(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_ENABLE_M; }
-  ATTR_INLINE void dis(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL &= ~TIMER32_CH_CNTRL_ENABLE_M; }
-  ATTR_INLINE void inv(const bool mod = true, uc32 ch = 0)
+  INLINE void en(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_ENABLE_M; }
+  INLINE void dis(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL &= ~TIMER32_CH_CNTRL_ENABLE_M; }
+  INLINE void inv(const bool mod = true, uc32 ch = 0)
   {
     if (mod) T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_INVERTED_PWM_M | TIMER32_CH_CNTRL_CAPTURE_NEG_M;
     else T_32(N)->CHANNELS[ch].CNTRL &= ~(TIMER32_CH_CNTRL_INVERTED_PWM_M | TIMER32_CH_CNTRL_CAPTURE_NEG_M);
   }
-  ATTR_INLINE void mode(TIM_MODE mod, uc32 ch = 0)
+  INLINE void mode(TIM_MODE mod, uc32 ch = 0)
   {
     u32 cntrl = T_32(N)->CHANNELS[ch].CNTRL & (TIMER32_CH_CNTRL_ENABLE_M | TIMER32_CH_CNTRL_NOISE_M);
     switch (mod) {
@@ -108,33 +108,33 @@ public:
 
   // Прерывания
 
-  ATTR_INLINE void int_ovf(const bool on = true)
+  INLINE void int_ovf(const bool on = true)
   {
     T_32(N)->INT_MASK = on ?
       T_32(N)->INT_MASK |= TIMER32_INT_OVERFLOW_M :
       T_32(N)->INT_MASK &= ~TIMER32_INT_OVERFLOW_M;
   }
-  ATTR_INLINE void int_udf(const bool on = true)
+  INLINE void int_udf(const bool on = true)
   {
     T_32(N)->INT_MASK = on ?
       T_32(N)->INT_MASK |= TIMER32_INT_UNDERFLOW_M :
       T_32(N)->INT_MASK &= ~TIMER32_INT_UNDERFLOW_M;
   }
-  ATTR_INLINE void int_cmp(uc32 ch, const bool on = true)
+  INLINE void int_cmp(uc32 ch, const bool on = true)
   {
     T_32(N)->INT_MASK = on ?
       T_32(N)->INT_MASK |= TIMER32_INT_OC_M(ch) :
       T_32(N)->INT_MASK &= ~TIMER32_INT_OC_M(ch);
   }
-  ATTR_INLINE void int_cap(uc32 ch, const bool on = true)
+  INLINE void int_cap(uc32 ch, const bool on = true)
   {
     T_32(N)->INT_MASK = on ?
       T_32(N)->INT_MASK |= TIMER32_INT_IC_M(ch) :
       T_32(N)->INT_MASK &= ~TIMER32_INT_IC_M(ch);
   }
 
-  ATTR_INLINE void int_clr() { T_32(N)->INT_CLEAR = -1; }
-  ATTR_INLINE void int_en()
+  INLINE void int_clr() { T_32(N)->INT_CLEAR = -1; }
+  INLINE void int_en()
   {
     switch (N) {
       case 0: EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_0_S); break;
@@ -142,7 +142,7 @@ public:
       case 2: EPIC->MASK_LEVEL_SET = EPIC_LINE_M(EPIC_LINE_TIMER32_2_S); break;
     }
   }
-  ATTR_INLINE void int_dis()
+  INLINE void int_dis()
   {
     switch (N) {
       case 0: EPIC->MASK_LEVEL_CLEAR = EPIC_LINE_M(EPIC_LINE_TIMER32_0_S); break;

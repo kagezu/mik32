@@ -52,6 +52,6 @@ int main(void)
     }
     r++;
     lcd.release();
-    delay_ms(15);
+    delay_ms(1);
   }
 }

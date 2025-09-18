@@ -6,15 +6,15 @@ template <typename C>
 class ILI9486_16 : public IDriver {
 private:
   uint16_t flag;
-  ATTR_INLINE void set_rgb_format();
+  INLINE void set_rgb_format();
 
 public:
   using RGB = C;
-  ATTR_INLINE constexpr int16_t max_x() { return 319; }
-  ATTR_INLINE constexpr int16_t max_y() { return 479; }
-  ATTR_INLINE void select() { L_CS(CLR); }
-  ATTR_INLINE void release() { L_CS(SET); }
-  ATTR_INLINE void send_rgb(C color, int32_t len) {
+  INLINE constexpr int16_t max_x() { return 319; }
+  INLINE constexpr int16_t max_y() { return 479; }
+  INLINE void select() { L_CS(CLR); }
+  INLINE void release() { L_CS(SET); }
+  INLINE void send_rgb(C color, int32_t len) {
     while (len--) send_rgb(color);
   }
 
@@ -36,19 +36,19 @@ public:
     release();
   }
 
-  ATTR_INLINE void send_command(uint8_t command) {
+  INLINE void send_command(uint8_t command) {
     L_RS(CLR);
     send_byte(command);
     L_RS(SET);
   }
 
-  ATTR_INLINE void send_byte(uint8_t data) {
+  INLINE void send_byte(uint8_t data) {
     L_PORT(OUTPUT) = data;
     L_WR(CLR);
     L_WR(SET);
   }
 
-  ATTR_INLINE void send_word(uint16_t data) {
+  INLINE void send_word(uint16_t data) {
     L_PORT(OUTPUT) = (data >> 8);
     L_WR(CLR);
     L_WR(SET);
@@ -75,14 +75,14 @@ void ILI9486_16<RGB16>::set_rgb_format() {
 }
 
 template <>
-ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color) {
+INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color) {
   L_PORT(OUTPUT) = color.rgb;
   L_WR(CLR);
   L_WR(SET);
 }
 
 template <>
-ATTR_INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color, int32_t len) {
+INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color, int32_t len) {
   L_PORT(OUTPUT) = color.rgb;
   while (len--) {
     L_WR(CLR);
@@ -155,13 +155,13 @@ void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 ////////////////////////////////// RGB18 //////////////////////////////////////
 
 template <>
-ATTR_INLINE void ILI9486_16<RGB18>::set_rgb_format() {
+INLINE void ILI9486_16<RGB18>::set_rgb_format() {
   send_command(COLMOD);
   send_byte(0x66);  // 6x6x6 bit (24 bit transfer)
 }
 
 template <>
-ATTR_INLINE void ILI9486_16<RGB18>::select() {
+INLINE void ILI9486_16<RGB18>::select() {
   L_CS(CLR);
   flag = 0;
 }

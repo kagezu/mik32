@@ -47,7 +47,7 @@ void ILI9225_SOFT::send_command(uint16_t command)
   ILI_SOFT_RS(SET); // Запись данных
 }
 
-ATTR_NOINLINE void ILI9225_SOFT::set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+NOINLINE void ILI9225_SOFT::set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
 {
   // Обмен осями
   if (R) {

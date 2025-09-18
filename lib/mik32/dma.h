@@ -58,17 +58,17 @@ public:
   }
 
   // Начать работу
-  ATTR_INLINE void start() { CH()->CFG = config; }
+  INLINE void start() { CH()->CFG = config; }
   // Сбросить канал
-  ATTR_INLINE void reset() { CH()->CFG = 0; }
+  INLINE void reset() { CH()->CFG = 0; }
 
   // Ожидание завершения работы канала
-  ATTR_INLINE void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & DMA_READY())) delay_us(10); }
-  ATTR_INLINE bool is_active() { return !(DMA_CONFIG->CONFIG_STATUS & DMA_READY()); }
+  INLINE void wait() { while (!(DMA_CONFIG->CONFIG_STATUS & DMA_READY())) delay_us(10); }
+  INLINE bool is_active() { return !(DMA_CONFIG->CONFIG_STATUS & DMA_READY()); }
 
   // Установка данных
   template<typename D, typename S>
-  ATTR_INLINE void setup(D dst, S src, uint32_t len)
+  INLINE void setup(D dst, S src, uint32_t len)
   {
     CH()->DST = (uint32_t)dst;
     CH()->SRC = (uint32_t)src;

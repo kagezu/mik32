@@ -1,6 +1,6 @@
 
 protected:
-ATTR_INLINE void send_command(uint8_t command) {
+INLINE void send_command(uint8_t command) {
   ST_SPI_RS(CLR);  // Запись команды
   send_byte(command);
   ST_SPI_RS(SET);  // Запись данных
@@ -9,20 +9,20 @@ ATTR_INLINE void send_command(uint8_t command) {
 public:
 S spi;
 
-ATTR_INLINE constexpr int16_t max_x() { return 127; }
-ATTR_INLINE constexpr int16_t max_y() { return 159; }
-ATTR_INLINE void release() {
+INLINE constexpr int16_t max_x() { return 127; }
+INLINE constexpr int16_t max_y() { return 159; }
+INLINE void release() {
   spi.end();
   ST_SPI_CS(SET);
 }
-ATTR_INLINE void send_rgb(RGB color, uint8_t len) {
+INLINE void send_rgb(RGB color, uint8_t len) {
   while (len--) send_rgb(color);
 }
-ATTR_INLINE void send_byte(uint8_t data) {
+INLINE void send_byte(uint8_t data) {
   spi.send(data);
   spi.wait_idle();
 }
-ATTR_INLINE void send_word(uint16_t data) {
+INLINE void send_word(uint16_t data) {
   spi.send16(data);
   spi.wait_idle();
 }

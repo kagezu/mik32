@@ -1,5 +1,5 @@
-ATTR_INLINE constexpr int16_t max_x() { return 479; }
-ATTR_INLINE constexpr int16_t max_y() { return 799; }
+INLINE constexpr int16_t max_x() { return 479; }
+INLINE constexpr int16_t max_y() { return 799; }
 
 void init(uint8_t rotation = 0) {
   GPIO_NT35510();
@@ -19,8 +19,9 @@ void init(uint8_t rotation = 0) {
 }
 
 
-ATTR_INLINE void send_command(uint16_t com) {
-  NT_PORT(OUTPUT) = com;
+INLINE void send_command(uint16_t com) {
+  // NT_PORT(OUTPUT) = com;
+  NT_PORT.out(com);
   NT_RS(CLR);
   NT_WR(SET);
   NT_WR(CLR);
@@ -29,19 +30,21 @@ ATTR_INLINE void send_command(uint16_t com) {
   NT_RS(SET);
 }
 
-ATTR_INLINE void send_byte(uint8_t data) {
-
-  NT_PORT(OUTPUT) = data;
+INLINE void send_byte(uint8_t data) {
+  // NT_PORT(OUTPUT) = data;
+  NT_PORT.out(data);
   NT_WR(SET);
   NT_WR(CLR);
 }
 
-ATTR_INLINE void send_word(uint16_t data) {
+INLINE void send_word(uint16_t data) {
   // NT_WR(CLR);
-  NT_PORT(OUTPUT) = (data >> 8);
+  // NT_PORT(OUTPUT) = (data >> 8);
+  NT_PORT.out(data>>8);
   NT_WR(CLR);
   NT_WR(SET);
-  NT_PORT(OUTPUT) = data;
+  // NT_PORT(OUTPUT) = data;
+  NT_PORT.out(data);
   NT_WR(CLR);
   NT_WR(SET);
 }

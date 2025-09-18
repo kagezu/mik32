@@ -1,4 +1,5 @@
 #pragma once
+#include "pgmspace.h"
 
 #define ILI9225_DRIVER_OUTPUT_CTRL      0x01
 #define ILI9225_LCD_AC_DRIVING_CTRL     0x02

@@ -19,8 +19,8 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); flag = 0; }
-  ATTR_INLINE void set_rgb_format()
+  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); flag = 0; }
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x03); // 4x4x4 bit
@@ -76,15 +76,15 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
-  ATTR_INLINE void set_rgb_format()
+  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
+  INLINE void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x05); // 5x6x5 bit
     spi.thr(2);
   }
 
-  ATTR_INLINE void send_rgb(RGB16 color)
+  INLINE void send_rgb(RGB16 color)
   {
     spi.wait_thr();
     spi.send16(color.rgb);
@@ -110,15 +110,15 @@ public:
 
 #include "base.h"
 
-  ATTR_INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
-  ATTR_INLINE   void set_rgb_format()
+  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
+  INLINE   void set_rgb_format()
   {
     send_command(COLMOD);
     send_byte(0x06); // 6x6x6 bit (24 bit transfer)
     spi.thr(3);
   }
 
-  ATTR_INLINE void send_rgb(RGB18 color)
+  INLINE void send_rgb(RGB18 color)
   {
     spi.wait_thr();
     spi.send(color.red);

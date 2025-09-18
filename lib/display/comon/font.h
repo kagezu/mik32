@@ -1,5 +1,10 @@
 #pragma once
+#ifdef __AVR__
 #include "core.h"
+#else
+#include <stdint.h>
+#define PROGMEM
+#endif
 
 struct Font {
   uint8_t count_char;

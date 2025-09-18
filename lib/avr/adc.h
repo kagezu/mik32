@@ -42,12 +42,12 @@ public:
     return value();
   }
 
-  ATTR_INLINE void delay(uint8_t div) { ADCSRA = (ADCSRA & ~(0x7 << ADPS0)) | (div << ADPS0); }
-  ATTR_INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
-  ATTR_INLINE void single() { ADCSRA |= _BV(ADSC); }
-  ATTR_INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
-  ATTR_INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
-  ATTR_INLINE void wait() { while (!(ADCSRA & _BV(ADIF))); }
+  INLINE void delay(uint8_t div) { ADCSRA = (ADCSRA & ~(0x7 << ADPS0)) | (div << ADPS0); }
+  INLINE void chanel(uint8_t ch) { ADMUX = ch | (ADC_ADLAR << ADLAR) | (ADC_AVCC << REFS0); }
+  INLINE void single() { ADCSRA |= _BV(ADSC); }
+  INLINE void start() { ADCSRA |= _BV(ADSC) | _BV(ADATE); }
+  INLINE void stop() { ADCSRA &= ~_BV(ADATE); ADCSRA |= _BV(ADEN); }
+  INLINE void wait() { while (!(ADCSRA & _BV(ADIF))); }
 
 #if ADC_ADLAR
   uint8_t value() { return ADCH; }

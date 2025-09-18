@@ -101,13 +101,13 @@ public:
 
   // Передача данных
 
-  ATTR_INLINE void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
-  ATTR_INLINE void wait_idle() { wait(); }
-  ATTR_INLINE void wait_thr() { wait(); }
+  INLINE void wait() { asm volatile("nop"); while (!(SPSR & _BV(SPIF))); }
+  INLINE void wait_idle() { wait(); }
+  INLINE void wait_thr() { wait(); }
 
-  ATTR_INLINE void send(uint8_t data) { SPDR = data; }
-  ATTR_INLINE void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
-  ATTR_INLINE uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
+  INLINE void send(uint8_t data) { SPDR = data; }
+  INLINE void send16(uint16_t data) { SPDR = to_byte(data, 1); wait(); SPDR = data; }
+  INLINE uint8_t transfer(uint8_t data) { SPDR = data; wait(); return SPDR; }
 
   uint16_t transfer16(uint16_t data)
   {

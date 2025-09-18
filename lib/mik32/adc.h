@@ -19,7 +19,7 @@ public:
 
 public:
   // template<const int ch>
-  ATTR_INLINE static void init(const int ch)
+  INLINE static void init(const int ch)
   {
     switch (ch) {
       case 0: ADC0(ANALOG); break;
@@ -37,7 +37,7 @@ public:
 
 
   // Преобразует число тактов в допустимое SAH_TIME
-  ATTR_INLINE static int cycle(int32_t tick)
+  INLINE static int cycle(int32_t tick)
   {
     if (tick < ADC::SAH_MIN + ADC::TIME) tick = ADC::SAH_MIN + ADC::TIME;
     if (tick > ADC::SAH_MAX + ADC::TIME) tick = ADC::SAH_MAX + ADC::TIME;
@@ -45,14 +45,14 @@ public:
   }
 
   // Задержка Fsps = Fcpu / (delay & 0x3E) 
-  ATTR_INLINE static void delay(int time)
+  INLINE static void delay(int time)
   {
     ANALOG_REG->ADC_CONFIG =
       (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SAH_TIME_WRITE_M)
       | (((time - ADC::TIME) | 1) << ADC_CONFIG_SAH_TIME_WRITE_S);
   }
 
-  ATTR_INLINE static void chanel(int ch)
+  INLINE static void chanel(int ch)
   {
     ANALOG_REG->ADC_CONFIG =
       (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M) |
@@ -63,7 +63,7 @@ public:
     wait();                       // Ждать завершения
   }
 
-  ATTR_INLINE static uint16_t next(int ch)
+  INLINE static uint16_t next(int ch)
   {
     ANALOG_REG->ADC_CONFIG =
       (ANALOG_REG->ADC_CONFIG & ~ADC_CONFIG_SEL_M)
@@ -73,9 +73,9 @@ public:
     return value();
   }
 
-  ATTR_INLINE static void single() { ANALOG_REG->ADC_SINGLE = 1; }
-  ATTR_INLINE static void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
-  ATTR_INLINE static void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
-  ATTR_INLINE static void wait() { while (!(ANALOG_REG->ADC_VALID)); }
-  ATTR_INLINE static int value() { return ANALOG_REG->ADC_VALUE; }
+  INLINE static void single() { ANALOG_REG->ADC_SINGLE = 1; }
+  INLINE static void start() { ANALOG_REG->ADC_CONTINUOUS = 1; }
+  INLINE static void stop() { ANALOG_REG->ADC_CONTINUOUS = 0; }
+  INLINE static void wait() { while (!(ANALOG_REG->ADC_VALID)); }
+  INLINE static int value() { return ANALOG_REG->ADC_VALUE; }
 };
