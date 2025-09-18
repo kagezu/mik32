@@ -28,10 +28,12 @@
 #endif
 
 #ifdef MIK32V2
-#define ILI_8_RD(x)   x ( 0, 8 )
-#define ILI_8_WR(x)   x ( 0, 9 )
-#define ILI_8_RS(x)   x ( 0, 10)
-#define ILI_8_CS(x)   x ( 1, 15)
-#define ILI_8_RST(x)  x ( 0, 0 )
-#define ILI_8_PORT(x) x ( 0, 16)
+Pin<0, 8 > ILI_8_RD;
+Pin<0, 9 > ILI_8_WR;
+Pin<0, 10> ILI_8_RS;
+Pin<1, 15> ILI_8_CS;
+Pin<0, 0 > ILI_8_RST;
+
+#define ILI_8_MASK  0x02FF
+Port<0, ILI_8_MASK> ILI_8_PORT;
 #endif

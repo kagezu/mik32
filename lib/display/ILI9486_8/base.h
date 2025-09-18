@@ -1,16 +1,25 @@
 INLINE constexpr int16_t max_x() { return 319; }
 INLINE constexpr int16_t max_y() { return 479; }
-INLINE  void select() { ILI_8_CS(CLR); }
-INLINE  void release() { ILI_8_CS(SET); }
+INLINE  void select() { ILI_8_CS.clr(); }
+INLINE  void release() { ILI_8_CS.set(); }
 INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
 
 void init(uint8_t rotation = 0)
 {
-  ILI_8_RD(GPIO); ILI_8_WR(GPIO); ILI_8_RS(GPIO); ILI_8_CS(GPIO); ILI_8_RST(GPIO);
-  ILI_8_RD(OUT); ILI_8_WR(OUT); ILI_8_RS(OUT); ILI_8_CS(OUT); ILI_8_RST(OUT);
-  ILI_8_PORT(OUT) | 0xFF;
-  ILI_8_RD(SET); ILI_8_WR(CLR); ILI_8_RS(CLR); ILI_8_CS(SET); ILI_8_RST(CLR);
-  ILI_8_RST(SET);
+  ILI_8_PORT.init(GPIO_Output);
+
+  ILI_8_RD.init(GPIO_Output);
+  ILI_8_WR.init(GPIO_Output);
+  ILI_8_RS.init(GPIO_Output);
+  ILI_8_CS.init(GPIO_Output);
+  ILI_8_RST.init(GPIO_Output);
+
+  ILI_8_RST.clr();
+  ILI_8_RD.set();
+  ILI_8_WR.set();
+  ILI_8_RS.set();
+  ILI_8_CS.set();
+  ILI_8_RST.set();
 
   select();
   send_command(SLPOUT);
@@ -34,17 +43,17 @@ INLINE void scroll(uint16_t sl)
 
 INLINE void send_command(uint8_t command)
 {
-  ILI_8_RS(CLR);
+  ILI_8_RS.clr();
   send_byte(command);
-  ILI_8_RS(SET);
+  ILI_8_RS.set();
 }
 
 INLINE void send_byte(uint8_t data)
 {
 #ifdef MIK32V2
-  ILI_8_WR(CLR) | 0xff;
-  ILI_8_PORT(SET) | data;
-  ILI_8_WR(SET);
+  ILI_8_PORT.clr(ILI_8_MASK);
+  ILI_8_PORT.set(data);
+  ILI_8_WR.set();
 #else
   ILI_8_PORT(OUTPUT) = data;
   ILI_8_WR(SET); ILI_8_WR(CLR);
@@ -54,12 +63,12 @@ INLINE void send_byte(uint8_t data)
 INLINE void send_word(uint16_t data)
 {
 #ifdef MIK32V2
-  ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);
-  ILI_8_PORT(STATE) = data >> 8;
-  ILI_8_WR(SET);
-  ILI_8_PORT(CLR) | 0xff | ILI_8_WR(MASK);
-  ILI_8_PORT(STATE) = data & 0xff;
-  ILI_8_WR(SET);
+  ILI_8_PORT.clr(ILI_8_MASK);
+  ILI_8_PORT.set(data >> 8);
+  ILI_8_WR.set();
+  ILI_8_PORT.clr(ILI_8_MASK);
+  ILI_8_PORT.set(data & 0xff);
+  ILI_8_WR.set();
 #else
   ILI_8_PORT(OUTPUT) = data >> 8;
   ILI_8_WR(SET); ILI_8_WR(CLR);

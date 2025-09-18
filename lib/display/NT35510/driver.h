@@ -28,8 +28,8 @@ public:
 
 #include "base.h"
 
-  INLINE void select() { NT_CS(CLR); }
-  INLINE void release() { NT_CS(SET); }
+  INLINE void select() { NT_CS.clr(); }
+  INLINE void release() { NT_CS.set(); }
 
   void set_rgb_format()
   {
@@ -47,19 +47,17 @@ public:
 
   INLINE void send_rgb(RGB16 color)
   {
-    // NT_PORT(OUTPUT) = color.rgb;
-  NT_PORT.out(color.rgb);
-    NT_WR(CLR);
-    NT_WR(SET);
+    NT_PORT.out(color.rgb);
+    NT_WR.clr();
+    NT_WR.set();
   }
 
   INLINE void send_rgb(RGB16 color, int32_t len)
   {
-    // NT_PORT(OUTPUT) = color.rgb;
-  NT_PORT.out(color.rgb);
+    NT_PORT.out(color.rgb);
     while (len--) {
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_WR.clr();
+      NT_WR.set();
     }
   }
 
@@ -69,13 +67,12 @@ public:
     set_addr(x0, y0, x1, y1);
 
     uint32_t len = (x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
-    // NT_PORT(OUTPUT) = color.rgb;
-  NT_PORT.out(color.rgb);
+    NT_PORT.out(color.rgb);
 
   #ifndef WR_FORSED
     while (len--) {
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_WR.clr();
+      NT_WR.set();
     }
   #else
 
@@ -101,16 +98,16 @@ public:
     }
     else
       while (len--) {
-        NT_WR(CLR);
-        NT_WR(SET);
+        NT_WR.clr();
+        NT_WR.set();
       }
   #endif
 
   #ifdef MIK32V2
 
     while (len--) {
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_WR.clr();
+      NT_WR.set();
     }
 
   #endif
@@ -134,12 +131,12 @@ public:
 
   INLINE void select()
   {
-    NT_CS(CLR);
+    NT_CS.clr();
     flag = 0;
   }
   INLINE void release()
   {
-    NT_CS(CLR);
+    NT_CS.clr();
   }
   INLINE void send_rgb(RGB color, int32_t len)
   {
@@ -155,21 +152,18 @@ public:
   {
     static uint16_t half;
     if (flag) {
-      // NT_PORT(OUTPUT) = color.red | half;
-  NT_PORT.out(color.red | half);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.red | half);
+      NT_WR.clr();
+      NT_WR.set();
       flag = 0;
-      // NT_PORT(OUTPUT) = color.rgb;
-  NT_PORT.out(color.rgb);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.rgb);
+      NT_WR.clr();
+      NT_WR.set();
     }
     else {
-      // NT_PORT(OUTPUT) = (color.rgb >> 8);
-  NT_PORT.out(color.rgb >> 8);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.rgb >> 8);
+      NT_WR.clr();
+      NT_WR.set();
       half = color.blue << 8;
       flag = 1;
     }
@@ -185,20 +179,17 @@ public:
     uint16_t lword = *(uint16_t *)&color.blue;
 
     while (len--) {
-      // NT_PORT(OUTPUT) = hword;
-  NT_PORT.out(hword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(hword);
+      NT_WR.clr();
+      NT_WR.set();
 
-      // NT_PORT(OUTPUT) = mword;
-  NT_PORT.out(mword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(mword);
+      NT_WR.clr();
+      NT_WR.set();
 
-      // NT_PORT(OUTPUT) = lword;
-  NT_PORT.out(lword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(lword);
+      NT_WR.clr();
+      NT_WR.set();
     }
     release();
   }
@@ -218,12 +209,12 @@ public:
 
   INLINE void select()
   {
-    NT_CS(CLR);
+    NT_CS.clr();
     flag = 0;
   }
   INLINE void release()
   {
-    NT_CS(CLR);
+    NT_CS.clr();
   }
   INLINE void send_rgb(RGB color, int32_t len)
   {
@@ -240,21 +231,18 @@ public:
   {
     static uint16_t half;
     if (flag) {
-      // NT_PORT(OUTPUT) = color.red | half;
-  NT_PORT.out(color.red | half);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.red | half);
+      NT_WR.clr();
+      NT_WR.set();
       flag = 0;
-      // NT_PORT(OUTPUT) = color.rgb;
-  NT_PORT.out(color.rgb);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.rgb);
+      NT_WR.clr();
+      NT_WR.set();
     }
     else {
-      // NT_PORT(OUTPUT) = (color.rgb >> 8);
-  NT_PORT.out(color.rgb >> 8);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(color.rgb >> 8);
+      NT_WR.clr();
+      NT_WR.set();
       half = color.blue << 8;
       flag = 1;
     }
@@ -270,20 +258,17 @@ public:
     uint16_t lword = *(uint16_t *)&color.blue;
 
     while (len--) {
-      // NT_PORT(OUTPUT) = hword;
-  NT_PORT.out(hword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(hword);
+      NT_WR.clr();
+      NT_WR.set();
 
-      // NT_PORT(OUTPUT) = mword;
-  NT_PORT.out(mword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(mword);
+      NT_WR.clr();
+      NT_WR.set();
 
-      // NT_PORT(OUTPUT) = lword;
-  NT_PORT.out(lword);
-      NT_WR(CLR);
-      NT_WR(SET);
+      NT_PORT.out(lword);
+      NT_WR.clr();
+      NT_WR.set();
     }
     release();
   }

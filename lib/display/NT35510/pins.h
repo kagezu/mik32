@@ -14,32 +14,25 @@
 #ifdef MIK32V2
 #include "timer.h"
 
-#define NT_WR(x)   x(1, 0)
-#define NT_RS(x)   x(1, 9)
-#define NT_CS(x)   x(1, 15)
-#define NT_RST(x)  x(0, 0)  // Не используется
-#define NT_PORT(x) x(0, 0)
+Pin<1, 10> SEL_0;
+Pin<1, 0> NT_WR;
+Pin<1, 9> NT_RS;
+Pin<1, 15> NT_CS;
+Pin<0, 0> NT_RST; // Не используется
+Port<0, 0xFFFF> NT_PORT;
 
-#define SEL_0(x)   x(1, 10)
 
 static inline void GPIO_NT35510()
 {
-  SEL_0(GPIO);
-  SEL_0(OUT);
-  SEL_0(CLR);  // PORT 0.3 -> D9
-  NT_WR(GPIO);
-  NT_RS(GPIO);
-  NT_CS(GPIO);
-  NT_WR(OUT);
-  NT_RS(OUT);
-  NT_CS(OUT);
-  NT_WR(CLR);
-  NT_RS(CLR);
-  NT_CS(SET);
-  PAD_CONFIG->PORT_0_CFG = 0;  // PORT 0 -> GPIO
-  GPIO_0->DIRECTION_OUT = 0xFFFF;
-  GPIO_0->CLEAR = 0xFFFF;
-  GPIO_0->SET = 0xFFFF;
+  SEL_0.init(GPIO_Output);
+  SEL_0.clr();  // PORT 0.3 -> D9
+  NT_WR.init(GPIO_Output);
+  NT_RS.init(GPIO_Output);
+  NT_CS.init(GPIO_Output);
+  NT_WR.clr();
+  NT_RS.clr();
+  NT_CS.set();
+  NT_PORT.init(GPIO_Output);
 
   /*
   T32_2_PS;
@@ -59,27 +52,21 @@ static inline void GPIO_NT35510()
 #define NT_RS(x)   x(A, 10)
 #define NT_CS(x)   x(A, 11)
 #define NT_RST(x)  x(D, 0)  // Не используется
-// #define NT_PORT(x) x(B, 0)
+
 Port<PB, 0xFFFF> NT_PORT;
 
 static inline void GPIO_NT35510()
 {
-  // GPIO_InitTypeDef init;
-  // init.GPIO_Speed = GPIO_Speed_2MHz;
-  // init.GPIO_Mode = GPIO_Mode_Out_PP;
-  // init.GPIO_Pin = GPIO_Pin_All;
-  // GPIO_Init(L_PORT(PORT), &init);
-
   NT_PORT.init(GPIO_2MHz);
 
   NT_WR(OUT);
   NT_RD(OUT);
   NT_RS(OUT);
   NT_CS(OUT);
-  NT_WR(CLR);
-  NT_RS(CLR);
-  NT_RD(SET);
-  NT_CS(SET);
+  NT_WR.clr();
+  NT_RS.clr();
+  NT_RD.set();
+  NT_CS.set();
 
 
 #ifdef WR_FORSEDX

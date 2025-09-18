@@ -12,7 +12,7 @@
 #endif
 #ifndef __AVR__
 #include "ILI9486_16/driver.h"
-// #include "NT35510/driver.h"
+#include "NT35510/driver.h"
 #endif
 
 #define FONT_TAB_FACTOR 2

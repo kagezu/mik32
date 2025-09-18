@@ -1,7 +1,8 @@
 INLINE constexpr int16_t max_x() { return 479; }
 INLINE constexpr int16_t max_y() { return 799; }
 
-void init(uint8_t rotation = 0) {
+void init(uint8_t rotation = 0)
+{
   GPIO_NT35510();
   select();
   send_command(NT_SWRESET);
@@ -19,37 +20,36 @@ void init(uint8_t rotation = 0) {
 }
 
 
-INLINE void send_command(uint16_t com) {
-  // NT_PORT(OUTPUT) = com;
+INLINE void send_command(uint16_t com)
+{
   NT_PORT.out(com);
-  NT_RS(CLR);
-  NT_WR(SET);
-  NT_WR(CLR);
-  NT_WR(SET);
-  NT_WR(CLR);
-  NT_RS(SET);
+  NT_RS.clr();
+  NT_WR.set();
+  NT_WR.clr();
+  NT_WR.set();
+  NT_WR.clr();
+  NT_RS.set();
 }
 
-INLINE void send_byte(uint8_t data) {
-  // NT_PORT(OUTPUT) = data;
+INLINE void send_byte(uint8_t data)
+{
   NT_PORT.out(data);
-  NT_WR(SET);
-  NT_WR(CLR);
+  NT_WR.set();
+  NT_WR.clr();
 }
 
-INLINE void send_word(uint16_t data) {
-  // NT_WR(CLR);
-  // NT_PORT(OUTPUT) = (data >> 8);
-  NT_PORT.out(data>>8);
-  NT_WR(CLR);
-  NT_WR(SET);
-  // NT_PORT(OUTPUT) = data;
+INLINE void send_word(uint16_t data)
+{
+  NT_PORT.out(data >> 8);
+  NT_WR.clr();
+  NT_WR.set();
   NT_PORT.out(data);
-  NT_WR(CLR);
-  NT_WR(SET);
+  NT_WR.clr();
+  NT_WR.set();
 }
 
-void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1)
+{
   send_command(NT_CASET);
   send_byte(x0 >> 8);
   send_command(NT_CASET + 1);
@@ -69,7 +69,8 @@ void set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   send_command(NT_RAMWR);
 }
 
-void send_config(const uint8_t *config, int16_t size) {
+void send_config(const uint8_t *config, int16_t size)
+{
   while (size > 0) {
     uint8_t count = *config++;
     uint16_t comand = (uint16_t)(*config++) << 8;
@@ -81,7 +82,8 @@ void send_config(const uint8_t *config, int16_t size) {
   }
 }
 
-void pixel(int16_t x, int16_t y, RGB color) {
+void pixel(int16_t x, int16_t y, RGB color)
+{
   select();
   set_addr(x, y, x, y);
   send_rgb(color);

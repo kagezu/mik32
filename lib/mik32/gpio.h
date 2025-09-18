@@ -52,7 +52,7 @@ constexpr u32 GPIO_50MHz = 0x00;
 constexpr u32 GPIO_10MHz = 0x10;
 constexpr u32 GPIO_2MHz = 0x20;
 
-constexpr u32 GPIO_Imput = 0x00;  // Вход
+constexpr u32 GPIO_Input = 0x00;  // Вход
 constexpr u32 GPIO_Output = 0x40; // Выход
 
 typedef struct {
@@ -82,10 +82,10 @@ public:
   INLINE void out(bool data) { if (data) set(); else clr(); }
   INLINE u32 get() { return GPIOx()->STATE & (1 << P); }
 
-  INLINE void in_analog() { init(GPIO_Analog | GPIO_Imput); }
-  INLINE void in_nc() { init(GPIO_Port | GPIO_Float | GPIO_2mA); }
-  INLINE void in_vcc() { init(GPIO_Port | GPIO_VCC | GPIO_2mA); }
-  INLINE void in_gnd() { init(GPIO_Port | GPIO_GND | GPIO_2mA); }
+  // INLINE void in_analog() { init(GPIO_Analog); }
+  // INLINE void in_nc() { init(GPIO_Port | GPIO_Float | GPIO_2mA); }
+  // INLINE void in_vcc() { init(GPIO_Port | GPIO_VCC | GPIO_2mA); }
+  // INLINE void in_gnd() { init(GPIO_Port | GPIO_GND | GPIO_2mA); }
   // INLINE void out(uc32 conf = GPIO_Port | GPIO_Float | GPIO_max) { init(conf | GPIO_Output); }
 
   INLINE void init(uc32 conf)
@@ -113,9 +113,12 @@ private:
   }
 
 public:
-  INLINE u32 get() { return GPIOx()->STATE & PINS; }
+  INLINE void set(u32 data) { GPIOx()->SET = data; }
+  INLINE void clr(u32 data) { GPIOx()->CLEAR = data; }
+  INLINE void inv(u32 data) { GPIOx()->OUTPUT ^= data; }
   INLINE void out(u32 data) { GPIOx()->OUTPUT = data; }
-  void init(uc32 conf = GPIO_Port | GPIO_Float | GPIO_2mA | GPIO_Imput)
+  INLINE u32 get() { return GPIOx()->STATE; }
+  void init(uc32 conf = GPIO_Port | GPIO_Float | GPIO_2mA)
   {
     for (u32 pin = 0; pin < 16; pin++) {
       PADx()->CFG = (PADx()->CFG & ~PAD_CONFIG_PIN_M(pin)) | PAD_CONFIG_PIN(pin, conf & 0b11);
