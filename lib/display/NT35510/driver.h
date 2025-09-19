@@ -19,8 +19,8 @@ template <>
 class NT35510<RGB16> {
 protected:
 #ifdef MIK32V2
-  T32<1> tim1;
-  T32<2> tim2;
+  // T32<1> tim1;
+  // T32<2> tim2;
 #endif
 
 public:
@@ -105,10 +105,15 @@ public:
 
   #ifdef MIK32V2
 
-    while (len--) {
-      NT_WR.clr();
-      NT_WR.set();
-    }
+    len <<= 1;
+    NT_WR.init(GPIO_Timer | GPIO_2MHz);
+    TIMER32_2->CHANNELS[0].CNTRL =
+      TIMER32_CH_CNTRL_MODE_PWM_M |
+      TIMER32_CH_CNTRL_ENABLE_M;
+    T32_1_C;
+    while (T32_1 < len);
+    TIMER32_2->CHANNELS[0].CNTRL = 0;
+    NT_WR.init(GPIO_Output | GPIO_2MHz);
 
   #endif
   #endif

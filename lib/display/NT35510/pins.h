@@ -24,24 +24,24 @@ Port<0, 0xFFFF> NT_PORT;
 
 static inline void GPIO_NT35510()
 {
-  SEL_0.init(GPIO_Output);
+  SEL_0.init(GPIO_Output | GPIO_2MHz);
   SEL_0.clr();  // PORT 0.3 -> D9
-  NT_WR.init(GPIO_Output);
-  NT_RS.init(GPIO_Output);
-  NT_CS.init(GPIO_Output);
+  NT_WR.init(GPIO_Output | GPIO_2MHz);
+  NT_RS.init(GPIO_Output | GPIO_2MHz);
+  NT_CS.init(GPIO_Output | GPIO_2MHz);
   NT_WR.clr();
   NT_RS.clr();
   NT_CS.set();
-  NT_PORT.init(GPIO_Output);
+  NT_PORT.init(GPIO_Output | GPIO_2MHz);
 
-  /*
+  // /*
   T32_2_PS;
   TIMER32_2->TOP = 1;
   TIMER32_2->CHANNELS[0].OCR = 1;
   T32_2_EN;
   T32_1_PS;
   T32_1_EN;
-  */
+  // */
 }
 #endif
 
