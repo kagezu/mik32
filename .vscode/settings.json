@@ -39,7 +39,9 @@
     "future": "cpp",
     "functional": "cpp",
     "tuple": "cpp",
-    "utility": "cpp"
+    "utility": "cpp",
+    "core.h": "c",
+    "mik32.h": "c"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

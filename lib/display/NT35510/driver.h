@@ -77,8 +77,8 @@ public:
   #else
 
   #ifdef CH32V20x_D6
-    if (len > 26) { // Порог эффективности
-      L_WR(OUTA);
+    if (len > 26) {  // Порог эффективности
+      NT_WR.init(GP_Timer | GPO_10MHz);
 
       len -= 2;
       for (int i = len >> 16; i > 0; i--) {
@@ -94,7 +94,7 @@ public:
         while ((TIM3->INTFR & TIM_UIF) == 0);
       }
 
-      L_WR(OUT);
+      NT_WR.init(GPO_10MHz);
     }
     else
       while (len--) {
@@ -106,14 +106,14 @@ public:
   #ifdef MIK32V2
 
     len <<= 1;
-    NT_WR.init(GPIO_Timer | GPIO_2MHz);
+    NT_WR.init(GP_Timer | GPO_2MHz);
     TIMER32_2->CHANNELS[0].CNTRL =
       TIMER32_CH_CNTRL_MODE_PWM_M |
       TIMER32_CH_CNTRL_ENABLE_M;
     T32_1_C;
     while (T32_1 < len);
     TIMER32_2->CHANNELS[0].CNTRL = 0;
-    NT_WR.init(GPIO_Output | GPIO_2MHz);
+    NT_WR.init(GPO_2MHz);
 
   #endif
   #endif

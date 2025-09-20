@@ -24,15 +24,15 @@ Port<0, 0xFFFF> NT_PORT;
 
 static inline void GPIO_NT35510()
 {
-  SEL_0.init(GPIO_Output | GPIO_2MHz);
+  SEL_0.init( GPO_2MHz);
   SEL_0.clr();  // PORT 0.3 -> D9
-  NT_WR.init(GPIO_Output | GPIO_2MHz);
-  NT_RS.init(GPIO_Output | GPIO_2MHz);
-  NT_CS.init(GPIO_Output | GPIO_2MHz);
+  NT_WR.init(GPO_2MHz);
+  NT_RS.init(GPO_2MHz);
+  NT_CS.init(GPO_2MHz);
   NT_WR.clr();
   NT_RS.clr();
   NT_CS.set();
-  NT_PORT.init(GPIO_Output | GPIO_2MHz);
+  NT_PORT.init(GPO_2MHz);
 
   // /*
   T32_2_PS;
@@ -47,22 +47,21 @@ static inline void GPIO_NT35510()
 
 #ifdef CH32V20x_D6
 
-#define NT_WR(x)   x(A, 8)
-#define NT_RD(x)   x(A, 9)
-#define NT_RS(x)   x(A, 10)
-#define NT_CS(x)   x(A, 11)
-#define NT_RST(x)  x(D, 0)  // Не используется
+Pin<PA, 8> NT_WR;
+Pin<PA, 9> NT_RD;
+Pin<PA, 10> NT_RS;
+Pin<PA, 11> NT_CS;
 
 Port<PB, 0xFFFF> NT_PORT;
 
 static inline void GPIO_NT35510()
 {
-  NT_PORT.init(GPIO_2MHz);
+  NT_PORT.init(GPO_2MHz);
 
-  NT_WR(OUT);
-  NT_RD(OUT);
-  NT_RS(OUT);
-  NT_CS(OUT);
+  NT_WR.init(GPO_10MHz);
+  NT_RD.init(GPO_10MHz);
+  NT_RS.init(GPO_10MHz);
+  NT_CS.init(GPO_10MHz);
   NT_WR.clr();
   NT_RS.clr();
   NT_RD.set();

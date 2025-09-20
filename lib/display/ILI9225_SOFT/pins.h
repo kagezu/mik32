@@ -20,20 +20,20 @@
 #endif
 
 #ifdef MIK32V2
-#define ILI_SOFT_SCK(x)     x ( 1, 7 )     // A1
-#define ILI_SOFT_SDA(x)     x ( 0, 4 )     // A2
-#define ILI_SOFT_RS(x)      x ( 0, 7 )     // A3
-#define ILI_SOFT_RST(x)     x ( 0, 9 )     // A4
-#define ILI_SOFT_CS(x)      x ( 1, 15)     // A5
+Pin<1, 7 > ILI_SOFT_SCK;  // A1
+Pin<0, 4 > ILI_SOFT_SDA;  // A2
+Pin<0, 7 > ILI_SOFT_RS;   // A3
+Pin<0, 9 > ILI_SOFT_RST;  // A4
+Pin<1, 15> ILI_SOFT_CS;   // A5
 #endif
 
 #ifdef CH32V20x_D6
 
-#define ILI_SOFT_CS(x)      x ( A, 11 )
-#define ILI_SOFT_RS(x)      x ( A, 10 )
-#define ILI_SOFT_RST(x)     x ( D, 0  )
-#define ILI_SOFT_SCK(x)     x ( B, 13 )
-#define ILI_SOFT_SDA(x)     x ( B, 15 )
+Pin<PA, 11> ILI_SOFT_CS;
+Pin<PA, 10> ILI_SOFT_RS;
+Pin<0, 0 > ILI_SOFT_RST;
+Pin<PB, 13> ILI_SOFT_SCK;
+Pin<PB, 15> ILI_SOFT_SDA;
 
 #endif
 

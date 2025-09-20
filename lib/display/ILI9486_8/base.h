@@ -6,13 +6,13 @@ INLINE void send_rgb(RGB color, int32_t len) { while (len--) send_rgb(color); }
 
 void init(uint8_t rotation = 0)
 {
-  ILI_8_PORT.init(GPIO_Output);
 
-  ILI_8_RD.init(GPIO_Output);
-  ILI_8_WR.init(GPIO_Output);
-  ILI_8_RS.init(GPIO_Output);
-  ILI_8_CS.init(GPIO_Output);
-  ILI_8_RST.init(GPIO_Output);
+  ILI_8_RD.init(GPO_2mA);
+  ILI_8_WR.init(GPO_2mA);
+  ILI_8_RS.init(GPO_2mA);
+  ILI_8_CS.init(GPO_2mA);
+  ILI_8_RST.init(GPO_2mA);
+  ILI_8_PORT.init(GPO_2mA);
 
   ILI_8_RST.clr();
   ILI_8_RD.set();

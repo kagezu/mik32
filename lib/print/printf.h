@@ -1,7 +1,9 @@
 // #include "printf.h"
 #pragma once
 #include "core.h"
+#ifdef __AVR__
 #include "accel.h"
+#endif
 
 
 class PrintF {

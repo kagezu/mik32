@@ -32,28 +32,26 @@
 #define STATE(port, pin)    (GPIO_ ## port ->STATE)
 
 
-constexpr u32 GPIO_Port = 0x00;   // general IO
-constexpr u32 GPIO_Serial = 0x01; // 1я функция
-constexpr u32 GPIO_Timer = 0x02;  // 2я функция
-constexpr u32 GPIO_Analog = 0x03; // 3я функция
+constexpr u32 GP_IO = 0x00;     // general IO
+constexpr u32 GP_Serial = 0x01; // 1я функция
+constexpr u32 GP_Timer = 0x02;  // 2я функция
+constexpr u32 GP_Analog = 0x03; // 3я функция
 
-constexpr u32 GPIO_Float = 0x00;  // floating
-constexpr u32 GPIO_VCC = 0x04;    // pull-up
-constexpr u32 GPIO_GND = 0x08;    // pull-down
-constexpr u32 GPIO_Open = 0x0C;   // open-drain (не реализован)
+constexpr u32 GP_Float = 0x00;  // floating
+constexpr u32 GP_VCC = 0x04;    // pull-up
+constexpr u32 GP_GND = 0x08;    // pull-down
+constexpr u32 GP_Open = 0x00;   // open-drain (не реализован)
 
-constexpr u32 GPIO_2mA = 0x00;
-constexpr u32 GPIO_4mA = 0x10;
-constexpr u32 GPIO_8mA = 0x20;
-constexpr u32 GPIO_max = 0x30;
+constexpr u32 GPO_2mA = 0x40;
+constexpr u32 GPO_4mA = 0x50;
+constexpr u32 GPO_8mA = 0x60;
+constexpr u32 GPO_Max = 0x70;
 
 // Для совместимости
-constexpr u32 GPIO_50MHz = 0x00;
-constexpr u32 GPIO_10MHz = 0x10;
-constexpr u32 GPIO_2MHz = 0x20;
+constexpr u32 GPO_50MHz = 0x40;
+constexpr u32 GPO_10MHz = 0x50;
+constexpr u32 GPO_2MHz = 0x60;
 
-constexpr u32 GPIO_Input = 0x00;  // Вход
-constexpr u32 GPIO_Output = 0x40; // Выход
 
 typedef struct {
   volatile uint32_t CFG;
@@ -61,7 +59,7 @@ typedef struct {
   volatile uint32_t PUPD;
 } PAD_CONFIG_T;
 
-template <uc32 N, uc32 P>
+template <uc32 N, uc32 PINx>
 class Pin {
 private:
   constexpr static PAD_CONFIG_T *PADx() { return  ((PAD_CONFIG_T *)PAD_CONFIG_BASE_ADDRESS) + N; }
@@ -76,25 +74,18 @@ private:
   }
 
 public:
-  INLINE void set() { GPIOx()->SET = 1 << P; }
-  INLINE void clr() { GPIOx()->CLEAR = 1 << P; }
-  INLINE void inv() { GPIOx()->OUTPUT ^= 1 << P; }
+  INLINE void set() { GPIOx()->SET = 1 << PINx; }
+  INLINE void clr() { GPIOx()->CLEAR = 1 << PINx; }
+  INLINE void inv() { GPIOx()->OUTPUT ^= 1 << PINx; }
   INLINE void out(bool data) { if (data) set(); else clr(); }
-  INLINE u32 get() { return GPIOx()->STATE & (1 << P); }
-
-  // INLINE void in_analog() { init(GPIO_Analog); }
-  // INLINE void in_nc() { init(GPIO_Port | GPIO_Float | GPIO_2mA); }
-  // INLINE void in_vcc() { init(GPIO_Port | GPIO_VCC | GPIO_2mA); }
-  // INLINE void in_gnd() { init(GPIO_Port | GPIO_GND | GPIO_2mA); }
-  // INLINE void out(uc32 conf = GPIO_Port | GPIO_Float | GPIO_max) { init(conf | GPIO_Output); }
-
-  INLINE void init(uc32 conf)
+  INLINE u32 get() { return GPIOx()->STATE & (1 << PINx); }
+  INLINE void init(uc32 conf = GP_IO)
   {
-    PADx()->CFG = (PADx()->CFG & ~PAD_CONFIG_PIN_M(P)) | PAD_CONFIG_PIN(P, conf & 0b11);
-    PADx()->PUPD = (PADx()->PUPD & ~PAD_CONFIG_PIN_M(P)) | PAD_CONFIG_PIN(P, (conf >> 2) & 0b11);
-    PADx()->DS = (PADx()->DS & ~PAD_CONFIG_PIN_M(P)) | PAD_CONFIG_PIN(P, conf >> 4);
-    if (conf & GPIO_Output) GPIOx()->DIRECTION_OUT = 1 << P;
-    else GPIOx()->DIRECTION_IN = 1 << P;
+    PADx()->CFG = (PADx()->CFG & ~PAD_CONFIG_PIN_M(PINx)) | PAD_CONFIG_PIN(PINx, conf & 0b11);
+    PADx()->PUPD = (PADx()->PUPD & ~PAD_CONFIG_PIN_M(PINx)) | PAD_CONFIG_PIN(PINx, (conf >> 2) & 0b11);
+    PADx()->DS = (PADx()->DS & ~PAD_CONFIG_PIN_M(PINx)) | PAD_CONFIG_PIN(PINx, conf >> 4);
+    if (conf & GPO_Max) GPIOx()->DIRECTION_OUT = 1 << PINx;
+    else GPIOx()->DIRECTION_IN = 1 << PINx;
   }
 };
 
@@ -118,15 +109,14 @@ public:
   INLINE void inv(u32 data) { GPIOx()->OUTPUT ^= data; }
   INLINE void out(u32 data) { GPIOx()->OUTPUT = data; }
   INLINE u32 get() { return GPIOx()->STATE; }
-  void init(uc32 conf = GPIO_Port | GPIO_Float | GPIO_2mA)
+  void init(uc32 conf = GP_IO)
   {
     for (u32 pin = 0; pin < 16; pin++) {
       PADx()->CFG = (PADx()->CFG & ~PAD_CONFIG_PIN_M(pin)) | PAD_CONFIG_PIN(pin, conf & 0b11);
       PADx()->PUPD = (PADx()->PUPD & ~PAD_CONFIG_PIN_M(pin)) | PAD_CONFIG_PIN(pin, (conf >> 2) & 0b11);
       PADx()->DS = (PADx()->DS & ~PAD_CONFIG_PIN_M(pin)) | PAD_CONFIG_PIN(pin, (conf >> 4) & 0b11);
     }
-
-    if (conf & GPIO_Output) GPIOx()->DIRECTION_OUT = PINS;
+    if (conf & GPO_Max) GPIOx()->DIRECTION_OUT = PINS;
     else GPIOx()->DIRECTION_IN = PINS;
   }
 };

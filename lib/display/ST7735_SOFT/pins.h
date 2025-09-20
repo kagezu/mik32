@@ -40,11 +40,11 @@
 // #define ST_SOFT_RST(x)     x ( 0, 7 )     // A3
 // #define ST_SOFT_CS(x)      x ( 0, 9 )     // A4
 
-#define ST_SOFT_SCK(x)     x ( 1, 7 )     // A1
-#define ST_SOFT_SDA(x)     x ( 0, 4 )     // A2
-#define ST_SOFT_RS(x)      x ( 0, 7 )     // A3
-#define ST_SOFT_RST(x)     x ( 0, 9 )     // A4
-#define ST_SOFT_CS(x)      x ( 1, 15)     // A5
+Pin<1, 7 > ST_SOFT_SCK;   // A1
+Pin<0, 4 > ST_SOFT_SDA;   // A2
+Pin<0, 7 > ST_SOFT_RS;    // A3
+Pin<0, 9 > ST_SOFT_RST;   // A4
+Pin<1, 15> ST_SOFT_CS;    // A5
 
 // #define ST_SOFT_SCK(x)     x ( 1, 2 )
 // #define ST_SOFT_SDA(x)     x ( 1, 1 )
@@ -55,11 +55,11 @@
 
 #ifdef CH32V20x_D6
 
-#define ST_SOFT_SCK(x)     x ( B, 13 )
-#define ST_SOFT_SDA(x)     x ( B, 15 )
-#define ST_SOFT_RS(x)      x ( A, 10 )
-#define ST_SOFT_RST(x)     x ( D, 0  )
-#define ST_SOFT_CS(x)      x ( A, 11 )
+Pin<PB, 13> ST_SOFT_SCK;
+Pin<PB, 15> ST_SOFT_SDA;
+Pin<PA, 10> ST_SOFT_RS;
+Pin<0, 0> ST_SOFT_RST;
+Pin<PA, 11> ST_SOFT_CS;
 
 #endif
 
@@ -67,7 +67,11 @@
 
 static inline void GPIO_ST_SOFT()
 {
-  ST_SOFT_SCK(GPIO); ST_SOFT_SDA(GPIO); ST_SOFT_RST(GPIO); ST_SOFT_CS(GPIO); ST_SOFT_RS(GPIO);
-  ST_SOFT_SCK(OUT); ST_SOFT_SDA(OUT); ST_SOFT_RST(OUT); ST_SOFT_CS(OUT); ST_SOFT_RS(OUT);
-  ST_SOFT_CS(SET); ST_SOFT_RS(SET);
+  ST_SOFT_SCK.init(GPO_2mA);
+  ST_SOFT_SDA.init(GPO_2mA);
+  ST_SOFT_RST.init(GPO_2mA);
+  ST_SOFT_CS.init(GPO_2mA);
+  ST_SOFT_RS.init(GPO_2mA);
+  ST_SOFT_CS.set();
+  ST_SOFT_RS.set();
 }
