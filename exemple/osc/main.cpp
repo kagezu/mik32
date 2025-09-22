@@ -59,7 +59,7 @@ void print_info()
     VType.get_item<char *>()
   );
   lcd.at(lcd.max_x(), 0);
-  lcd.printf(P("\b\b\b\b\b\b\b\b\bFPS %.1.2q "), fps);
+  lcd.printf("\b\b\b\b\b\b\b\b\bFPS %.1.2q ", fps);
   lcd.printf("\f\n");
   menu.print(&lcd);
   lcd.prints("             ");
@@ -155,7 +155,7 @@ void init()
 
   // Сканирование энкодера по таймеру
   T32_0_PS; T32_0_FQ(INT_FQ);
-  T32_0_OVF; T32_0_IS; T32_0_EN;
+  T32_0_OVF; T32_0_IS; T32_0_EN;//EPIC_TIMER32_0_INDEX
 
   // Таймер для работы DMA с АЦП
   T32_1_PS; T32_1_EN;

@@ -36,13 +36,28 @@ public:
     send_command(NT_COLMOD);
     send_byte(0x05);  // 5x6x5 bit
 
-    /*
+#ifdef WR_FORSED
+#ifdef MIK32V2
     tim1.start();
     tim2.top(1);
     tim2.ocr(1);
     tim2.start();
     tim1.start();
-     */
+  #else
+    constexpr u16 WR_FORSED_DIV = 1;
+
+    tim1.PSC(0);
+    tim1.TOP(WR_FORSED_DIV);
+    tim1.OCR(1, 1);
+    tim1.pwm(0, 1);
+    tim1.slave(TIM_GAT | TIM_IT3);
+    tim1.enable();
+
+    tim3.PSC(WR_FORSED_DIV);
+    tim3.master(TIM_CNT_EN);
+    tim3.direct(TIM_REV);
+#endif
+#endif
   }
 
   INLINE void send_rgb(RGB16 color)
@@ -75,23 +90,22 @@ public:
       NT_WR.set();
     }
   #else
-
   #ifdef CH32V20x_D6
     if (len > 26) {  // Порог эффективности
       NT_WR.init(GP_Timer | GPO_10MHz);
 
       len -= 2;
       for (int i = len >> 16; i > 0; i--) {
-        TIM3->CNT = 0xFFFF;
-        TIM3->CTLR1 = TIM_DIR | TIM_OPM | TIM_CEN;  // Включеие счётчика
-        TIM3->INTFR = 0;
-        while ((TIM3->INTFR & TIM_UIF) == 0);
+        tim3.CNT(0xFFFF);
+        tim3.int_cleat();
+        tim3.single();  // Включеие счётчика
+        tim3.ovf_wait();
       }
-
-      if (TIM3->CNT = len) {
-        TIM3->INTFR = 0;
-        TIM3->CTLR1 = TIM_DIR | TIM_OPM | TIM_CEN;  // Включеие счётчика
-        while ((TIM3->INTFR & TIM_UIF) == 0);
+      if (len & 0xFFFF) {
+        tim3.CNT(len);
+        tim3.int_cleat();
+        tim3.single();  // Включеие счётчика
+        tim3.ovf_wait();
       }
 
       NT_WR.init(GPO_10MHz);
