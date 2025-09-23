@@ -73,13 +73,13 @@ public:
   // Режимы (пред-настройки)
 
   // TIM_MODE::[CMP, PWM, ENC]
-  INLINE void mode(TIM_MODE mod)
+  INLINE void mode(uc32 mod)
   {
     u32 cfgr = T_16(N)->CFGR & ~(TIMER16_CFGR_ENC_M | TIMER16_CFGR_TIMOUT_M);
     switch (mod) {
-      case TIM_MODE::CMP: cfgr |= TIMER16_CFGR_TIMOUT_M;  break; // Сбрасывать CNT
-      case TIM_MODE::PWM: break;
-      case TIM_MODE::ENC: cfgr |= TIMER16_CFGR_ENC_M; break;
+      case TIM_OVR: cfgr |= TIMER16_CFGR_TIMOUT_M;  break; // Сбрасывать CNT
+      case TIM_PWM: break;
+      case TIM_ENC3: cfgr |= TIMER16_CFGR_ENC_M; break;
     }
     T_16(N)->CFGR = cfgr;
   }

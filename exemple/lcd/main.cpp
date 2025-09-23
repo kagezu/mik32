@@ -16,7 +16,7 @@ int main(void)
   lcd.color(White);
   lcd.background(MidnightBlue);
 
-  timer.start();
+  timer.enable();
 
   int x = 0;
   while (true) {
@@ -32,13 +32,13 @@ int main(void)
         lcd.clear();
         break;
       case 1: lcd.demo(x++); break;
-      case 2: lcd.demo2(x++); break;
-      case 3: lcd.demo3(x++); break;
+        // case 2: lcd.demo2(x++); break;
+      case 2: lcd.demo3(x++); break;
 
       default: mode = 0;
     }
 
-    uint32_t fps = (F_CPU << 4) / timer.cnt();
+    uint32_t fps = (F_CPU << 4) / timer.CNT();
     lcd.at(0, lcd.max_y() - 2 * lcd.get_height() + 1);
     lcd.color(White);
     lcd.background(MidnightBlue);

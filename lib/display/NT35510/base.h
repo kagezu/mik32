@@ -3,7 +3,17 @@ INLINE constexpr int16_t max_y() { return 799; }
 
 void init(uint8_t rotation = 0)
 {
-  GPIO_NT35510();
+  NT_PORT.init(GPO_2MHz);
+  NT_WR.init(GPO_10MHz);
+  NT_RD.init(GPO_10MHz);
+  NT_RS.init(GPO_10MHz);
+  NT_CS.init(GPO_10MHz);
+  NT_WR.clr();
+  NT_RS.clr();
+  NT_RD.set();
+  NT_CS.set();
+
+  // GPIO_NT35510();
   select();
   send_command(NT_SWRESET);
   send_config(NT35510_CONFIG_STEP0, sizeof(NT35510_CONFIG_STEP0));

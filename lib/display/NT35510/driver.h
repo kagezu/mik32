@@ -19,8 +19,8 @@ template <>
 class NT35510<RGB16> {
 protected:
 #ifdef MIK32V2
-  // T32<1> tim1;
-  // T32<2> tim2;
+  T32<1> tim1;
+  T32<2> tim2;
 #endif
 
 public:
@@ -36,13 +36,22 @@ public:
     send_command(NT_COLMOD);
     send_byte(0x05);  // 5x6x5 bit
 
-#ifdef WR_FORSED
-#ifdef MIK32V2
-    tim1.start();
-    tim2.top(1);
-    tim2.ocr(1);
-    tim2.start();
-    tim1.start();
+  #ifdef WR_FORSED
+  #ifdef MIK32V2
+
+    // T32_2_PS;
+    // TIMER32_2->TOP = 1;
+    // TIMER32_2->CHANNELS[0].OCR = 1;
+    // T32_2_EN;
+    // T32_1_PS;
+    // T32_1_EN;
+
+    tim1.enable();
+    tim2.TOP(1);
+    tim2.OCR(1, 0);
+    tim2.pwm(0, 0);
+    tim2.enable(0);
+
   #else
     constexpr u16 WR_FORSED_DIV = 1;
 
@@ -56,8 +65,8 @@ public:
     tim3.PSC(WR_FORSED_DIV);
     tim3.master(TIM_CNT_EN);
     tim3.direct(TIM_REV);
-#endif
-#endif
+  #endif
+  #endif
   }
 
   INLINE void send_rgb(RGB16 color)
@@ -121,12 +130,10 @@ public:
 
     len <<= 1;
     NT_WR.init(GP_Timer | GPO_2MHz);
-    TIMER32_2->CHANNELS[0].CNTRL =
-      TIMER32_CH_CNTRL_MODE_PWM_M |
-      TIMER32_CH_CNTRL_ENABLE_M;
-    T32_1_C;
-    while (T32_1 < len);
-    TIMER32_2->CHANNELS[0].CNTRL = 0;
+    tim2.enable();
+    tim1.clear();
+    while (tim1.CNT() < len);
+    tim2.disable();
     NT_WR.init(GPO_2MHz);
 
   #endif

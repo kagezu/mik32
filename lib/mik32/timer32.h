@@ -60,53 +60,65 @@ public:
     }
   }
 
+  // Регистры
+
+  INLINE u32 CNT() { return T_32(N)->VALUE; }
+  INLINE void CNT(u32 val) { T_32(N)->VALUE = val; }
+  INLINE void PSC(u32 val) { T_32(N)->PRESCALER = val; }
+  INLINE void TOP(u32 val) { T_32(N)->TOP = val; }
+  INLINE void REP(u8 val) {}
+  INLINE void OCR(u32 val, uc32 ch = 0) { T_32(N)->CHANNELS[ch].OCR = val; }
+  INLINE u32 ICR(uc32 ch = 0) { return T_32(N)->CHANNELS[ch].ICR; }
+
   // Управление
 
-  INLINE void start() { T_32(N)->ENABLE = TIMER32_ENABLE_TIM_EN_M; }
+  INLINE void cont() {}
   INLINE void single() {}
-  INLINE void stop() { T_32(N)->ENABLE = 0; }
+  INLINE void enable() { T_32(N)->ENABLE = TIMER32_ENABLE_TIM_EN_M; }
+  INLINE void disable() { T_32(N)->ENABLE = 0; }
   INLINE void clear() { T_32(N)->ENABLE |= TIMER32_ENABLE_TIM_CLR_M; }
-  INLINE void direct(uc32 mod)
+
+  // Функции таймера
+
+  // Установить TOP OCR
+  INLINE void compare(uc32 config, uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL = config | TIM_OVR; }
+  INLINE void pwm(uc32 config, uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL = config | TIM_PWM; }
+
+
+
+
+
+
+  INLINE void enable(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_ENABLE_M; }
+  INLINE void disable(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL &= ~TIMER32_CH_CNTRL_ENABLE_M; }
+
+  INLINE void direct(uc32 mod = 0)
   {
     u32 control = T_32(N)->CONTROL & ~TIMER32_CONTROL_MODE_M;
     switch (mod) {
-      case TIM_MODE::DIR: control |= TIMER32_CH_CNTRL_MODE_COMPARE_M; break;
-      case TIM_MODE::REV: control |= TIMER32_CH_CNTRL_MODE_PWM_M; break;
-      case TIM_MODE::BI:  control |= TIMER32_CH_CNTRL_MODE_CAPTURE_M; break;
+      case 0: control |= TIMER32_CONTROL_MODE_UP_M; break;
+      case TIM_REV: control |= TIMER32_CONTROL_MODE_DOWN_M; break;
+      case TIM_BI:  control |= TIMER32_CONTROL_MODE_BIDIR_M; break;
     }
     T_32(N)->CONTROL = control;
   }
 
-  // Регистры
+  INLINE void forced(bool out, uc32 ch = 1) {}
+  INLINE void encoder() {}
+  INLINE void slave(uc32 trig) {}
+  INLINE void master(uc32 mms) {}
+  INLINE void capture(uc32 config, uc32 ch) {}
+  INLINE void capture_pwm(uc32 config, uc32 ch) {}
+  INLINE void init(uc32 mod) {}
 
-  INLINE u32 cnt() { return T_32(N)->VALUE; }
-  INLINE void cnt(u32 val) { T_32(N)->VALUE = val; }
-  INLINE void div(u32 val) { T_32(N)->PRESCALER = val; }
-  INLINE void top(u32 val) { T_32(N)->TOP = val; }
-  INLINE void ocr(u32 val, uc32 ch = 0) { T_32(N)->CHANNELS[ch].OCR = val; }
-  INLINE u32 icr(uc32 ch = 0) { return T_32(N)->CHANNELS[ch].ICR; }
+  //
 
-  // Каналы
+  INLINE void int_clear() { T_32(N)->INT_CLEAR = -1; }
+  INLINE void ovf_wait() { while (!(T_32(N)->FLAG & TIMER32_INT_OVERFLOW_M)); }
 
-  INLINE void en(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_ENABLE_M; }
-  INLINE void dis(uc32 ch) { T_32(N)->CHANNELS[ch].CNTRL &= ~TIMER32_CH_CNTRL_ENABLE_M; }
-  INLINE void inv(const bool mod = true, uc32 ch = 0)
-  {
-    if (mod) T_32(N)->CHANNELS[ch].CNTRL |= TIMER32_CH_CNTRL_INVERTED_PWM_M | TIMER32_CH_CNTRL_CAPTURE_NEG_M;
-    else T_32(N)->CHANNELS[ch].CNTRL &= ~(TIMER32_CH_CNTRL_INVERTED_PWM_M | TIMER32_CH_CNTRL_CAPTURE_NEG_M);
-  }
-  INLINE void mode(TIM_MODE mod, uc32 ch = 0)
-  {
-    u32 cntrl = T_32(N)->CHANNELS[ch].CNTRL & (TIMER32_CH_CNTRL_ENABLE_M | TIMER32_CH_CNTRL_NOISE_M);
-    switch (mod) {
-      case TIM_MODE::CMP: cntrl |= TIMER32_CH_CNTRL_MODE_COMPARE_M; break;
-      case TIM_MODE::PWM: cntrl |= TIMER32_CH_CNTRL_MODE_PWM_M; break;
-      case TIM_MODE::CAP: cntrl |= TIMER32_CH_CNTRL_MODE_CAPTURE_M; break;
-    }
-    T_32(N)->CHANNELS[ch].CNTRL = cntrl;
-  }
 
-  // Прерывания
+  ///////////////////////////
+    // Прерывания
 
   INLINE void int_ovf(const bool on = true)
   {
@@ -133,7 +145,6 @@ public:
       T_32(N)->INT_MASK &= ~TIMER32_INT_IC_M(ch);
   }
 
-  INLINE void int_clr() { T_32(N)->INT_CLEAR = -1; }
   INLINE void int_en()
   {
     switch (N) {
@@ -157,7 +168,7 @@ public:
   {
     u32 _div = f_in / val;
     if (_div) _div--;
-    div(_div);
+    // div(_div);
     f_get();
   }
 
@@ -165,7 +176,7 @@ public:
   {
     u32 _top = f_clk / val;
     if (_top) _top--;
-    top(_top);
+    // top(_top);
     // f_get();
   }
 
