@@ -15,7 +15,7 @@
 #include "NT35510/driver.h"
 #endif
 
-#define FONT_TAB_FACTOR 2
+#define FONT_TAB_FACTOR 1
 
 template <typename Driver, const int R = R_0>
 class Display : public Driver, public PrintF, public GFX {

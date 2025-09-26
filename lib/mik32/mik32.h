@@ -42,3 +42,16 @@
 #include "pgmspace.h"
 
 #include "type/int.h"
+
+// Clock
+
+/* RCC_Exported_Types */
+typedef struct {
+  uint32_t SYSCLK_Frequency; /* returns SYSCLK clock frequency expressed in Hz */
+  uint32_t HCLK_Frequency;   /* returns HCLK clock frequency expressed in Hz */
+  uint32_t PCLK1_Frequency;  /* returns PCLK1 clock frequency expressed in Hz */
+  uint32_t PCLK2_Frequency;  /* returns PCLK2 clock frequency expressed in Hz */
+  uint32_t ADCCLK_Frequency; /* returns ADCCLK clock frequency expressed in Hz */
+} RCC_ClocksTypeDef;
+
+void RCC_GetClocksFreq(RCC_ClocksTypeDef *RCC_Clocks);

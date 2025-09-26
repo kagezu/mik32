@@ -55,7 +55,7 @@
 // MIK32 AMUR
 
 // Поместить функцию в оперативную память
-#define RAM            __attribute__((section(".ram_text")))
+#define RAM             __attribute__((noinline, section(".ram_text")))
 
 // Обработчик прерывания
 // #define ISR            __attribute__((used, interrupt, section(".trap_text")))

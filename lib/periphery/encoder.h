@@ -10,30 +10,26 @@ public:
 public:
   Encoder()
   {
-    ENCODER_A(GPIO);
-    ENCODER_B(GPIO);
-    ENCODER_SW(GPIO);
-    ENCODER_A(IN);
-    ENCODER_B(IN);
-    ENCODER_SW(IN);
-    ENCODER_A(P_VCC);
-    ENCODER_B(P_VCC);
-    ENCODER_SW(P_VCC);
+    ENCODER_A.init(GP_VCC);
+    ENCODER_B.init(GP_VCC);
+    ENCODER_SW.init(GP_VCC);
+
+    // ENCODER_A(P_VCC);
+    // ENCODER_B(P_VCC);
+    // ENCODER_SW(P_VCC);
 
   #ifdef ENCODER_GND
-    ENCODER_GND(GPIO);
-    ENCODER_GND(OUT);
-    ENCODER_GND(CLR);
-    ENCODER_SW(P_GND);
+    ENCODER_GND.init(GPO_2mA);
+    ENCODER_GND.clr();
   #endif
   }
 
   bool is_push()
   {
   #ifdef ENCODER_GND
-    return ENCODER_SW(GET);
+    return ENCODER_SW.get();
   #else
-    // return !ENCODER_SW(GET);
+    return !ENCODER_SW.get();
   #endif
   }
 
@@ -42,8 +38,8 @@ public:
     int result;
 
     // состояние контактов A и B ?
-    bool a = (bool)ENCODER_A(GET);
-    bool b = (bool)ENCODER_B(GET);
+    bool a = (bool)ENCODER_A.get();
+    bool b = (bool)ENCODER_B.get();
 
     // если состояние контакта A изменилось и оно такое как B
     // то попорот по часовой, иначе против
