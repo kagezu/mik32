@@ -8,7 +8,7 @@
 //EEDAT
 //EEA
 #define EEPROM_EEA_ADDR_S               2
-#define EEPROM_EEA_ADDR_M               (0b7FF << EEPROM_EEA_ADDR_S)
+#define EEPROM_EEA_ADDR_M               (0x7FF << EEPROM_EEA_ADDR_S)
 #define EEPROM_EEA_ADDR(v)              (((v) << EEPROM_EEA_ADDR_S) & EEPROM_EEA_ADDR_M)
 //EECON
 #define EEPROM_EECON_EX_S               0
@@ -90,21 +90,20 @@
 
 
 #ifndef __ASSEMBLER__
-    #include <inttypes.h>
+#include <inttypes.h>
 
-    typedef struct
-    {
-        volatile uint32_t EEDAT;
-        volatile uint32_t EEA;
-        volatile uint32_t EECON;
-        volatile uint32_t EESTA;
-        volatile uint32_t EERB;
-        volatile uint32_t EEADJ;
-        volatile uint32_t NCYCRL;
-        volatile uint32_t NCYCEP1;
-        volatile uint32_t NCYCEP2;
+typedef struct {
+  volatile uint32_t EEDAT;
+  volatile uint32_t EEA;
+  volatile uint32_t EECON;
+  volatile uint32_t EESTA;
+  volatile uint32_t EERB;
+  volatile uint32_t EEADJ;
+  volatile uint32_t NCYCRL;
+  volatile uint32_t NCYCEP1;
+  volatile uint32_t NCYCEP2;
 
-    } EEPROM_REGS_TypeDef;
+} EEPROM_REGS_TypeDef;
 #endif
 
 

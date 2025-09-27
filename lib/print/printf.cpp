@@ -4,7 +4,7 @@
 
 #define KEY_u
 // #define KEY_d
-// #define KEY_x
+#define KEY_x
 #define KEY_q
 #define KEY_S
 // #define KEY_p
@@ -126,7 +126,7 @@ void PrintF::printf(const char *string, ...)
         switch (lng) {
           case 1:  ptr -= 2; *(uint16_t *)ptr = h_print((uint8_t)(uint32_t)__builtin_va_arg(args, void *)); break;
           #ifdef NUM_16
-          case 2: ptr = sprint(ptr, (uint16_t)(uint32_t)__builtin_va_arg(args, void *, lng); break;
+          case 2: ptr = sprint(ptr, (uint16_t)(uint32_t)__builtin_va_arg(args, void *), lng); break;
           #endif
           #ifdef NUM_32
           case 4:  ptr = sprint(ptr, (uint32_t)__builtin_va_arg(args, uint32_t), lng); break;

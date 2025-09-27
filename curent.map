@@ -6,163 +6,110 @@ ram              0x02000000         0x00004000         xrw
 
 Linker script and memory map
 
-.text           0x80000000     0x2e54
+.text           0x80000000     0x1cb8
  *crt0.o(.text .text.*)
                 0x80000000                _start
                 0x80000090                SmallSystemInit
-                0x80000092                memset
-                0x8000013a       0x3c 
-                0x80000176       0x6e 
-                0x800001e4      0x15e 
-                0x80000342       0x5c 
-                0x8000039e       0x34 
-                0x8000039e                Display<NT35510<RGB16>, 0>::pixel(short, short)
-                0x800003ce                non-virtual thunk to Display<NT35510<RGB16>, 0>::pixel(short, short)
-                0x800003d2       0xd2 
-                0x800004a4       0x8e 
-                0x800004a4                Display<NT35510<RGB16>, 0>::fill(short, short, short, short)
-                0x8000052e                non-virtual thunk to Display<NT35510<RGB16>, 0>::fill(short, short, short, short)
-                0x80000532      0x288 
-                0x80000532                Display<NT35510<RGB16>, 0>::putc(unsigned char)
-                0x800007ba       0x80 
-                0x800007ba                Encoder::Encoder()
-                0x800007ba                Encoder::Encoder()
-                0x8000083a       0x28 
-                0x8000083a                transform_to_display(short*, short*, long, long)
-                0x80000862       0xc4 
-                0x80000862                print_info()
-                0x80000926       0xf2 
-                0x80000926                osc_window(int&, int&)
-                0x80000a18       0x54 
-                0x80000a18                border_draw()
-                0x80000a6c       0xd6 
-                0x80000a6c                axis_draw()
-                0x80000b42       0xba 
-                0x80000b42                data_draw()
-                0x80000bfc       0x88 
-                0x80000bfc                init()
-                0x80000c84       0x96 
-                0x80000c84                sample(unsigned long)
-                0x80000d1a      0x204 
-                0x80000d1a                Lagrange<8, 16, 12>::init(int)
-                0x80000f1e      0x1ca 
-                0x80000f1e                void FFT<1443l, 12l>::run<short>(short*)
-                0x800010e8       0x5c 
-                0x800010e8                void FFT<1443l, 12l>::sqrt<short>(short*, int)
+                0x80000092       0x24 
+                0x80000092                ILI9486_8<RGB16>::send_command(unsigned char)
+                0x800000b6       0x14 
+                0x800000b6                ILI9486_8<RGB16>::send_byte(unsigned char)
+                0x800000ca       0x22 
+                0x800000ca                ILI9486_8<RGB16>::send_word(unsigned short)
+                0x800000ec       0x70 
+                0x800000ec                IDriver::set_addr(unsigned short, unsigned short, unsigned short, unsigned short)
+                0x8000015c      0x208 
+                0x8000015c                ILI9486_8<RGB16>::init(unsigned char)
+                0x80000364       0x58 
+                0x80000364                ILI9486_8<RGB16>::pixel(short, short, RGB16)
+                0x800003bc       0x2e 
+                0x800003bc                Display<ILI9486_8<RGB16>, 96>::pixel(short, short)
+                0x800003e6                non-virtual thunk to Display<ILI9486_8<RGB16>, 96>::pixel(short, short)
+                0x800003ea       0x86 
+                0x800003ea                ILI9486_8<RGB16>::area(unsigned short, unsigned short, unsigned short, unsigned short, RGB16)
+                0x80000470       0x8e 
+                0x80000470                Display<ILI9486_8<RGB16>, 96>::fill(short, short, short, short)
+                0x800004fa                non-virtual thunk to Display<ILI9486_8<RGB16>, 96>::fill(short, short, short, short)
+                0x800004fe      0x292 
+                0x800004fe                Display<ILI9486_8<RGB16>, 96>::putc(unsigned char)
+                0x8000078c                non-virtual thunk to Display<ILI9486_8<RGB16>, 96>::putc(unsigned char)
  .text.startup.main
-                0x80001144      0x6fa 
-                0x80001144                main
-                0x8000183e      0x176 
-                0x800019cc                delay_us(unsigned long)
-                0x800019d2                delay_ms(unsigned long)
-                0x800019ee                sei()
-                0x800019f4                cli()
- .text.fix16_sqrt
-                0x800019fa                fix16_sqrt
-                0x80001a84                PrintF::prints(char const*)
-                0x80001aac                PrintF::strlen(char*)
-                0x80001abc                PrintF::prints(char*, char)
-                0x80001b4a                PrintF::printf(char const*, ...)
-                0x80001ea8                GFX::w_line(short, short, short)
-                0x80001ed4                GFX::h_line(short, short, short)
-                0x80001efe                MItem::next(int)
-                0x80001f2c                MItem::select()
-                0x80001f8c                MItem::print(PrintF*)
-                0x80002074                MItem::save(int*)
-                0x800020c6                MItem::load(int*)
-                0x80002118                strlen
-                0x8000217c                __ashldi3
-                0x800021a2                __ashrdi3
-                0x800021ce                __divdi3
- .rodata        0x800025b4      0x328 
-                0x800028dc                system_5x7
-                0x80002c04       0x50 
+                0x80000790      0x264 
+                0x80000790                main
+                0x800009f4      0x35e 
+                0x80000d52                RCC_GetClocksFreq(RCC_ClocksTypeDef*)
+                0x80000dac                PrintF::prints(char const*)
+                0x80000dd4                PrintF::strlen(char*)
+                0x80000de4                PrintF::prints(char*, char)
+                0x80000e72                PrintF::printf(char const*, ...)
+                0x800011d0                strlen
+ .rodata        0x80001234       0xde 
+                0x80001314                serif_18i
+                0x80001ba4       0x50 
  .rodata.str1.4
-                0x80002c54       0xd6 
-                                 0xbf (size before relaxing)
-                0x80002d2c       0x24 
-                0x80002d2c                vtable for Display<NT35510<RGB16>, 0>
- .rodata.str1.4
-                0x80002d50                __clz_tab
- .init_array    0x80002e50        0x4 
+                0x80001bf4       0x81 
+                0x80001c78       0x3c 
+                0x80001c78                vtable for Display<ILI9486_8<RGB16>, 96>
+ .init_array    0x80001cb4        0x4 
 
-.data           0x02000000      0x510 load address 0x80002e54
+.data           0x02000000      0x10c load address 0x80001cb8
  .small_ram_text
                 0x02000000                SystemInit
- .trap_text     0x020000c0       0xfa 
                 0x020000c0                trap_handler
- .ram_text      0x020001c0      0x202 
- .sdata         0x020003c4       0x14 
-                0x020003c4                fps
-                0x020003c8                _ft
-                0x020003d0                _vt
- .data          0x020003d8      0x138 
-                0x020003d8                VType
-                0x020003f0                VScale
-                0x02000408                FqScale
-                0x02000420                menu
-                0x02000440                TType
-                0x02000458                ZeroLevel
-                0x02000470                FType
-                0x02000488                SPEC_Menu
-                0x020004a0                FFT_Menu
-                0x020004c4                OSC_Menu
-                0x020004f0                MExit
-                0x02000504                _tt
+                0x020000c4                delay_us(unsigned long)
+                0x020000e0                delay_ms(unsigned long)
+ .sdata         0x02000100        0xc 
+                0x02000100                eeprom
+                0x02000104                ram
+                0x02000108                ee
 
-.tdata          0x02000510        0x0
+.tdata          0x0200010c        0x0
 
-.tbss           0x02000510        0x0
+.tbss           0x0200010c        0x0
 
-.sbss           0x02000510       0x69 load address 0x80003364
- .sbss          0x02000510       0x69 
-                0x02000510                timer
-                0x02000514                count
-                0x02000518                dma
-                0x0200051c                ENCODER_SW
-                0x02000520                ENCODER_B
-                0x02000524                ENCODER_A
-                0x02000528                NT_PORT
-                0x0200052c                NT_CS
-                0x02000530                NT_RS
-                0x02000534                NT_WR
-                0x02000538                NT_RD
-                0x0200053c                ILI_8_PORT
-                0x02000540                ILI_8_RST
-                0x02000544                ILI_8_CS
-                0x02000548                ILI_8_RS
-                0x0200054c                ILI_8_WR
-                0x02000550                ILI_8_RD
-                0x02000554                ILI_SOFT_CS
-                0x02000558                ILI_SOFT_RST
-                0x0200055c                ILI_SOFT_RS
-                0x02000560                ILI_SOFT_SDA
-                0x02000564                ILI_SOFT_SCK
-                0x02000568                ST_SOFT_CS
-                0x0200056c                ST_SOFT_RST
-                0x02000570                ST_SOFT_RS
-                0x02000574                ST_SOFT_SDA
-                0x02000578                ST_SOFT_SCK
+.sbss           0x0200010c       0x61 load address 0x80001dc4
+ .sbss          0x0200010c       0x61 
+                0x0200010c                k
+                0x02000110                tim0
+                0x02000118                USER_SW
+                0x0200011c                NT_PORT
+                0x02000120                NT_CS
+                0x02000124                NT_RS
+                0x02000128                NT_WR
+                0x0200012c                NT_RD
+                0x02000130                ILI_8_PORT
+                0x02000134                ILI_8_RST
+                0x02000138                ILI_8_CS
+                0x0200013c                ILI_8_RS
+                0x02000140                ILI_8_WR
+                0x02000144                ILI_8_RD
+                0x02000148                ILI_SOFT_CS
+                0x0200014c                ILI_SOFT_RST
+                0x02000150                ILI_SOFT_RS
+                0x02000154                ILI_SOFT_SDA
+                0x02000158                ILI_SOFT_SCK
+                0x0200015c                ST_SOFT_CS
+                0x02000160                ST_SOFT_RST
+                0x02000164                ST_SOFT_RS
+                0x02000168                ST_SOFT_SDA
+                0x0200016c                ST_SOFT_SCK
 
-.bss            0x0200057c     0x3760 load address 0x800033d0
- .bss           0x0200057c     0x373c 
-                0x0200057c                lcd
-                0x020005c4                view
-                0x020005d0                points2
-                0x02000994                points
-                0x02000d58                enc
-                0x02000d68                L
-                0x02000f70                buffer
-                0x02001ab8                fft
-                0x02003cb8                PrintF::buffer
+.bss            0x02000170      0x174 load address 0x80001e28
+ .bss           0x02000170      0x150 
+                0x02000170                lcd
+                0x020001ac                RCC_Clocks
+                0x020001c0                color
+                0x020002c0                PrintF::buffer
  *(COMMON)
 
-.rela.dyn       0x02003cdc        0x0 load address 0x80006b30
-                0x02003cdc        0x0 
-                0x02003cdc        0x0 
- .rela.text     0x02003cdc        0x0 
+.rela.dyn       0x020002e4        0x0 load address 0x80001f9c
+                0x020002e4        0x0 
+                0x020002e4        0x0 
+ .rela.text     0x020002e4        0x0 
+ .rela.trap_text
+                0x020002e4        0x0 
 
-.stack          0x02003d00      0x300 load address 0x80006b54
+.stack          0x02003d00      0x300 load address 0x800059b8
  FILL mask 0x00000000
 
 /DISCARD/
