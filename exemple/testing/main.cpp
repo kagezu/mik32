@@ -2,21 +2,22 @@
 #include "lcd.h"
 #include "adc.h"
 
+RCC_ClocksTypeDef RCC_Clocks;
 Pin<2, 6> USER_SW;
 T32<0> tim0;
 LCD lcd;
 
-volatile uint32_t temp;
+u8 *ee = (u8 *)0x1000000;
+u8 *ram = (u8 *)0x2000000;
+u32 *eeprom = (u32 *)0x1000000;
+
+u32 &k = eeprom[0];
 
 INLINE void test1(uint32_t arg)
-{
-
-}
+{}
 
 INLINE void test2(uint32_t arg)
-{
-
-}
+{}
 
 __attribute__((noinline, section(".ram_text")))
 void print1(uint32_t arg)
@@ -36,15 +37,9 @@ void print2(uint32_t arg)
   lcd.printf("Arg: %lu \t Time: %lu tick \n", arg, tick);
 }
 
-void init_encoder()
-{
-  USER_SW.init(GP_VCC);
-}
-
-RCC_ClocksTypeDef RCC_Clocks;
-
 int main(void)
 {
+  USER_SW.init(GP_VCC);
   tim0.enable();
 
   RCC_GetClocksFreq(&RCC_Clocks);
@@ -74,15 +69,17 @@ int main(void)
 
   // Rect rect(50, 100, 450, 400);
 
-  u16 *ee = (u16 *)0x1000000;
-  u16 *ram = (u16 *)0x2000000;
+  for (int y = 0; y < 256; y++)
+    for (int x = 0; x < 64; x++) {
+      lcd.pixel(x + 400, y + 30, RGB(*ram, *ram << 3, *ram << 5));
+      ram++;
+    }
 
   for (int y = 0; y < 64; y++)
-    for (int x = 0; x < 64; x++)
-      lcd.pixel(x + 400, y + 10, *ee++);
-  for (int y = 0; y < 128; y++)
-    for (int x = 0; x < 64; x++)
-      lcd.pixel(x + 400, y + 100, *ram++);
+    for (int x = 0; x < 128; x++) {
+      lcd.pixel(x + 250, y + 250, RGB(*ee, *ee << 3, *ee << 5));
+      ee++;
+    }
 
   while (true);
 
