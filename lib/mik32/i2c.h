@@ -1,10 +1,10 @@
 #pragma once
-#include "core.h"
+#include "mik32.h"
 // #include "pinout.h"
 // #include "mik32_hal_i2c.h"
 
 extern "C" {
-#include "mik32_hal_i2c.h"
+  #include "mik32_hal_i2c.h"
 }
 
 #define I2C_IDLE    0x00

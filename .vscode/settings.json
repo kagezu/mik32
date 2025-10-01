@@ -41,7 +41,8 @@
     "tuple": "cpp",
     "utility": "cpp",
     "core.h": "c",
-    "mik32.h": "c"
+    "mik32.h": "c",
+    "eeprom cpp": "cpp"
   },
   "platformio-ide.autoOpenPlatformIOIniFile": false
 }

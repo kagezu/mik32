@@ -1,5 +1,6 @@
 // #include "type/array.h"
 #pragma once
+#include "mik32.h"
 
 /*
 #### Array<T, I> T элемент, I индекс

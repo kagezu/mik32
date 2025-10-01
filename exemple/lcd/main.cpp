@@ -11,8 +11,10 @@ int main(void)
 {
   USER_B.init(GP_GND);
   lcd.init();
-  if (lcd.max_y() > 300) lcd.font(sans_24, 0, 0);
-  else lcd.font(serif_18i, 0, 0);
+  // if (lcd.max_y() > 300) lcd.font(sans_24, 0, 0);
+  // else lcd.font(serif_18i, 0, 0);
+  // lcd.font(*(Font *)0x01001F20, 0, 0);
+  lcd.font(*((Font *)0x01001F20), 0, 0);
   lcd.color(White);
   lcd.background(MidnightBlue);
 
