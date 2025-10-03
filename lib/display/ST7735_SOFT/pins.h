@@ -18,10 +18,13 @@
 // #define ST_SOFT_RST(x)     x ( C, PC3)
 // #define ST_SOFT_CS(x)      x ( C, PC4)
 
-Pin<PC, PC1> ST_SOFT_SCK;
-Pin<PC, PC2> ST_SOFT_SDA;
-Pin<PC, PC3> ST_SOFT_RS;
-Pin<PC, PC4> ST_SOFT_RST;
+Pin<PB, PB3> ST_SOFT_SCK;
+Pin<PB, PB5> ST_SOFT_SDA;
+// Pin<PC, PC3> ST_SOFT_RS;
+Pin<PC, PC6> ST_SOFT_RST;
+// Pin<PC, PC5> ST_SOFT_CS;
+
+Pin<PC, PC4> ST_SOFT_RS;
 Pin<PC, PC5> ST_SOFT_CS;
 #endif
 
