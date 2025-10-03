@@ -8,3 +8,6 @@
 #include <avr/pgmspace.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+#include "macros/attribute.h"
+#include "type/int.h"

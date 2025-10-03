@@ -10,13 +10,12 @@
 // ST_8_RD       ?
 
 #ifdef __AVR_ATmega328P__
-#define ST_8_RD(x)   x ( C, 0 )
-#define ST_8_WR(x)   x ( C, 1 )
-#define ST_8_RS(x)   x ( C, 2 )
-#define ST_8_CS(x)   x ( C, 3 )
-#define ST_8_RST(x)  x ( C, 4 )
-// #define ST_8_RST(x)  x ( C, 8 )
-#define ST_8_PORT(x) x ( D, 8 )
+Pin<PC, 0> ST_8_RD;
+Pin<PC, 1> ST_8_WR;
+Pin<PC, 2> ST_8_RS;
+Pin<PC, 3> ST_8_CS;
+Pin<PC, 4> ST_8_RST;
+Port<PD, 0xFF> ST_8_PORT;
 #endif
 
 #ifdef __AVR_ATmega128__

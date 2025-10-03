@@ -10,9 +10,9 @@
 #ifndef ILI_SPI_RS
 
 #ifdef __AVR_ATmega328P__
-#define ILI_SPI_CS(x)      x ( C, 0)
-#define ILI_SPI_RS(x)      x ( C, 0)
-#define ILI_SPI_RST(x)     x ( C, 0) // На самом деле сброс не подключён
+Pin<PB, 0> ILI_SPI_CS;
+Pin<PB, 1> ILI_SPI_RS;
+Pin<PC, 6> ILI_SPI_RST; // На самом деле сброс не подключён
 #endif
 
 #ifdef MIK32V2

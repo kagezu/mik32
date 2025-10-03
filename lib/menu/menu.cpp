@@ -49,7 +49,7 @@ void MItem::print(PrintF *out)
   switch (type) {
     case ListType:
       out->printf("%s ", name);
-      if (pass) MLIST(value)->print(out);
+      if (pass) MLIST(value)->print.init(GPO_Max);
       else out->printf("\1%s\1 ", MLIST(value)->name);
       break;
 

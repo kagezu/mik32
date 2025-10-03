@@ -24,16 +24,16 @@
 
 static inline void GPIO_ILI9486_16()
 {
-  // SEL_0(GPIO); SEL_0(OUT); SEL_0(CLR);  // PORT 0.3 -> D9
+  // SEL_0(GPIO); SEL_0.init(GPO_Max); SEL_0.clr();  // PORT 0.3 -> D9
   L_WR(GPIO);
   L_RS(GPIO);
   L_CS(GPIO);
-  L_WR(OUT);
-  L_RS(OUT);
-  L_CS(OUT);
-  L_WR(CLR);
-  L_RS(CLR);
-  L_CS(SET);
+  L_WR.init(GPO_Max);
+  L_RS.init(GPO_Max);
+  L_CS.init(GPO_Max);
+  L_WR.clr();
+  L_RS.clr();
+  L_CS.set();
   PAD_CONFIG->PORT_0_CFG = 0;  // PORT 0 -> GPIO
   L_PORT(OUT) | 0xFFFF;        // PORT 0 -> OUT
 }
@@ -55,12 +55,12 @@ static inline void GPIO_ILI9486_16()
   init.GPIO_Pin = GPIO_Pin_All;
   GPIO_Init(L_PORT(PORT), &init);
 
-  L_WR(OUT);
-  L_RS(OUT);
-  L_CS(OUT);
-  L_WR(CLR);
-  L_RS(CLR);
-  L_CS(SET);
+  L_WR.init(GPO_Max);
+  L_RS.init(GPO_Max);
+  L_CS.init(GPO_Max);
+  L_WR.clr();
+  L_RS.clr();
+  L_CS.set();
 
 #ifdef WR_FORSED
   constexpr uint32_t WR_PSC_DIV_TAB[] = { 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8 };

@@ -1,5 +1,5 @@
 #include "i2c.h"
-
+/*
 volatile uint8_t I2C::_state;
 volatile uint8_t I2C::_master_address;
 volatile uint16_t I2C::_master_index;
@@ -133,3 +133,4 @@ ISR(TWI_vect)
       break;
   }
 }
+*/

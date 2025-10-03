@@ -100,56 +100,12 @@ NOINLINE void ILI9225_SOFT::set_addr(uint16_t x0, uint16_t y0, uint16_t x1, uint
 
 void ILI9225_SOFT::send_word(uint16_t rgb)
 {
-#ifdef __AVR__
-  uint8_t d0 = ILI_SOFT_SCK(OUTPUT) & ~(ILI_SOFT_SDA(MASK) | ILI_SOFT_SCK(MASK));
-  uint8_t d1 = (ILI_SOFT_SCK(OUTPUT) | ILI_SOFT_SDA(MASK)) & ~ILI_SOFT_SCK(MASK);
-  uint8_t s0 = (ILI_SOFT_SCK(OUTPUT) & ~ILI_SOFT_SDA(MASK)) | ILI_SOFT_SCK(MASK);
-
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x8000 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x4000 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x2000 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x1000 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x800 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x400 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x200 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x100 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x80 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x40 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x20 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x10 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x8 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x4 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x2 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-  ILI_SOFT_SCK(OUTPUT) = rgb & 0x1 ? d1 : d0;
-  ILI_SOFT_SCK(OUTPUT) = s0;
-
-  ILI_SOFT_SCK.clr();
-#else    
   for (uint16_t mask = 0x8000; mask; mask >>= 1) {
     if (rgb & mask) ILI_SOFT_SDA.set();
     else ILI_SOFT_SDA.clr();
     ILI_SOFT_SCK.set();
     ILI_SOFT_SCK.clr();
   }
-#endif
 }
 
 void ILI9225_SOFT::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB16 color)
@@ -160,52 +116,8 @@ void ILI9225_SOFT::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB1
   set_addr(x0, y0, x1, y1);
   uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
-#ifdef __AVR__
-  uint8_t d0 = ILI_SOFT_SCK(OUTPUT) & ~(ILI_SOFT_SDA(MASK) | ILI_SOFT_SCK(MASK));
-  uint8_t d1 = (ILI_SOFT_SCK(OUTPUT) | ILI_SOFT_SDA(MASK)) & ~ILI_SOFT_SCK(MASK);
-  uint8_t s0 = (ILI_SOFT_SCK(OUTPUT) & ~ILI_SOFT_SDA(MASK)) | ILI_SOFT_SCK(MASK);
-
-  // Дублирование кода намеренно, так как оптимизация ускоряет тут выполнение в 2 раза
-  while (len--) {
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x8000 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x4000 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x2000 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x1000 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x800 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x400 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x200 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x100 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x80 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x40 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x20 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x10 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x8 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x4 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x2 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-    ILI_SOFT_SCK(OUTPUT) = rgb & 0x1 ? d1 : d0;
-    ILI_SOFT_SCK(OUTPUT) = s0;
-  }
-#else
   while (len--) send_word(rgb);
-#endif
+
   ILI_SOFT_SCK.clr();
   ILI_SOFT_CS.set();
 }

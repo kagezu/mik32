@@ -12,11 +12,12 @@
 #ifndef ILI_SOFT_RS
 
 #ifdef __AVR_ATmega328P__
-#define ILI_SOFT_SCK(x)     x ( C, PC1)
-#define ILI_SOFT_SDA(x)     x ( C, PC2)
-#define ILI_SOFT_RS(x)      x ( C, PC3)
-#define ILI_SOFT_RST(x)     x ( C, PC4)
-#define ILI_SOFT_CS(x)      x ( C, PC5)
+Pin<PC, PC1> ILI_SOFT_SCK;
+Pin<PC, PC2> ILI_SOFT_SDA;
+Pin<PC, PC3> ILI_SOFT_RS;
+Pin<PC, PC4> ILI_SOFT_RST;
+Pin<PC, PC5> ILI_SOFT_CS;
+// Pin<PC, 0> ILI_SOFT_PORT;
 #endif
 
 #ifdef MIK32V2

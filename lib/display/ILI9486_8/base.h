@@ -55,8 +55,8 @@ INLINE void send_byte(uint8_t data)
   ILI_8_PORT.set(data);
   ILI_8_WR.set();
 #else
-  ILI_8_PORT(OUTPUT) = data;
-  ILI_8_WR(SET); ILI_8_WR(CLR);
+  ILI_8_PORT.out(data);
+  ILI_8_WR.set(); ILI_8_WR.clr();
 #endif
 }
 
@@ -70,10 +70,10 @@ INLINE void send_word(uint16_t data)
   ILI_8_PORT.set(data & 0xff);
   ILI_8_WR.set();
 #else
-  ILI_8_PORT(OUTPUT) = data >> 8;
-  ILI_8_WR(SET); ILI_8_WR(CLR);
-  ILI_8_PORT(OUTPUT) = data;
-  ILI_8_WR(SET); ILI_8_WR(CLR);
+  ILI_8_PORT.out(data >> 8);
+  ILI_8_WR.set(); ILI_8_WR.clr();
+  ILI_8_PORT.out(data);
+  ILI_8_WR.set(); ILI_8_WR.clr();
 #endif
 }
 

@@ -11,8 +11,8 @@ extern SPI spi;
 void VS1053::init()
 {
   X_DREQ(GPIO); X_CS(GPIO); X_DCS(GPIO);
-  X_DREQ(IN);  X_CS(OUT);  X_DCS(OUT);
-  X_CS(SET);  X_DCS(SET);
+  X_DREQ(IN);  X_CS.init(GPO_Max);  X_DCS.init(GPO_Max);
+  X_CS.set();  X_DCS.set();
 
   spi.begin(_init);
   write_register(SCI_CLOCKF, SM_RESET);
@@ -28,12 +28,12 @@ void VS1053::rt() { load_patch(rtmidi); }
 
 void VS1053::send(uint8_t *ptr, uint8_t size)
 {
-  X_DCS(CLR);
+  X_DCS.clr();
   spi.begin(_write);
   while (size--) {
     spi.transfer16(*ptr++);
   }
-  X_DCS(SET);
+  X_DCS.set();
   spi.end();
 }
 
@@ -53,47 +53,47 @@ void VS1053::send(uint8_t *ptr, uint8_t size)
 uint16_t VS1053::read_register(uint8_t addr)
 {
   uint16_t result;
-  X_CS(CLR);
+  X_CS.clr();
   spi.transfer(SCI_READ);
   spi.transfer(addr);
   result = spi.transfer16(0xFFFF);
-  X_CS(SET);
+  X_CS.set();
   return result;
 }
 
 void VS1053::write_register(uint8_t addr, uint16_t data)
 {
-  X_CS(CLR);
+  X_CS.clr();
   spi.transfer(SCI_WRITE);
   spi.transfer(addr);
   spi.transfer16(data);
   WAIT_DREQ;
-  X_CS(SET);
+  X_CS.set();
 }
 
 void VS1053::send_midi(uint8_t msg)
 {
-  X_DCS(CLR);
+  X_DCS.clr();
   // spi.transfer(SCI_MIDI);
   spi.transfer16(msg);
-  X_DCS(SET);
+  X_DCS.set();
 }
 
 void VS1053::send_midi(uint8_t msg, uint8_t data)
 {
-  X_DCS(CLR);
+  X_DCS.clr();
   // spi.transfer(SCI_MIDI);
   spi.transfer16(msg);
   // spi.transfer(SCI_MIDI);
   spi.transfer(data);
   // spi.wait();
   // WAIT_DREQ;
-  X_DCS(SET);
+  X_DCS.set();
 }
 
 void VS1053::send_midi(uint8_t msg, uint8_t data1, uint8_t data2)
 {
-  X_DCS(CLR);
+  X_DCS.clr();
   // spi.transfer(SCI_MIDI);
   spi.transfer16(msg);
   // spi.transfer(SCI_MIDI);
@@ -102,7 +102,7 @@ void VS1053::send_midi(uint8_t msg, uint8_t data1, uint8_t data2)
   spi.transfer16(data2);
   // spi.wait();
   // WAIT_DREQ;
-  X_DCS(SET);
+  X_DCS.set();
 }
 
 // Приватные функции

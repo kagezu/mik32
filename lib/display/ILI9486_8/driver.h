@@ -47,10 +47,10 @@ public:
     uint16_t y = y1 - y0;
     for (uint16_t i = 0; i <= x; i++)
       for (uint16_t j = 0; j <= y; j++) {
-        ILI_8_PORT(OUTPUT) = h;
-        ILI_8_WR(SET); ILI_8_WR(CLR);
-        ILI_8_PORT(OUTPUT) = l;
-        ILI_8_WR(SET); ILI_8_WR(CLR);
+        ILI_8_PORT.out(h);
+        ILI_8_WR.set(); ILI_8_WR.clr();
+        ILI_8_PORT.out(l);
+        ILI_8_WR.set(); ILI_8_WR.clr();
       }
   #endif
     release();
@@ -83,12 +83,12 @@ public:
     ILI_8_PORT.out(color.blue | mask);
     ILI_8_WR.set();
   #else
-    ILI_8_PORT(OUTPUT) = color.red;
-    ILI_8_WR(SET); ILI_8_WR(CLR);
-    ILI_8_PORT(OUTPUT) = color.green;
-    ILI_8_WR(SET); ILI_8_WR(CLR);
-    ILI_8_PORT(OUTPUT) = color.blue;
-    ILI_8_WR(SET); ILI_8_WR(CLR);
+    ILI_8_PORT.out(color.red);
+    ILI_8_WR.set(); ILI_8_WR.clr();
+    ILI_8_PORT.out(color.green);
+    ILI_8_WR.set(); ILI_8_WR.clr();
+    ILI_8_PORT.out(color.blue);
+    ILI_8_WR.set(); ILI_8_WR.clr();
   #endif
   }
 
@@ -116,14 +116,14 @@ public:
     uint16_t y = y1 - y0;
     for (uint16_t i = 0; i <= x; i++)
       for (uint16_t j = 0; j <= y; j++) {
-        ILI_8_PORT(OUTPUT) = rgb.red;
-        ILI_8_WR(SET); ILI_8_WR(CLR);
-        ILI_8_PORT(OUTPUT) = rgb.green;
-        ILI_8_WR(SET); ILI_8_WR(CLR);
-        ILI_8_PORT(OUTPUT) = rgb.blue;
-        ILI_8_WR(SET); ILI_8_WR(CLR);
+        ILI_8_PORT.out(rgb.red);
+        ILI_8_WR.set(); ILI_8_WR.clr();
+        ILI_8_PORT.out(rgb.green);
+        ILI_8_WR.set(); ILI_8_WR.clr();
+        ILI_8_PORT.out(rgb.blue);
+        ILI_8_WR.set(); ILI_8_WR.clr();
       #endif
-    }
+      }
     release();
   }
 };

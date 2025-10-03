@@ -50,50 +50,6 @@ void send_byte(uint8_t data)
 
 void send_word(uint16_t rgb)
 {
-#ifdef __AVR__
-  reg d0 = ST_SOFT_SCK(OUTPUT) & ~(ST_SOFT_SDA(MASK) | ST_SOFT_SCK(MASK));
-  reg d1 = (ST_SOFT_SCK(OUTPUT) | ST_SOFT_SDA(MASK)) & ~ST_SOFT_SCK(MASK);
-  reg s0 = (ST_SOFT_SCK(OUTPUT) & ~ST_SOFT_SDA(MASK)) | ST_SOFT_SCK(MASK);
-
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x8000 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x4000 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x2000 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x1000 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x800 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x400 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x200 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x100 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x80 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x40 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x20 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x10 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x8 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x4 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x2 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-  ST_SOFT_SCK(OUTPUT) = rgb & 0x1 ? d1 : d0;
-  ST_SOFT_SCK(OUTPUT) = s0;
-
-  ST_SOFT_SCK.clr();
-#else
-
   int mask = 0x8000;
   while (mask) {
     if (rgb & mask)  ST_SOFT_SDA.set();
@@ -102,5 +58,4 @@ void send_word(uint16_t rgb)
     ST_SOFT_SCK.clr();
     mask >>= 1;
   }
-#endif
 }

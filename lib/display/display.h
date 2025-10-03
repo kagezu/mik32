@@ -8,9 +8,9 @@
 #ifndef CH32V20x_D6
 #include "ST7789/driver.h"
 #include "ILI9486_8/driver.h"
-#include "SSD1306/driver.h"
 #endif
 #ifndef __AVR__
+#include "SSD1306/driver.h"
 #include "ILI9486_16/driver.h"
 #include "NT35510/driver.h"
 #endif

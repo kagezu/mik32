@@ -1,5 +1,5 @@
 #pragma once
-#include "pgmspace.h"
+#include "Arduino.h"
 
 // Fundamental Command
 

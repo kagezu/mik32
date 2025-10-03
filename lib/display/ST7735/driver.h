@@ -19,7 +19,7 @@ public:
 
 #include "base.h"
 
-  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); flag = 0; }
+  INLINE void select() { spi.begin(); ST_SPI_CS.clr(); flag = 0; }
   INLINE void set_rgb_format()
   {
     send_command(COLMOD);
@@ -76,7 +76,7 @@ public:
 
 #include "base.h"
 
-  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
+  INLINE void select() { spi.begin(); ST_SPI_CS.clr(); }
   INLINE void set_rgb_format()
   {
     send_command(COLMOD);
@@ -110,7 +110,7 @@ public:
 
 #include "base.h"
 
-  INLINE void select() { spi.begin(); ST_SPI_CS(CLR); }
+  INLINE void select() { spi.begin(); ST_SPI_CS.clr(); }
   INLINE   void set_rgb_format()
   {
     send_command(COLMOD);

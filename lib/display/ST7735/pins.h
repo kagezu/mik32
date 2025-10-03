@@ -10,9 +10,14 @@
 #ifndef ST_SPI_RS
 
 #ifdef __AVR_ATmega328P__
-#define ST_SPI_RS(x)      x ( C, PC4)
-#define ST_SPI_CS(x)      x ( C, PC5)
-#define ST_SPI_RST(x)     x ( C, PC6) // На самом деле сброс не подключён
+// #define ST_SPI_RS(x)      x ( PC, PC4)
+// #define ST_SPI_CS(x)      x ( PC, PC5)
+// #define ST_SPI_RST(x)     x ( PC, PC6) // На самом деле сброс не подключён
+
+Pin<PC, PC4> ST_SPI_RS;
+Pin<PC, PC5> ST_SPI_CS;
+
+
 #endif
 
 #ifdef __AVR_ATmega128__
