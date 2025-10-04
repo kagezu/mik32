@@ -34,13 +34,15 @@ public:
 
   void init(uint8_t rotation = 0)
   {
-    // ST_SPI_RST.init(GPO_Max);
-    // ST_SPI_RST.clr();
+    ST_SPI_RST.init(GPO_Max);
+    ST_SPI_RST.clr();
     ST_SPI_CS.init(GPO_Max);
     ST_SPI_CS.set();
     ST_SPI_RS.init(GPO_Max);
     ST_SPI_RS.set();
-    // ST_SPI_RST.set();
+    ST_SPI_RST.set();
+
+    delay_ms(50);
 
     // Настройка для инициализации
     spi.mode(SPI_MODE0);

@@ -18,14 +18,12 @@
 // #define ST_SOFT_RST(x)     x ( C, PC3)
 // #define ST_SOFT_CS(x)      x ( C, PC4)
 
-Pin<PB, PB3> ST_SOFT_SCK;
-Pin<PB, PB5> ST_SOFT_SDA;
-// Pin<PC, PC3> ST_SOFT_RS;
-Pin<PC, PC6> ST_SOFT_RST;
-// Pin<PC, PC5> ST_SOFT_CS;
+Pin<PB, PB0> ST_SOFT_CS;
+Pin<PB, PB1> ST_SOFT_RS;
+Pin<PB, PB3> ST_SOFT_SDA;
+Pin<PB, PB5> ST_SOFT_SCK;
+Pin<PC, PC3> ST_SOFT_RST;
 
-Pin<PC, PC4> ST_SOFT_RS;
-Pin<PC, PC5> ST_SOFT_CS;
 #endif
 
 #ifdef __AVR_ATmega128__
@@ -67,14 +65,3 @@ Pin<PA, 11> ST_SOFT_CS;
 #endif
 
 #endif
-
-static inline void GPIO_ST_SOFT()
-{
-  ST_SOFT_SCK.init(GPO_2mA);
-  ST_SOFT_SDA.init(GPO_2mA);
-  ST_SOFT_RST.init(GPO_2mA);
-  ST_SOFT_CS.init(GPO_2mA);
-  ST_SOFT_RS.init(GPO_2mA);
-  ST_SOFT_CS.set();
-  ST_SOFT_RS.set();
-}

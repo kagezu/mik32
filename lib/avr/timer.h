@@ -15,3 +15,6 @@
 #define T32_0_EN   T1_DIV_1024
 #define T32_0_C   TCNT1 = 0
 #define T32_0     ((uint32_t)TCNT1 << 10)
+
+
+#define T1_CNT    ((uint32_t)TCNT1 << 10)

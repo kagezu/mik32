@@ -15,12 +15,19 @@ void pixel(int16_t x, int16_t y, RGB color)
 
 void init(uint8_t rotation = 0)
 {
-  GPIO_ST_SOFT();
+  ST_SOFT_SCK.init(GPO_2mA);
+  ST_SOFT_SDA.init(GPO_2mA);
+  ST_SOFT_RST.init(GPO_2mA);
+  ST_SOFT_CS.init(GPO_2mA);
+  ST_SOFT_RS.init(GPO_2mA);
+  ST_SOFT_CS.set();
+  ST_SOFT_RS.set();
+  ST_SOFT_SCK.clr();
 
-  ST_SOFT_RST.clr();               // Аппаратный сброс
+  ST_SOFT_RST.clr();    // Аппаратный сброс
   delay_ms(2);
   ST_SOFT_RST.set();
-  delay_ms(15);                // Ждать стабилизации напряжений
+  delay_ms(30);         // Ждать стабилизации напряжений
 
   select();
   send_config(ST7735_CONFIG, sizeof(ST7735_CONFIG));
@@ -50,7 +57,7 @@ void send_byte(uint8_t data)
 
 void send_word(uint16_t rgb)
 {
-  int mask = 0x8000;
+  u16 mask = 0x8000;
   while (mask) {
     if (rgb & mask)  ST_SOFT_SDA.set();
     else  ST_SOFT_SDA.clr();

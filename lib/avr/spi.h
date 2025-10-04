@@ -25,6 +25,8 @@ class SPI {
 protected:
   uint8_t spcr;
   uint8_t spsr;
+  uint8_t sreg;
+  uint8_t transaction = 0;
 
 public:
   SPI()
@@ -35,7 +37,10 @@ public:
     SPI1_NSS_IN.init(GP_VCC);
 
     fq(0x4000);
-
+    master();
+    SPCR = spcr;
+    SPSR = spsr;
+    SPDR = 0;
   }
 
   void fq(uint16_t fq)
@@ -73,7 +78,7 @@ public:
 
   void end(void)
   {
-    wait();
+    // wait();
     transaction = 0;
     SREG = sreg;
   }
@@ -109,9 +114,6 @@ public:
     }
   }
 
-private:
-  uint8_t sreg;
-  uint8_t transaction = 0;
 };
 
 class SPI0 : public SPI {};

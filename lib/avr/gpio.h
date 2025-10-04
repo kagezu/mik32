@@ -39,17 +39,19 @@ private:
   constexpr static GPIO_TypeDef *GPIOx() { return  ((GPIO_TypeDef *)&PINB) + N; }
 
 public:
-  INLINE void set() { GPIOx()->PORT = 1 << PINx; }
+  INLINE void set() { GPIOx()->PORT |= 1 << PINx; }
   INLINE void clr() { GPIOx()->PORT &= ~(1 << PINx); }
   INLINE void inv() { GPIOx()->PORT ^= 1 << PINx; }
   INLINE void out(bool data) { if (data) set(); else clr(); }
   INLINE u8 get() { return GPIOx()->PIN & (1 << PINx); }
   INLINE void init(uc8 conf = GP_IO)
   {
-    if (conf & GPO_Max) GPIOx()->DDR = 1 << PINx;
-    else GPIOx()->DDR &= ~(1 << PINx);
-    if (conf & GP_VCC) GPIOx()->PORT = 1 << PINx;
-    else GPIOx()->PORT &= ~(1 << PINx);
+    if (conf & GPO_Max) GPIOx()->DDR |= 1 << PINx;
+    else {
+      GPIOx()->DDR &= ~(1 << PINx);
+      if (conf & GP_VCC) GPIOx()->PORT |= 1 << PINx;
+      else GPIOx()->PORT &= ~(1 << PINx);
+    }
   }
 };
 
@@ -67,8 +69,10 @@ public:
   void init(uc32 conf = GP_IO)
   {
     if (conf & GPO_Max) GPIOx()->DDR |= PINS;
-    else GPIOx()->DDR &= ~PINS;
-    if (conf & GP_VCC) GPIOx()->PORT |= PINS;
-    else GPIOx()->PORT &= ~PINS;
+    else {
+      GPIOx()->DDR &= ~PINS;
+      if (conf & GP_VCC) GPIOx()->PORT |= PINS;
+      else GPIOx()->PORT &= ~PINS;
+    }
   }
 };

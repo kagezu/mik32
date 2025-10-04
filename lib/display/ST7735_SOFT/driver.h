@@ -37,12 +37,12 @@ public:
   {
     uint16_t rgb = color.rgb;
 
-    ST_SOFT_CS.clr();
+    select();
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      for (int mask = 0x800; mask; mask >>= 1) {
+      for (u16 mask = 0x800; mask; mask >>= 1) {
         if (rgb & mask) ST_SOFT_SDA.set();
         else ST_SOFT_SDA.clr();
         ST_SOFT_SCK.set();
@@ -79,12 +79,12 @@ public:
   {
     uint16_t rgb = color.rgb;
 
-    ST_SOFT_CS.clr();
+    select();
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      int mask = 0x8000;
+      u16 mask = 0x8000;
       while (mask) {
         if (rgb & mask)  ST_SOFT_SDA.set();
         else  ST_SOFT_SDA.clr();
@@ -94,8 +94,7 @@ public:
       }
     }
 
-    ST_SOFT_SCK.clr();
-    ST_SOFT_CS.set();
+    release();
   }
 };
 
@@ -215,7 +214,7 @@ public:
     uint8_t g = color.green;
     uint8_t b = color.blue;
 
-    ST_SOFT_CS.clr();
+    select();
     set_addr(x0, y0, x1, y1);
     uint16_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
@@ -308,6 +307,7 @@ public:
       ST_SOFT_SCK.set();
       ST_SOFT_SCK.clr();
     }
-    ST_SOFT_CS.set();
+
+    release();
   }
 };

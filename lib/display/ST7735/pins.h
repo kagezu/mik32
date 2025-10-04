@@ -14,8 +14,12 @@
 // #define ST_SPI_CS(x)      x ( PC, PC5)
 // #define ST_SPI_RST(x)     x ( PC, PC6) // На самом деле сброс не подключён
 
-Pin<PC, PC4> ST_SPI_RS;
-Pin<PC, PC5> ST_SPI_CS;
+// Pin<PC, PC4> ST_SPI_RS;
+// Pin<PC, PC5> ST_SPI_CS;
+
+Pin<PB, PB0> ST_SPI_CS;
+Pin<PB, PB1> ST_SPI_RS;
+Pin<PC, PC3> ST_SPI_RST;
 
 
 #endif
