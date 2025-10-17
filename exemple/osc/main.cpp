@@ -7,7 +7,7 @@
 #include "encoder.h"
 #include "fft.h"
 
-constexpr int ADC_CH = 2;         // Номер канала ADC
+constexpr int ADC_CH = 0;         // Номер канала ADC
 constexpr int INT_FQ = 200;       // Hz опрос энкодера
 constexpr int INFO_FQ = 3;        // Hz обновление текста
 constexpr int Lp = 8;             // Узловых точек для интерполяции Лагранжа (чётная)
@@ -149,9 +149,9 @@ void data_draw()
 void init()
 {
   // Восстановление настроек из батарейного домена
-  if (RTC->REG[15] == RTC_REG_SAVED)
-    menu.load((int *)RTC->REG);
-  RTC->REG[15] = RTC_REG_SAVED;
+  // if (RTC->REG[15] == RTC_REG_SAVED)
+  //   menu.load((int *)RTC->REG);
+  // RTC->REG[15] = RTC_REG_SAVED;
 
   // Сканирование энкодера по таймеру
   T32_0_PS; T32_0_FQ(INT_FQ);
@@ -191,8 +191,8 @@ int main(void)
 {
   init();
   lcd.init();
-  lcd.font(system_5x7, 1, 3);
-  // lcd.font(arial_14, 1, 3);
+  if (lcd.max_x() < 320)lcd.font(system_5x7, 1, 3);
+  else lcd.font(arial_14, 1, 3);
   fft.init();
   ADC::init(ADC_CH);
   dma.adc(DMA_TIMER1, buffer, sizeof(buffer));

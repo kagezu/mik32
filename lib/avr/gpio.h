@@ -2,26 +2,26 @@
 #pragma once
 #include <avr.h>
 
-constexpr u8 GP_Float = 0x00;  // floating
-constexpr u8 GP_VCC = 0x02;    // pull-up
-constexpr u8 GP_GND = 0x00;    // pull-down
-constexpr u8 GP_Open = 0x00;   // open-drain
+#define GP_Float 0x00  // floating
+#define GP_VCC 0x02    // pull-up
+#define GP_GND 0x00    // pull-down
+#define GP_Open 0x00   // open-drain
 
 // Для совместимости
 
-constexpr u8 GP_IO = 0x00;     // general IO
-constexpr u8 GP_Serial = 0x00; // 1я функция
-constexpr u8 GP_Timer = 0x00;  // 2я функция
-constexpr u8 GP_Analog = 0x00; // 3я функция
+#define GP_IO  0x00     // general IO
+#define GP_Serial  0x00 // 1я функция
+#define GP_Timer  0x00  // 2я функция
+#define GP_Analog  0x00 // 3я функция
 
-constexpr u8 GPO_2mA = 0x01;
-constexpr u8 GPO_4mA = 0x01;
-constexpr u8 GPO_8mA = 0x01;
-constexpr u8 GPO_Max = 0x01;
+#define GPO_2mA  0x01
+#define GPO_4mA 0x01
+#define GPO_8mA 0x01
+#define GPO_Max 0x01
 
-constexpr u8 GPO_50MHz = 0x01;
-constexpr u8 GPO_10MHz = 0x01;
-constexpr u8 GPO_2MHz = 0x01;
+#define GPO_50MHz 0x01
+#define GPO_10MHz 0x01
+#define GPO_2MHz  0x01
 
 typedef struct {
   volatile uint8_t PIN;
@@ -29,9 +29,9 @@ typedef struct {
   volatile uint8_t PORT;
 } GPIO_TypeDef;
 
-constexpr uc8 PB = 0x0;
-constexpr uc8 PC = 0x1;
-constexpr uc8 PD = 0x2;
+#define PB  0x0
+#define PC  0x1
+#define PD  0x2
 
 template <uc8 N, uc8 PINx>
 class Pin {

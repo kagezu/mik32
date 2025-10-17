@@ -44,7 +44,11 @@
 #define BUFFER_LENGTH 32
 #define WIRE_HAS_END 1
 
-class I2C {
+template< const auto N = 0>
+class I2C {};
+
+template<>
+class I2C<0> {
 private:
   static volatile uint8_t *_master_buffer;
   static volatile uint16_t _master_index;

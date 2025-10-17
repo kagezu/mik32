@@ -30,24 +30,6 @@ public:
   {
     static uint8_t half;
 
-  #ifdef MIK32V2
-    if (flag) {
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = half | (color.rgb >> 8);
-      ST_8_WR.set();
-      flag = 0;
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = color.rgb & 0xff;
-      ST_8_WR.set();
-    }
-    else {
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = color.rgb >> 4;
-      half = color.rgb << 4;
-      flag = 1;
-      ST_8_WR.set();
-    }
-  #else 
     if (flag) {
       ST_8_PORT.out(half | (color.rgb >> 8));
       ST_8_WR.set(); ST_8_WR.clr();
@@ -61,7 +43,6 @@ public:
       half = color.rgb << 4;
       flag = 1;
     }
-  #endif
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB12 color)
@@ -77,15 +58,12 @@ public:
     uint32_t len = ((x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1)) >> 1;
 
     while (len--) {
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = hbyte;
-      ST_8_WR.set();
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = mbyte;
-      ST_8_WR.set();
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = lbyte;
-      ST_8_WR.set();
+      ST_8_PORT.out(hbyte);
+      ST_8_WR.set(); ST_8_WR.clr();
+      ST_8_PORT.out(mbyte);
+      ST_8_WR.set(); ST_8_WR.clr();
+      ST_8_PORT.out(lbyte);
+      ST_8_WR.set(); ST_8_WR.clr();
     }
   #else
     uint16_t len = ((x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1)) >> 1;
@@ -134,12 +112,10 @@ public:
   #ifdef MIK32V2
     uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
     while (len--) {
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = h;
-      ST_8_WR.set();
-      ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-      ST_8_PORT(STATE) = l;
-      ST_8_WR.set();
+      ST_8_PORT.out(h);
+      ST_8_WR.set(); ST_8_WR.clr();
+      ST_8_PORT.out(l);
+      ST_8_WR.set(); ST_8_WR.clr();
     }
   #else
     uint16_t x = x1 - x0;
@@ -175,24 +151,12 @@ public:
 
   INLINE void send_rgb(RGB18 color)
   {
-  #ifdef MIK32V2
-    ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-    ST_8_PORT(STATE) = color.red;
-    ST_8_WR.set();
-    ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-    ST_8_PORT(STATE) = color.green;
-    ST_8_WR.set();
-    ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);
-    ST_8_PORT(STATE) = color.blue;
-    ST_8_WR.set();
-  #else
     ST_8_PORT.out(color.red);
     ST_8_WR.set(); ST_8_WR.clr();
     ST_8_PORT.out(color.green);
     ST_8_WR.set(); ST_8_WR.clr();
     ST_8_PORT.out(color.blue);
     ST_8_WR.set(); ST_8_WR.clr();
-  #endif
   }
 
   void area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, RGB18 color)
@@ -201,17 +165,14 @@ public:
     set_addr(x0, y0, x1, y1);
 
   #ifdef MIK32V2
-    uint32_t red = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.red;
-    uint32_t green = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.green;
-    uint32_t blue = (ST_8_PORT(OUTPUT) & ~(0xff | ST_8_WR(MASK))) | color.blue;
     uint32_t len = (x1 - x0 + 1) * (y1 - y0 + 1);
 
     while (len--) {
-      ST_8_PORT.out(red;
+      ST_8_PORT.out(color.red);
       ST_8_WR.set();
-      ST_8_PORT.out(green;
+      ST_8_PORT.out(color.green);
       ST_8_WR.set();
-      ST_8_PORT.out(blue;
+      ST_8_PORT.out(color.blue);
       ST_8_WR.set();
 
       // ST_8_PORT(CLR) | 0xff | ST_8_WR(MASK);

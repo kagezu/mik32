@@ -31,9 +31,13 @@ Pin<PC, PC3> ST_SPI_RST;
 #endif
 
 #ifdef MIK32V2
-#define ST_SPI_CS(x)      x ( 1, 4 )
-#define ST_SPI_RS(x)      x ( 1, 9 )
-#define ST_SPI_RST(x)     x ( 1, 6 ) // На самом деле сброс не подключён
+// #define ST_SPI_CS(x)      x ( 1, 4 )
+// #define ST_SPI_RS(x)      x ( 1, 9 )
+// #define ST_SPI_RST(x)     x ( 1, 6 ) // На самом деле сброс не подключён
+
+Pin<1, 4> ST_SPI_CS;
+Pin<1, 9> ST_SPI_RS;
+Pin<1, 6> ST_SPI_RST;
 #endif
 
 #ifdef CH32V20x_D6

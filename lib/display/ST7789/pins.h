@@ -28,12 +28,19 @@ Port<PD, 0xFF> ST_8_PORT;
 #endif
 
 #ifdef MIK32V2
-#define ST_8_RD(x)   x ( 0, 8 )     // D4
-#define ST_8_WR(x)   x ( 0, 9 )     // A4
-#define ST_8_RS(x)   x ( 0, 10)     // D2
-#define ST_8_CS(x)   x ( 1, 15)
-#define ST_8_RST(x)  x ( 2, 8 )
-#define ST_8_PORT(x) x ( 0, 0 )
+// #define ST_8_RD(x)   x ( 0, 8 )     // D4
+// #define ST_8_WR(x)   x ( 0, 9 )     // A4
+// #define ST_8_RS(x)   x ( 0, 10)     // D2
+// #define ST_8_CS(x)   x ( 1, 15)
+// #define ST_8_RST(x)  x ( 2, 8 )
+// #define ST_8_PORT(x) x ( 0, 0 )
+
+Pin<0, 8 > ST_8_RD;
+Pin<0, 9 > ST_8_WR;
+Pin<0, 10> ST_8_RS;
+Pin<1, 15> ST_8_CS;
+Pin<2, 8 > ST_8_RST;
+Port<0, 0xFFFF> ST_8_PORT;
 #endif
 
 #ifdef CH32V20x_D6

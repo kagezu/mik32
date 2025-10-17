@@ -54,7 +54,7 @@ public:
 
   INLINE void send_word(uint16_t data)
   {
-    L_PORT.out((data >> 8);
+    L_PORT.out(data >> 8);
     L_WR.clr();
     L_WR.set();
     L_PORT.out(data);
@@ -84,7 +84,7 @@ void ILI9486_16<RGB16>::set_rgb_format()
 template <>
 INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color)
 {
-  L_PORT.out(color.rgb;
+  L_PORT.out(color.rgb);
   L_WR.clr();
   L_WR.set();
 }
@@ -92,7 +92,7 @@ INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color)
 template <>
 INLINE void ILI9486_16<RGB16>::send_rgb(RGB16 color, int32_t len)
 {
-  L_PORT.out(color.rgb;
+  L_PORT.out(color.rgb);
   while (len--) {
     L_WR.clr();
     L_WR.set();
@@ -106,7 +106,7 @@ void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
   set_addr(x0, y0, x1, y1);
 
   uint32_t len = (uint32_t)(x1 - x0 + 1) * (uint32_t)(y1 - y0 + 1);
-  L_PORT.out(color.rgb;
+  L_PORT.out(color.rgb);
 
 #ifndef WR_FORSED
   while (len--) {
@@ -184,16 +184,16 @@ void ILI9486_16<RGB18>::send_rgb(RGB18 color)
 {
   static uint16_t half;
   if (flag) {
-    L_PORT.out(color.red | half;
+    L_PORT.out(color.red | half);
     L_WR.set();
     L_WR.clr();
     flag = 0;
-    L_PORT.out(color.rgb;
+    L_PORT.out(color.rgb);
     L_WR.set();
     L_WR.clr();
   }
   else {
-    L_PORT.out(color.rgb >> 8;
+    L_PORT.out(color.rgb >> 8);
     L_WR.set();
     L_WR.clr();
     half = color.blue << 8;
@@ -212,15 +212,15 @@ void ILI9486_16<RGB18>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
   uint16_t lword = *(uint16_t *)&color.blue;
 
   while (len--) {
-    L_PORT.out(hword;
+    L_PORT.out(hword);
     L_WR.set();
     L_WR.clr();
 
-    L_PORT.out(mword;
+    L_PORT.out(mword);
     L_WR.set();
     L_WR.clr();
 
-    L_PORT.out(lword;
+    L_PORT.out(lword);
     L_WR.set();
     L_WR.clr();
   }

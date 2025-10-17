@@ -1,6 +1,6 @@
 #pragma once
 #ifdef __AVR__
-#include "core.h"
+#include "avr.h"
 #else
 #include <stdint.h>
 #define PROGMEM

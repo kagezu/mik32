@@ -101,7 +101,7 @@ fix16_t fix16_asin(fix16_t x)
   fix16_t out;
   out = (fix16_one - fix16_mul(x, x));
   out = fix16_div(x, fix16_sqrt(out));
-  out = fix16_atan.init(GPO_Max);
+  out = fix16_atan(out);
   return out;
 }
 

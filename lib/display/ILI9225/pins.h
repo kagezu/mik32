@@ -16,9 +16,13 @@ Pin<PC, 6> ILI_SPI_RST; // На самом деле сброс не подклю
 #endif
 
 #ifdef MIK32V2
-#define ILI_SPI_CS(x)      x ( 1, 4 ) 
-#define ILI_SPI_RS(x)      x ( 1, 9 )
-#define ILI_SPI_RST(x)     x ( 1, 6 )  // Переключаем на NSS1
+// #define ILI_SPI_CS(x)      x ( 1, 4 ) 
+// #define ILI_SPI_RS(x)      x ( 1, 9 )
+// #define ILI_SPI_RST(x)     x ( 1, 6 )  // Переключаем на NSS1
+
+Pin<1, 4> ILI_SPI_CS;
+Pin<1, 9> ILI_SPI_RS;
+Pin<1, 6> ILI_SPI_RST; // Переключаем на NSS1
 #endif
 
 #ifdef CH32V20x_D6

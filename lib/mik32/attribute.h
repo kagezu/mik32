@@ -57,5 +57,7 @@
 // Поместить функцию в оперативную память
 #define RAM             __attribute__((noinline, section(".ram_text")))
 
+#define RAM_RO          __attribute__((section(".data")))
+
 // Обработчик прерывания
 // #define ISR            __attribute__((used, interrupt, section(".trap_text")))

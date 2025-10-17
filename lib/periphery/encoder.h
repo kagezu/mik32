@@ -1,4 +1,5 @@
 // #include "encoder.h"
+#pragma once
 #include "core.h"
 #include "pins.h"
 

@@ -1,6 +1,7 @@
 // #include "core.h"
 #pragma once
 #include "macros/common.h"
+#include "avr.h"
 #include "gpio.h"
 
 void delay_us(uint16_t us);

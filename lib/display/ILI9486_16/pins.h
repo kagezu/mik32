@@ -14,28 +14,33 @@
 // #define L_WR(x)   x ( 0, 9 )
 // #define L_RS(x)   x ( 0, 10)
 
-#define L_WR(x)   x(1, 8)
-#define L_RS(x)   x(1, 9)
-#define L_CS(x)   x(1, 15)
-#define L_RST(x)  x(0, 0)  // Не используется
-#define L_PORT(x) x(0, 0)
+// #define L_WR(x)   x(1, 8)
+// #define L_RS(x)   x(1, 9)
+// #define L_CS(x)   x(1, 15)
+// #define L_RST(x)  x(0, 0)  // Не используется
+// #define L_PORT(x) x(0, 0)
 
-#define SEL_0(x)  x(1, 10)
+
+Pin<1, 8> L_WR;
+Pin<1, 9> L_RS;
+Pin<1, 15> L_CS;
+Port<0, 0xFFFF> L_PORT;
 
 static inline void GPIO_ILI9486_16()
 {
   // SEL_0(GPIO); SEL_0.init(GPO_Max); SEL_0.clr();  // PORT 0.3 -> D9
-  L_WR(GPIO);
-  L_RS(GPIO);
-  L_CS(GPIO);
+  // L_WR(GPIO);
+  // L_RS(GPIO);
+  // L_CS(GPIO);
   L_WR.init(GPO_Max);
   L_RS.init(GPO_Max);
   L_CS.init(GPO_Max);
   L_WR.clr();
   L_RS.clr();
   L_CS.set();
-  PAD_CONFIG->PORT_0_CFG = 0;  // PORT 0 -> GPIO
-  L_PORT(OUT) | 0xFFFF;        // PORT 0 -> OUT
+  L_PORT.init(GPO_Max);
+  // PAD_CONFIG->PORT_0_CFG = 0;  // PORT 0 -> GPIO
+  // L_PORT(OUT) | 0xFFFF;        // PORT 0 -> OUT
 }
 #endif
 

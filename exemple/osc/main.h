@@ -18,7 +18,7 @@ const char *_vt[] = { "AC", "DC" };
 const char *_ft[] = { "Off", "Sum" };
 const char *_tt[] = { "Front", "Cutoff", "Maximum" };
 
-ADD_MINT(FqScale, "Time", 3, _fq);
+ADD_MINT(FqScale, "Time", 6, _fq);
 ADD_MINT(VScale, "Voltage", 1, _vsc);
 ADD_MTEXT(VType, "Current", 0, _vt);
 ADD_MVALUE(ZeroLevel, "Setup zero", 0, -200, 200);
