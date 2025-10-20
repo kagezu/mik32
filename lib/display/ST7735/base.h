@@ -46,7 +46,7 @@ public:
 
     // Настройка для инициализации
     spi.mode(SPI_MODE0);
-    spi.fq(4000);
+    spi.fq(8000);
 
     select();
     send_command(SWRESET);
@@ -58,8 +58,8 @@ public:
     send_command(DISPON);
     release();
 
-    spi.fq(16000);        // По даташиту
   #ifdef MIK32V2
+    spi.fq(16000);        // По даташиту
     spi.mode(SPI_MODE3);  // Ускоряет ещё на 11,7% для MIK32
   #endif
   #ifdef CH32V20x_D6

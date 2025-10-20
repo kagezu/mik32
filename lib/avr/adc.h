@@ -13,11 +13,11 @@
 #define ADC_CH_VBG  14
 #define ADC_CH_GND  15
 
-#define ADC_ADLAR   1
+#define ADC_ADLAR   0
 
 class ADC {
 public:
-  ADC(uint8_t ch, uint8_t div = 1)
+  void init(uint8_t ch, uint8_t div = 1)
   {
     DIDR0 |= _BV(ch);         // Отключить цифровой вход
     ADMUX = ch                // Выбрать канал

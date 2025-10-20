@@ -17,10 +17,13 @@
 // Pin<PC, PC4> ST_SPI_RS;
 // Pin<PC, PC5> ST_SPI_CS;
 
-Pin<PB, PB0> ST_SPI_CS;
-Pin<PB, PB1> ST_SPI_RS;
-Pin<PC, PC3> ST_SPI_RST;
+// Pin<PB, PB0> ST_SPI_CS;
+// Pin<PB, PB1> ST_SPI_RS;
+// Pin<PC, PC3> ST_SPI_RST;
 
+Pin<PC, PC2> ST_SPI_CS;
+Pin<PC, PC1> ST_SPI_RS;
+Pin<PC, PC0> ST_SPI_RST;
 
 #endif
 

@@ -38,6 +38,9 @@ public:
 
     fq(0x4000);
     master();
+
+    spcr |= _BV(SPE);
+
     SPCR = spcr;
     SPSR = spsr;
     SPDR = 0;
@@ -72,8 +75,9 @@ public:
   void begin()
   {
     if (!transaction) { sreg = SREG; cli(); transaction = 1; }
-    SPCR = spcr;
-    SPSR = spsr;
+    // SPCR = spcr;
+    // SPSR = spsr;
+    // SPDR = 0;
   }
 
   void end(void)
