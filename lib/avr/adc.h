@@ -15,6 +15,14 @@
 
 #define ADC_ADLAR   0
 
+#define ADC_DIV_1   1
+#define ADC_DIV_4   2
+#define ADC_DIV_8   3
+#define ADC_DIV_16  4
+#define ADC_DIV_32  5
+#define ADC_DIV_64  6
+#define ADC_DIV_128 7
+
 class ADC {
 public:
   void init(uint8_t ch, uint8_t div = 1)
