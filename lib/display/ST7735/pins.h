@@ -44,9 +44,14 @@ Pin<1, 6> ST_SPI_RST;
 #endif
 
 #ifdef CH32V20x_D6
-#define ST_SPI_CS(x)      x ( A, 11 )
-#define ST_SPI_RS(x)      x ( A, 10 )
-#define ST_SPI_RST(x)     x ( D, 0  ) // Не подключён
+
+Pin<PA, 11> ST_SPI_CS;
+Pin<PA, 10> ST_SPI_RS;
+Pin<PC, 0> ST_SPI_RST;
+
+// #define ST_SPI_CS(x)      x ( A, 11 )
+// #define ST_SPI_RS(x)      x ( A, 10 )
+// #define ST_SPI_RST(x)     x ( D, 0  ) // Не подключён
 #endif
 
 #endif

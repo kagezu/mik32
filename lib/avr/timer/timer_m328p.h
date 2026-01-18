@@ -161,8 +161,8 @@
 #define T0_COMPB_ON   TIMSK0 |= _BV(OCIE0B);
 #define T0_COMPB_OFF  TIMSK0 &=~_BV(OCIE0B);
 // Использовать: ISR(TIMER0_OVF_vect)
-#define T0_OVF_ON     TIMSK0 |= _BV(TOIE);
-#define T0_OVF_OFF    TIMSK0 &=~_BV(TOIE);
+#define T0_OVF_ON     TIMSK0 |= _BV(TOIE0);
+#define T0_OVF_OFF    TIMSK0 &=~_BV(TOIE0);
 
 
 //------------------- Timer 1 ----------------------

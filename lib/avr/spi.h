@@ -94,12 +94,12 @@ public:
 
   uint16_t transfer16(uint16_t data)
   {
-    SPDR = to_byte(data, 1);
+    SPDR = data >> 8;
     wait();
-    to_byte(data, 1) = SPDR;
-    SPDR = to_byte(data, 0);
+    data = (uint16_t)SPDR << 8;
+    SPDR = data;
     wait();
-    to_byte(data, 0) = SPDR;
+    data |= SPDR;
     return data;
   }
 

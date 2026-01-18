@@ -144,7 +144,6 @@ void PrintF::printf(const char *string, ...)
       #ifdef KEY_p
       case 'p': ptr = sprint_h(ptr, (void *)__builtin_va_arg(args, void *); break;
       #endif
-
       case 'c': putc((char)(uint32_t)__builtin_va_arg(args, void *)); continue;
       case 's': prints((char *)__builtin_va_arg(args, char *), digit); continue;
       case '%': putc('%'); continue;

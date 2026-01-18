@@ -5,8 +5,8 @@
 
 class Encoder {
 public:
-  int count = 2, c1 = 0, c2 = 0;
-  bool a0, b0;
+  int count = 0, c1 = 0, c2 = 0;
+  bool a0, b0, push = 0;
 
 public:
   Encoder()
@@ -27,11 +27,15 @@ public:
 
   bool is_push()
   {
-  #ifdef ENCODER_GND
-    return ENCODER_SW.get();
+    bool detect =
+    #ifdef ENCODER_GND
+      ENCODER_SW.get();
   #else
-    return !ENCODER_SW.get();
+      !ENCODER_SW.get();
   #endif
+    if (detect) push = true;
+    else if (push) { push = false; return true; }
+    return false;
   }
 
   int scan()

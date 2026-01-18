@@ -46,11 +46,17 @@ static inline void GPIO_ILI9486_16()
 
 #ifdef CH32V20x_D6
 
-#define L_WR(x)   x(A, 8)
-#define L_RS(x)   x(A, 10)
-#define L_CS(x)   x(A, 11)
-#define L_RST(x)  x(D, 0)  // Не используется
-#define L_PORT(x) x(B, 0)
+// #define L_WR(x)   x(A, 8)
+// #define L_RS(x)   x(A, 10)
+// #define L_CS(x)   x(A, 11)
+// #define L_RST(x)  x(D, 0)  // Не используется
+// #define L_PORT(x) x(B, 0)
+
+
+Pin<PA, 8> L_WR;
+Pin<PA, 10> L_RS;
+Pin<PA, 11> L_CS;
+Port<PB, 0> L_PORT;
 
 static inline void GPIO_ILI9486_16()
 {
@@ -58,7 +64,7 @@ static inline void GPIO_ILI9486_16()
   init.GPIO_Speed = GPIO_Speed_2MHz;
   init.GPIO_Mode = GPIO_Mode_Out_PP;
   init.GPIO_Pin = GPIO_Pin_All;
-  GPIO_Init(L_PORT(PORT), &init);
+  GPIO_Init(L_PORT.gpio(), &init);
 
   L_WR.init(GPO_Max);
   L_RS.init(GPO_Max);

@@ -24,8 +24,8 @@ Pin<2, 6> ENCODER_SW;
 #ifdef __AVR__
 
 Pin<PD, 5> ENCODER_SW;
-Pin<PD, 6> ENCODER_A;
-Pin<PD, 7> ENCODER_B;
+Pin<PD, 7> ENCODER_A;
+Pin<PD, 6> ENCODER_B;
 
 
 // #define ENCODER_A   D2
