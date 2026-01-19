@@ -2,6 +2,8 @@
 #include "comon/include.h"
 #include "pins.h"
 
+// #define WR_FORSED     // Аппаратное тактирование
+
 template <typename C>
 class ILI9486_16 : public IDriver {
 private:
@@ -28,7 +30,7 @@ public:
 
     select();
     send_command(SLPOUT);
-    delay_ms(30);
+    delay_ms(100);
     send_config(ILI9486_CONFIG, sizeof(ILI9486_CONFIG));
     send_command(MADCTL);
     send_byte((rotation | 0x08));  // BGR -> RBG
@@ -120,7 +122,8 @@ void ILI9486_16<RGB16>::area(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1,
 
 #ifdef CH32V20x_D6
   if (len > 26) {  // Порог эффективности
-    L_WR(OUTA);
+
+     L_WR.init(GP_Timer | GPO_50MHz);
 
     len--;
     for (int i = len >> 16; i > 0; i--) {
