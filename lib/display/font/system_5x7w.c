@@ -1,6 +1,6 @@
 #include "comon/font.h"
 
-#ifdef  MIK32V2
+#ifndef  __AVR__
 
 static const uint32_t data[] PROGMEM = {
   0x00000000, 0x00000000, // (space)

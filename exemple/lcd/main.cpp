@@ -7,7 +7,7 @@ T32<0> timer;
 Pin<2, 6>   USER_B;
 int mode = 1;
 
-int main(void)
+__attribute__((naked)) int main(void)
 {
   USER_B.init(GP_GND);
   lcd.init();
