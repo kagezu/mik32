@@ -75,8 +75,8 @@ public:
   INLINE void background(typename Driver::RGB b) { _background = b; }
   INLINE void clear() { area(0, 0, max_x(), max_y(), _background); }
   INLINE void fill(typename Driver::RGB color) { area(_viewport->min_x, _viewport->min_y, _viewport->max_x, _viewport->max_y, color); }
-  INLINE void fill(Rect view) { area(view.min_x, view.min_y, view.max_x, view.max_y, _color); }
-  INLINE void fill(Rect view, typename Driver::RGB color) { area(view.min_x, view.min_y, view.max_x, view.max_y, color); }
+  INLINE void fill(Rect *view) { area(view->min_x, view->min_y, view->max_x, view->max_y, _color); }
+  INLINE void fill(Rect *view, typename Driver::RGB color) { area(view->min_x, view->min_y, view->max_x, view->max_y, color); }
   INLINE void viewport(Rect *view) { _viewport = view; }
   INLINE void viewport() { _viewport = &_didplay; }
 

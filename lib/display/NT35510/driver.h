@@ -106,13 +106,13 @@ public:
       len -= 2;
       for (int i = len >> 16; i > 0; i--) {
         tim3.CNT(0xFFFF);
-        tim3.int_cleat();
+        tim3.int_clear();
         tim3.single();  // Включеие счётчика
         tim3.ovf_wait();
       }
       if (len & 0xFFFF) {
         tim3.CNT(len);
-        tim3.int_cleat();
+        tim3.int_clear();
         tim3.single();  // Включеие счётчика
         tim3.ovf_wait();
       }
