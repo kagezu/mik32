@@ -143,6 +143,28 @@ public:
     }
   }
 
+  // Интерполяция массива данных
+  template<typename I, typename O>
+  void interpolate2(I *in, O *out, int size, int div)
+  {
+    int count = 0;
+    while (1) {
+      for (int x = 0; x < step; x++) {
+        if(count == 0) {
+        int_t sum = 0;
+        for (int j = 0; j < NODE; j++)
+          sum += (int_t)li[x][j] * in[j]; // Q int_t.dig
+        *out++ = sum >> dig; // Q lag_t.0
+        size --;
+        if(!size)return;
+        }
+        count++;
+        if(count == div) count = 0;
+      }
+      in++; // Следующий отрезок
+    }
+  }
+
 private:
   static const uint64_t fact(int x)
   {
