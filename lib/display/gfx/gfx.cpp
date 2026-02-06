@@ -8,16 +8,16 @@
 void GFX::w_line(int16_t x, int16_t y, int16_t x1)
 {
   if (x > x1) swap(x, x1);
-  if (x < 0) x = 0;
-  if (x1 < 0) x1 = 0;
+  // if (x < 0) x = 0;
+  // if (x1 < 0) x1 = 0;
   fill(x, y, x1, y);
 }
 
 void GFX::h_line(int16_t x, int16_t y, int16_t y1)
 {
   if (y > y1) swap(y, y1);
-  if (y < 0) y = 0;
-  if (y1 < 0) y1 = 0;
+  // if (y < 0) y = 0;
+  // if (y1 < 0) y1 = 0;
   fill(x, y, x, y1);
 }
 
